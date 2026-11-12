@@ -1,7 +1,7 @@
 # כוכב כדורגל · Football Star — Project Plan
 
 > **Name:** "כוכב כדורגל" (Hebrew, main title) · "Football Star" (English) · "نجم كرة القدم" (Arabic). The title follows the selected language.
-> **Domain:** none yet — use the free `*.vercel.app` address until one is bought.
+> **Domain:** none yet — live at https://football-star-one.vercel.app until one is bought.
 
 > **Logo:** provided by the owner (`assets/logo-source.png`) — navy + silver badge with Star of David. Site palette follows it (dark navy default theme).
 
@@ -435,14 +435,14 @@ The same question bank is used inside both career modes.
 
 ## 7. Feature List by Phase
 
-### Phase 0 — Foundation
+### Phase 0 — Foundation ✅ (completed 2026-11-12)
 - [x] Next.js 16 + TS + Tailwind 4 + shadcn/ui scaffold
 - [x] i18n with `he` (default), `en`; `ar` wired but hidden until ready; RTL/LTR switching; locale cookie + profile
 - [x] Fonts (Heebo / Cairo), theme (system/light/dark), layout, mobile bottom nav
 - [x] Supabase migrations (`profiles`, RLS, `is_admin()`, sign-up trigger), TS types
-- [ ] Supabase project created & migration pushed — **needs owner's account**
-- [x] Auth code (magic link + Google, callback, sign-out) — **needs Supabase + Google OAuth config**
-- [ ] GitHub → Vercel preview deploys — **needs owner's account**
+- [x] Supabase project created & migrations pushed
+- [x] Auth: email magic link working end-to-end (Google sign-in coded; needs Google OAuth client — optional)
+- [x] GitHub (LidorHanoh/football-star) → Vercel auto-deploys — live at https://football-star-one.vercel.app
 - [x] Title "כוכב כדורגל" / "Football Star" / "نجم كرة القدم" per language
 - [x] Brand: owner's logo, favicon/app icons/share image, navy + silver palette
 

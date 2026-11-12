@@ -28,5 +28,5 @@ const og = await sharp(round).resize(560, 560).png().toBuffer();
 await sharp({ create: { width: 1200, height: 630, channels: 4, background: "#060b1a" } })
   .composite([{ input: og, gravity: "center" }])
   .jpeg({ quality: 85 })
-  .toFile("src/app/opengraph-image.jpg");
-console.log("src/app/opengraph-image.jpg");
+  .toFile("src/app/[locale]/opengraph-image.jpg");
+console.log("src/app/[locale]/opengraph-image.jpg");
