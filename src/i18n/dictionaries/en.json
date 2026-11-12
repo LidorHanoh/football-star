@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "siteName": "Football Star",
+    "description": "A football game: Trivia, Player Career and Manager Career."
+  },
+  "nav": {
+    "home": "Home",
+    "trivia": "Trivia",
+    "playerCareer": "Player Career",
+    "managerCareer": "Manager Career",
+    "leaderboard": "Leaderboard",
+    "profile": "Profile",
+    "about": "About",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "menu": "Main menu"
+  },
+  "home": {
+    "heroTitle": "Become the next football star",
+    "heroSubtitle": "Test your knowledge, build a career from the youth team to retirement, or manage a club from 20 leagues.",
+    "playNow": "Play now",
+    "modesTitle": "Choose a game mode",
+    "triviaTitle": "Trivia",
+    "triviaDesc": "Medium-to-hard questions on Israeli football, the Champions League and more. Pick your topics and climb the leaderboard.",
+    "playerTitle": "Player Career",
+    "playerDesc": "Start in the youth team, develop, get offers from Europe — and later continue as a manager.",
+    "managerTitle": "Manager Career",
+    "managerDesc": "Pick a club from 20 leagues, set your lineup and tactics, make transfers and meet the board's goals.",
+    "dailyTitle": "Daily Challenge",
+    "dailyDesc": "The same 5 questions for everyone, one attempt per day. Keep your streak alive!",
+    "comingSoon": "Coming soon"
+  },
+  "comingSoon": {
+    "title": "Under construction",
+    "body": "This mode is being built and arrives in the next phase. Meanwhile you can sign in and save your spot on the leaderboard.",
+    "backHome": "Back to home"
+  },
+  "auth": {
+    "title": "Sign in",
+    "subtitle": "You can play without an account. An account is needed for leaderboards and cloud saves.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "sendLink": "Email me a sign-in link",
+    "sending": "Sending…",
+    "linkSent": "Sent! Check your inbox and click the link.",
+    "or": "or",
+    "google": "Continue with Google",
+    "notConfigured": "Sign-in isn't configured on the server yet.",
+    "error": "Something went wrong. Please try again.",
+    "continueAsGuest": "Continue as guest"
+  },
+  "profile": {
+    "title": "My profile",
+    "guestTitle": "You're playing as a guest",
+    "guestBody": "Your progress is saved on this device only. Sign in to save to the cloud and appear on leaderboards.",
+    "username": "Username",
+    "level": "Level",
+    "xp": "XP",
+    "streak": "Daily streak",
+    "memberSince": "Member since"
+  },
+  "footer": {
+    "disclaimer": "Football Star is not affiliated with any club, league or player. All crests and kits in the game are original.",
+    "nonCommercial": "A free, non-commercial project."
+  },
+  "about": {
+    "title": "About",
+    "body": "Football Star is a free football game in Hebrew, English and soon Arabic. It uses real league, club and player names, but ratings are our own and all crests and kits are original designs. If you'd like content removed, contact us and we'll handle it quickly."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "Looks like the ball went out of play.",
+    "backHome": "Back to home"
+  }
+}
