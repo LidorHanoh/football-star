@@ -1,13 +1,15 @@
 "use client";
 
-import { DicesIcon, PenLineIcon, ShieldIcon } from "lucide-react";
+import { DicesIcon, PenLineIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
+import { ROLE_START } from "@/lib/engine/attrs";
 import { askForMore, netWage, signOffer } from "@/lib/engine/career";
 import type { Agent, Offer, World } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
+import { Crest } from "./crest";
 import { type CareerDict, clubName, fill, FLAGS, money } from "./helpers";
 
 export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) {
@@ -18,8 +20,8 @@ export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) 
       <h1 className="font-heading text-3xl font-extrabold">{t.offers.title}</h1>
       <p className="mb-6 text-muted-foreground">{t.offers.subtitle}</p>
       <ul className="grid gap-4 md:grid-cols-3">
-        {save.offers.map((offer) => (
-          <li key={offer.id}>
+        {save.offers.map((offer, i) => (
+          <li key={offer.id} className="animate-rise" style={{ animationDelay: `${i * 110}ms` }}>
             <OfferCard
               offer={offer}
               world={world}
@@ -64,11 +66,9 @@ export function OfferCard({
   const league = world.leagues.find((l) => l.key === club.leagueKey);
   const tagColor = { big: "bg-amber-500/15 text-amber-600 dark:text-amber-300", steady: "bg-sky-500/15 text-sky-600 dark:text-sky-300", fast: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", renew: "bg-violet-500/15 text-violet-600 dark:text-violet-300", transfer: "bg-rose-500/15 text-rose-600 dark:text-rose-300" }[offer.tag];
   return (
-    <article className={cn("flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm", highlight && "border-primary ring-2 ring-primary/30")}>
+    <article className={cn("flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg", highlight && "border-primary ring-2 ring-primary/30")}>
       <div className="flex items-start gap-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-          <ShieldIcon className="size-7" aria-hidden />
-        </span>
+        <Crest club={club} className="size-12" />
         <div className="min-w-0">
           <h2 className="truncate font-heading text-xl font-bold">{clubName(world, offer.clubId, locale)}</h2>
           <p className="truncate text-sm text-muted-foreground">
@@ -91,6 +91,13 @@ export function OfferCard({
         <div>
           <dt className="text-muted-foreground">{t.offers.level[offer.level]}</dt>
           <dd className="font-medium">{fill(t.offers.years, { n: offer.years })}</dd>
+        </div>
+        <div className="col-span-2 flex items-center justify-between gap-2 rounded-xl bg-muted/60 px-3 py-2">
+          <dt className="text-muted-foreground">{t.offers.role}</dt>
+          <dd className="text-end">
+            <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold text-white", { star: "bg-amber-500", starter: "bg-emerald-600", rotation: "bg-sky-600", bench: "bg-slate-500" }[offer.role])}>{t.roles[offer.role]}</span>
+            <span className="ms-2 text-xs text-muted-foreground">{fill(t.offers.startChance, { pct: Math.round(ROLE_START[offer.role] * 100) })}</span>
+          </dd>
         </div>
         <div className="col-span-2">
           <dt className="mb-1 flex justify-between text-muted-foreground">

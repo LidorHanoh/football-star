@@ -213,7 +213,10 @@
       "position": "Position",
       "foot": "Preferred foot",
       "right": "Right",
-      "left": "Left"
+      "left": "Left",
+      "face": "Your player's face",
+      "newFace": "Another face",
+      "kit": "Shirt number"
     },
     "positions": {
       "GK": "Goalkeeper",
@@ -242,7 +245,8 @@
     "league": {
       "title": "Choose a league",
       "subtitle": "You'll get 3 offers from youth teams in this league.",
-      "strength": "Level"
+      "strength": "Level",
+      "tier2": "2nd tier"
     },
     "offers": {
       "title": "Your offers",
@@ -276,7 +280,9 @@
       "won": "They agreed! New wage: {wage}/week",
       "lost": "They didn't like that. The coach trusts you less.",
       "alreadyAsked": "Already negotiated",
-      "afterAgent": "After agent ({pct}%): {wage}/week"
+      "afterAgent": "After agent ({pct}%): {wage}/week",
+      "role": "Squad role",
+      "startChance": "~{pct}% starts"
     },
     "agent": {
       "title": "Hire an agent",
@@ -286,7 +292,14 @@
       "hire": "Hire",
       "none": "No agent for now",
       "noneHint": "Keep 100% of your wage, but expect few and weaker offers.",
-      "yours": "Your agent"
+      "yours": "Your agent",
+      "pitch": [
+        "Young and hungry — few contacts yet.",
+        "Knows every club in the league.",
+        "Good contacts at home, a few abroad.",
+        "Well-known agent with links across Europe.",
+        "Super-agent: one call opens any door."
+      ]
     },
     "dashboard": {
       "season": "Season {year}",
@@ -366,7 +379,9 @@
       "assists": "{assists} assists in this half.",
       "benchWarmer": "You barely played. Work hard to earn the coach's trust.",
       "halfwayTable": "Halfway: your club is {pos} in the table.",
-      "finalTable": "Final position: {pos} in the table."
+      "finalTable": "Final position: {pos} in the table.",
+      "ratingDown": "Your world rating dropped: {from} → {to}",
+      "trainingPoints": "You earned {n} training points — spend them in the training tab."
     },
     "seasonEnd": {
       "title": "End of season {year}",
@@ -415,6 +430,93 @@
       "chooseClub": "Choose your club for next season",
       "startNext": "Start season {year}",
       "retireForced": "At {age} it's time to hang up the boots."
+    },
+    "exit": "Exit",
+    "roles": {
+      "star": "Star player",
+      "starter": "Starter",
+      "rotation": "Rotation",
+      "bench": "Bench"
+    },
+    "tabs": {
+      "label": "Career menu",
+      "overview": "Overview",
+      "squad": "Squad",
+      "stats": "Skills & training"
+    },
+    "squad": {
+      "coach": "Head coach",
+      "yourRole": "Your role",
+      "youthNote": "You're in the youth team — this is the first team you want to break into.",
+      "inXI": "You're in the starting XI!",
+      "onBench": "You're on the bench — prove yourself to start.",
+      "outOfSquad": "You're out of the matchday squad. Improve your rating and the coach's trust.",
+      "loading": "Loading the squad…",
+      "bench": "Bench",
+      "reserves": "Rest of the squad",
+      "failed": "Couldn't load the squad right now.",
+      "noData": "We don't have squad data for this club yet.",
+      "teamRating": "Average XI rating: {n}",
+      "you": "You"
+    },
+    "training": {
+      "title": "Skills & training",
+      "points": "{n} training pts",
+      "key": "Key skill for your position",
+      "improve": "Improve {attr}",
+      "hint": "You earn training points every half season — more if you train well and play a lot. Key skills (★) raise your rating fastest.",
+      "weight": "+1 here is worth about {pct}% of a rating point.",
+      "careerTotals": "Career totals"
+    },
+    "attrs": {
+      "outfield": {
+        "pace": "Pace",
+        "shooting": "Shooting",
+        "passing": "Passing",
+        "dribbling": "Dribbling",
+        "defending": "Defending",
+        "physical": "Physical"
+      },
+      "gk": {
+        "pace": "Diving",
+        "shooting": "Handling",
+        "passing": "Kicking",
+        "dribbling": "Reflexes",
+        "defending": "Positioning",
+        "physical": "Physical"
+      }
+    },
+    "play": {
+      "matchOf": "Match {n} of {total}",
+      "faster": "Faster",
+      "normal": "Normal speed",
+      "started": "Started",
+      "subOn": "Came off the bench ({min} min)"
+    },
+    "setPiece": {
+      "penaltyTitle": "Penalty! You take it",
+      "freekickTitle": "Free kick!",
+      "penaltySaveTitle": "Penalty against you — you're in goal!",
+      "penaltyHint": "Pick where to shoot. Top corners are hard to save — but easier to miss.",
+      "freekickHint": "Over the wall into a top corner is your best chance.",
+      "diveHint": "Pick where to dive.",
+      "zones": [
+        "Top left",
+        "Top middle",
+        "Top right",
+        "Bottom left",
+        "Bottom middle",
+        "Bottom right"
+      ],
+      "outcome": {
+        "goal": "GOAL!",
+        "saved": "SAVED!",
+        "miss": "MISSED!"
+      },
+      "saved": "SAVED!",
+      "conceded": "Goal…",
+      "afterGood": "The fans are singing your name!",
+      "afterBad": "Never mind — next time."
     }
   },
   "notFound": {

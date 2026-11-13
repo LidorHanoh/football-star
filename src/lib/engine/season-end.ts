@@ -1,5 +1,5 @@
 import { BALANCE } from "./balance";
-import { newSeason, seniorWage, youthWage } from "./career";
+import { newSeason, offerRole, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
 import type { CareerSave, Offer, SeasonSummary, World, WorldClub } from "./types";
@@ -94,6 +94,7 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
         wage: level === "first" ? seniorWage(myClub, rating, rng) : youthWage(myClub, rng),
         trust: clamp(save.bars.trust + 5, 0, 100),
         tag: "renew",
+        role: offerRole(rating, myClub, level, clamp(save.bars.trust + 5, 0, 100)),
       };
     } else released = true;
   }
@@ -103,11 +104,13 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
   const count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (save.talks.manager === "wantToLeave" ? 1 : 0), 1, 5);
   const reach = BALANCE.agents.reputationReach[q];
   const playerLevel = rating; // a club is interested if you'd fit their squad
+  const countryOf = (key: string) => world.leagues.find((l) => l.key === key)?.country;
+  const myCountry = countryOf(myClub.leagueKey);
   const candidates = world.clubs
     .filter((c) => c.id !== myClub.id)
     .filter((c) => c.teamRating >= playerLevel - 10 && c.teamRating <= playerLevel + 3 + reach / 2)
     // Abroad only once you're good enough (or with a strong agent).
-    .filter((c) => c.leagueKey === myClub.leagueKey || rating >= 66 - q * 2);
+    .filter((c) => countryOf(c.leagueKey) === myCountry || rating >= 66 - q * 2);
   // Safety net: someone always wants you — the weakest clubs in your league.
   if (!candidates.length) {
     candidates.push(...world.clubs.filter((c) => c.leagueKey === myClub.leagueKey && c.id !== myClub.id).sort((a, b) => a.teamRating - b.teamRating).slice(0, 4));
@@ -118,14 +121,16 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
   const offers: Offer[] = candidates.slice(0, count).map((club: WorldClub) => {
     const level = nextAge < 19 && club.teamRating > rating + 8 ? "youth" : "first";
     const wage = level === "first" ? seniorWage(club, rating, rng) : youthWage(club, rng);
+    const trust = clamp(45 + (rating - club.teamRating) * 3, 15, 80);
     return {
       id: `t${club.id.slice(0, 6)}${rng.int(100, 999)}`,
       clubId: club.id,
       level,
       years: rng.int(2, 4),
       wage: Math.round(wage * BALANCE.agents.wageBoost[q]),
-      trust: clamp(45 + (rating - club.teamRating) * 3, 15, 80),
+      trust,
       tag: "transfer",
+      role: offerRole(rating, club, level, trust),
     };
   });
 

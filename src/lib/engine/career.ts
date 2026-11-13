@@ -1,6 +1,8 @@
+import { attrWeight, DEFAULT_KIT, makeAttrs, overall, roleFor, upgradePlayerFields } from "./attrs";
 import { BALANCE } from "./balance";
+import { hash, personName } from "./people";
 import { clamp, newSeed, Rng } from "./rng";
-import type { Agent, CareerSave, Offer, Position, World, WorldClub } from "./types";
+import type { Agent, Attrs, CareerSave, Level, Offer, Position, World, WorldClub } from "./types";
 
 // ---------------------------------------------------------------------------
 // Hidden potential: stored obfuscated, never shown.
@@ -17,21 +19,37 @@ export interface NewPlayerInput {
   nationality: string;
   position: Position;
   foot: "right" | "left";
+  kit?: number;
+  face?: number;
 }
 
 export function createCareer(input: NewPlayerInput, seed = newSeed()): CareerSave {
   const rng = new Rng(seed);
   const { potential, rating } = BALANCE.start;
   const pot = Math.round(clamp(potential.mean + rng.normal() * potential.sd, potential.min, potential.max));
+  const start = rng.int(rating[0], rating[1]);
+  const attrs = makeAttrs(input.position, start, rng);
   const now = new Date().toISOString();
   return {
-    version: 1,
+    version: 2,
     id: `c${seed.toString(36)}${Date.now().toString(36)}`,
     createdAt: now,
     updatedAt: now,
     rng: rng.state,
     phase: "offers",
-    player: { ...input, age: BALANCE.start.age, rating: rng.int(rating[0], rating[1]), p: hidePotential(pot), trainingPoints: 0 },
+    player: {
+      name: input.name,
+      nationality: input.nationality,
+      position: input.position,
+      foot: input.foot,
+      age: BALANCE.start.age,
+      rating: overall(attrs, input.position),
+      attrs,
+      p: hidePotential(pot),
+      trainingPoints: 2,
+      kit: clamp(Math.round(input.kit ?? DEFAULT_KIT[input.position]), 1, 99),
+      face: input.face ?? rng.int(1, 2 ** 30),
+    },
     bars: { ...BALANCE.start.bars },
     contract: null,
     agent: null,
@@ -69,6 +87,7 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string): 
   const big = rng.pick(clubs.slice(0, third));
   const mid = rng.pick(clubs.slice(third, third * 2));
   const small = rng.pick(clubs.slice(third * 2));
+  const rating = save.player.rating;
   const make = (club: WorldClub, tag: Offer["tag"], trust: number): Offer => ({
     id: `o${club.id.slice(0, 8)}${rng.int(0, 9999)}`,
     clubId: club.id,
@@ -77,6 +96,7 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string): 
     wage: youthWage(club, rng),
     trust,
     tag,
+    role: offerRole(rating, club, "youth", trust),
   });
   const offers = [make(big, "big", 40), make(mid, "steady", 50), make(small, "fast", 62)];
   return { ...save, rng: rng.state, offers };
@@ -103,15 +123,14 @@ export function askForMore(save: CareerSave, offerId: string): { save: CareerSav
 // ---------------------------------------------------------------------------
 // Agents (fictional people). Better agents cost a bigger cut but bring better offers.
 // ---------------------------------------------------------------------------
-const FIRST = ["Avi", "Moshe", "Dani", "Eli", "Yossi", "Marco", "Carlos", "Jorge", "Luca", "Pierre", "Tom", "Max", "Ibrahim", "Nikos", "Sven"];
-const LAST = ["Levi", "Cohen", "Mizrahi", "Rossi", "Silva", "Mendes", "Dupont", "Becker", "Novak", "Khalil", "Andersen", "Kaplan", "Ferreira", "Bauer", "Haddad"];
 
 export function rollAgents(save: CareerSave): CareerSave {
   const rng = new Rng(save.rng);
   const qualities = [1, 2, 3, 4, 5];
   const agentsOnOffer: Agent[] = qualities.map((quality) => {
     const [lo, hi] = BALANCE.agents.commission[quality];
-    return { id: `a${quality}${rng.int(100, 999)}`, name: `${rng.pick(FIRST)} ${rng.pick(LAST)}`, quality, commission: rng.int(lo, hi) };
+    const face = rng.int(1, 2 ** 30);
+    return { id: `a${quality}${rng.int(100, 999)}`, name: personName(face, save.player.nationality === "Israel" && rng.chance(0.7)), face, quality, commission: rng.int(lo, hi) };
   });
   return { ...save, rng: rng.state, agentsOnOffer };
 }
@@ -151,4 +170,51 @@ function signOfferRaw(save: CareerSave, offerId: string, world: World): CareerSa
 
 export function newSeason(year: number, leagueKey: string) {
   return { year, leagueKey, halvesPlayed: 0 as const, matches: [], table: [], highlights: [] };
+}
+
+// ---------------------------------------------------------------------------
+// Squad role and strength of the team you'd play in
+// ---------------------------------------------------------------------------
+/** The youth team is about 12 points weaker than the first team. */
+export const teamStrength = (club: WorldClub, level: Level) => (level === "youth" ? club.teamRating - 12 : club.teamRating);
+
+export const offerRole = (rating: number, club: WorldClub, level: Level, trust: number) => roleFor(rating, teamStrength(club, level), trust);
+
+// ---------------------------------------------------------------------------
+// Training: spend points on attributes.
+// ---------------------------------------------------------------------------
+export function canTrain(save: CareerSave, k: keyof Attrs) {
+  const p = save.player;
+  return p.trainingPoints > 0 && p.attrs[k] < 99 && p.rating < readPotential(p.p) + 3;
+}
+
+export function train(save: CareerSave, k: keyof Attrs): CareerSave {
+  if (!canTrain(save, k)) return save;
+  const p = save.player;
+  const attrs = { ...p.attrs, [k]: Math.min(99, Math.round((p.attrs[k] + 1) * 10) / 10) };
+  return {
+    ...save,
+    player: { ...p, attrs, rating: overall(attrs, p.position), trainingPoints: p.trainingPoints - 1 },
+    bars: { ...save.bars, training: Math.min(100, save.bars.training + 2) },
+  };
+}
+
+export { attrWeight };
+
+// ---------------------------------------------------------------------------
+// Old saves → current shape.
+// ---------------------------------------------------------------------------
+export function migrateSave(save: CareerSave): CareerSave {
+  if ((save as { version: number }).version === 2) return save;
+  const seed = hash(save.id);
+  const player = upgradePlayerFields(save.player, seed);
+  const rating = overall(player.attrs, player.position);
+  return {
+    ...save,
+    version: 2,
+    player: { ...player, rating },
+    agent: save.agent ? { ...save.agent, face: save.agent.face ?? hash(save.agent.id) } : null,
+    agentsOnOffer: save.agentsOnOffer.map((a) => ({ ...a, face: a.face ?? hash(a.id) })),
+    offers: save.offers.map((o) => ({ ...o, role: o.role ?? "rotation" })),
+  };
 }

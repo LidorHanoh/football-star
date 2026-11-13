@@ -1,12 +1,16 @@
 "use client";
 
+import { DicesIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { NewPlayerInput } from "@/lib/engine/career";
+import { DEFAULT_KIT } from "@/lib/engine/attrs";
+import { newSeed } from "@/lib/engine/rng";
 import { type Position } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
+import { Face } from "./face";
 import { type CareerDict, FLAGS } from "./helpers";
 
 /** Where each position sits on the mini pitch (x: 0 left → 100 right, y: 0 attack → 100 own goal). */
@@ -17,11 +21,15 @@ const SPOTS: Record<Position, { x: number; y: number }> = {
 
 const NATIONS = Object.keys(FLAGS);
 
-export function CreatePlayer({ t, onBack, onDone }: { t: CareerDict; onBack: () => void; onDone: (input: NewPlayerInput) => void }) {
+export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: NewPlayerInput) => void }) {
   const [name, setName] = useState("");
   const [nationality, setNationality] = useState("Israel");
   const [position, setPosition] = useState<Position>("ST");
   const [foot, setFoot] = useState<"right" | "left">("right");
+  const [kit, setKit] = useState<number | null>(null);
+  const [face, setFace] = useState(() => newSeed());
+  const [spin, setSpin] = useState(0);
+  const number = kit ?? DEFAULT_KIT[position];
 
   return (
     <section className="mx-auto max-w-3xl px-4 py-8">
@@ -30,10 +38,26 @@ export function CreatePlayer({ t, onBack, onDone }: { t: CareerDict; onBack: () 
         className="grid gap-6 md:grid-cols-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (name.trim()) onDone({ name: name.trim().slice(0, 30), nationality, position, foot });
+          if (name.trim()) onDone({ name: name.trim().slice(0, 30), nationality, position, foot, kit: number, face });
         }}
       >
         <div className="grid content-start gap-5">
+          <div className="flex items-center gap-4 rounded-2xl border bg-card p-3">
+            <Face key={spin} seed={face} number={number} className="animate-pop size-24 shrink-0 overflow-hidden rounded-2xl shadow-md" title={t.create.face} />
+            <div className="grid gap-2">
+              <p className="text-sm font-medium">{t.create.face}</p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setFace(newSeed());
+                  setSpin(spin + 1);
+                }}
+              >
+                <DicesIcon aria-hidden /> {t.create.newFace}
+              </Button>
+            </div>
+          </div>
           <div className="grid gap-2">
             <Label htmlFor="pname">{t.create.name}</Label>
             <Input id="pname" required maxLength={30} value={name} placeholder={t.create.namePlaceholder} onChange={(e) => setName(e.target.value)} className="h-11 text-base" />
@@ -47,6 +71,10 @@ export function CreatePlayer({ t, onBack, onDone }: { t: CareerDict; onBack: () 
                 </option>
               ))}
             </select>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="pkit">{t.create.kit}</Label>
+            <Input id="pkit" type="number" inputMode="numeric" min={1} max={99} value={number} onChange={(e) => setKit(Math.max(1, Math.min(99, Number(e.target.value) || 1)))} className="h-11 w-28 text-center font-heading text-xl font-bold" />
           </div>
           <fieldset className="grid gap-2">
             <legend className="mb-2 text-sm font-medium">{t.create.foot}</legend>
@@ -89,11 +117,8 @@ export function CreatePlayer({ t, onBack, onDone }: { t: CareerDict; onBack: () 
           </div>
         </fieldset>
 
-        <div className="flex justify-between gap-3 md:col-span-2">
-          <Button type="button" variant="outline" size="lg" onClick={onBack}>
-            {t.back}
-          </Button>
-          <Button type="submit" size="lg" disabled={!name.trim()}>
+        <div className="flex justify-end gap-3 md:col-span-2">
+          <Button type="submit" size="lg" className="h-12 px-8" disabled={!name.trim()}>
             {t.next}
           </Button>
         </div>

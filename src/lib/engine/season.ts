@@ -1,7 +1,8 @@
+import { growAttrs, overall } from "./attrs";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
 import { clamp, Rng } from "./rng";
-import type { CareerSave, Highlight, MatchResult, Position, TableRow, World, WorldClub } from "./types";
+import type { CareerSave, Highlight, MatchResult, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
 
 /** Share of a team's goals / assists a player in this position is involved in (per 90, as a starter). */
 const GOAL_SHARE: Record<Position, number> = { GK: 0, CB: 0.04, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.08, AM: 0.15, LW: 0.17, RW: 0.17, ST: 0.3 };
@@ -57,7 +58,20 @@ function emptyRow(clubId: string): TableRow {
   return { clubId, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
 }
 
-function record(row: TableRow, gf: number, ga: number) {
+export function unrecord(row: TableRow, gf: number, ga: number) {
+  row.p--;
+  row.gf -= gf;
+  row.ga -= ga;
+  if (gf > ga) {
+    row.w--;
+    row.pts -= 3;
+  } else if (gf === ga) {
+    row.d--;
+    row.pts -= 1;
+  } else row.l--;
+}
+
+export function record(row: TableRow, gf: number, ga: number) {
   row.p++;
   row.gf += gf;
   row.ga += ga;
@@ -136,8 +150,16 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   if (growth > 0) growth *= clamp(gap / 12, 0, 1.4) * (0.7 + (bars.training / 100) * 0.6) * (0.6 + minutesShare * 0.6);
   growth += rng.normal() * 0.6;
   const before = player.rating;
-  player.rating = Math.round(clamp(player.rating + growth, 30, Math.max(pot, player.rating)));
+  const target = clamp(player.rating + growth, 30, Math.max(pot, player.rating));
+  player.attrs = growAttrs(player.attrs, player.position, target - player.rating, rng);
+  player.rating = overall(player.attrs, player.position);
   if (player.rating > before) events.push({ key: "ratingUp", params: { from: before, to: player.rating } });
+  else if (player.rating < before) events.push({ key: "ratingDown", params: { from: before, to: player.rating } });
+
+  // Training points: earned by training well and playing.
+  const points = Math.round(0.6 + bars.training / 45 + minutesShare * 1.2);
+  player.trainingPoints += points;
+  if (points) events.push({ key: "trainingPoints", params: { n: points } });
 
   // --- Bars -----------------------------------------------------------------
   const ratings = played.map((m) => m.rating!).filter(Boolean);
@@ -232,6 +254,22 @@ function playMyMatch(
     if (!moments.length && rng.chance(0.25)) moments.push({ minute: rng.int(5, 88), kind: "chance" });
   }
 
+  // A set piece for you to take (decided later by the player in the UI).
+  let setPiece: MatchResult["setPiece"];
+  if (minutes && minutes >= 30) {
+    const kind: SetPieceKind | null =
+      player.position === "GK"
+        ? rng.chance(0.07)
+          ? "penaltySave"
+          : null
+        : rng.chance(PENALTY_CHANCE[player.position])
+          ? "penalty"
+          : rng.chance(FREEKICK_CHANCE[player.position])
+            ? "freekick"
+            : null;
+    if (kind) setPiece = { kind, minute: started ? rng.int(8, Math.min(88, minutes)) : rng.int(92 - minutes, 89), seed: rng.int(1, 2 ** 30) };
+  }
+
   let rating: number | null = null;
   if (minutes) {
     const result = gf > ga ? 0.35 : gf === ga ? 0 : -0.3;
@@ -255,5 +293,8 @@ function playMyMatch(
     });
   }
 
-  return { half, round, opponentId: opp.id, home, goalsFor: gf, goalsAgainst: ga, minutes, started, goals, assists, rating };
+  return { half, round, opponentId: opp.id, home, goalsFor: gf, goalsAgainst: ga, minutes, started, goals, assists, rating, ...(setPiece ? { setPiece } : {}) };
 }
+
+const PENALTY_CHANCE: Record<Position, number> = { GK: 0, CB: 0.004, LB: 0.004, RB: 0.004, DM: 0.01, CM: 0.03, AM: 0.06, LW: 0.05, RW: 0.05, ST: 0.08 };
+const FREEKICK_CHANCE: Record<Position, number> = { GK: 0, CB: 0.01, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.07, AM: 0.1, LW: 0.08, RW: 0.08, ST: 0.06 };

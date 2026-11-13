@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo, Heebo } from "next/font/google";
-import { BottomNav } from "@/components/bottom-nav";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getDir, locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
@@ -41,26 +38,13 @@ export const viewport: Viewport = {
 };
 
 export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
-  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
+  const locale = await getLocale();
 
   return (
     <html lang={locale} dir={getDir(locale)} suppressHydrationWarning className={`${heebo.variable} ${cairo.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
-          <SiteHeader locale={locale} dict={dict} />
-          <main className="flex-1">{children}</main>
-          <SiteFooter locale={locale} dict={dict} />
-          <BottomNav
-            locale={locale}
-            menuLabel={dict.nav.menu}
-            labels={{
-              home: dict.nav.home,
-              playerCareer: dict.nav.playerCareer,
-              managerCareer: dict.nav.managerCareer,
-              leaderboard: dict.nav.leaderboard,
-              profile: dict.nav.profile,
-            }}
-          />
+          {children}
         </ThemeProvider>
       </body>
     </html>

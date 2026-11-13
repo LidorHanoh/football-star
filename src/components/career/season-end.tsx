@@ -1,10 +1,12 @@
 "use client";
 
-import { BriefcaseIcon, MessageCircleIcon, TrophyIcon, UserRoundIcon } from "lucide-react";
+import { BriefcaseIcon, MessageCircleIcon, TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { agentReport, answerManager, type ManagerChoice, managerMood, mustRetire, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
+import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
+import { Face } from "./face";
 import { clubName, fill } from "./helpers";
 import { OfferCard } from "./offers";
 import { StatusBars } from "./status-bars";
@@ -19,6 +21,12 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const summary = seasonSummary(save);
   const mood = managerMood(save);
   const contract = save.contract!;
+  const club = world.clubs.find((c) => c.id === contract.clubId)!;
+  const kit = clubKit(club);
+  const coach = clubManager(club, world.leagues.find((l) => l.key === club.leagueKey)?.country === "Israel");
+  const coachFace = <Face seed={coach.face} kind="manager" kit={kit} className="size-12 overflow-hidden rounded-full" title={coach.name} />;
+  const agentFace = save.agent ? <Face seed={save.agent.face} kind="agent" className="size-12 overflow-hidden rounded-full" title={save.agent.name} /> : <BriefcaseIcon aria-hidden />;
+  const meFace = <Face seed={save.player.face} kit={kit} className="size-10 overflow-hidden rounded-full" />;
   const seasonLabel = `${summary.year}/${String((summary.year + 1) % 100).padStart(2, "0")}`;
   const nextLabel = `${summary.year + 1}/${String((summary.year + 2) % 100).padStart(2, "0")}`;
 
@@ -74,7 +82,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
 
       {step === "manager" && (
         <div className="grid gap-4">
-          <Bubble who={s.manager} icon={<UserRoundIcon aria-hidden />}>
+          <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
             {s.managerSays[mood]}
           </Bubble>
           {!reply ? (
@@ -96,10 +104,10 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
             </div>
           ) : (
             <>
-              <Bubble who={save.player.name} mine>
+              <Bubble who={save.player.name} mine icon={meFace}>
                 {s.managerChoices[reply]}
               </Bubble>
-              <Bubble who={s.manager} icon={<UserRoundIcon aria-hidden />}>
+              <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
                 {s.managerReplies[reply][mood]}
               </Bubble>
               <Button size="lg" className="h-12 justify-self-end" onClick={openAgent}>
@@ -113,12 +121,12 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
       {step === "agent" && (
         <div className="grid gap-5">
           {mustRetire(save) ? (
-            <Bubble who={s.agentTitle} icon={<BriefcaseIcon aria-hidden />}>
+            <Bubble who={s.agentTitle} icon={agentFace}>
               {fill(s.retireForced, { age: save.player.age + 1 })}
             </Bubble>
           ) : (
             <>
-              <Bubble who={save.agent ? `${s.agentTitle} · ${save.agent.name}` : s.agentTitle} icon={<BriefcaseIcon aria-hidden />}>
+              <Bubble who={save.agent ? `${s.agentTitle} · ${save.agent.name}` : s.agentTitle} icon={agentFace}>
                 {!save.agent && <>{s.noAgent} </>}
                 {report?.released ? s.released : contractOver ? (offers.some((o) => o.tag === "renew") ? s.renewal : s.noRenewal) : fill(s.underContract, { year: contract.until + 1 })}
               </Bubble>
@@ -151,9 +159,9 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
 
 function Bubble({ who, icon, mine, children }: { who: string; icon?: React.ReactNode; mine?: boolean; children: React.ReactNode }) {
   return (
-    <div className={mine ? "flex justify-end" : "flex"}>
-      <div className={mine ? "max-w-lg rounded-2xl rounded-ee-sm bg-primary px-4 py-3 text-primary-foreground" : "flex max-w-xl gap-3 rounded-2xl rounded-es-sm border bg-card px-4 py-3"}>
-        {icon && <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-muted">{icon}</span>}
+    <div className={mine ? "animate-rise flex justify-end" : "animate-rise flex"}>
+      <div className={mine ? "flex max-w-lg flex-row-reverse gap-3 rounded-2xl rounded-ee-sm bg-primary px-4 py-3 text-primary-foreground" : "flex max-w-xl gap-3 rounded-2xl rounded-es-sm border bg-card px-4 py-3 shadow-sm"}>
+        {icon && <span className="mt-0.5 grid shrink-0 place-items-center rounded-full bg-muted">{icon}</span>}
         <div>
           <p className={mine ? "text-xs opacity-80" : "text-xs font-semibold text-muted-foreground"}>{who}</p>
           <p className="leading-relaxed">{children}</p>

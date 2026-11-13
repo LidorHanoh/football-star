@@ -1,21 +1,29 @@
 "use client";
 
-import { ChevronDownIcon, PlayIcon, SparklesIcon } from "lucide-react";
+import { BarChart3Icon, ChevronDownIcon, LayoutDashboardIcon, PlayIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { netWage } from "@/lib/engine/career";
+import { roleFor } from "@/lib/engine/attrs";
+import { netWage, teamStrength } from "@/lib/engine/career";
+import { clubKit } from "@/lib/engine/people";
 import { playHalf, type HalfEvent, sortTable } from "@/lib/engine/season";
-import type { CareerSave, Highlight } from "@/lib/engine/types";
+import type { CareerSave } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
+import { Crest } from "./crest";
+import { Face } from "./face";
 import { clubName, fill, FLAGS, leagueRating, money } from "./helpers";
-import { Highlights } from "./highlights";
+import { PlayerStats } from "./player-stats";
+import { SeasonPlay } from "./season-play";
+import { Squad } from "./squad";
 import { StatusBars } from "./status-bars";
 
-type Stage = { kind: "idle" } | { kind: "simulating" } | { kind: "highlights"; items: Highlight[]; events: HalfEvent[]; next: CareerSave } | { kind: "summary"; events: HalfEvent[]; pending?: CareerSave };
+type Stage = { kind: "idle" } | { kind: "simulating" } | { kind: "playing"; events: HalfEvent[]; next: CareerSave } | { kind: "summary"; events: HalfEvent[]; pending?: CareerSave };
+type Tab = "overview" | "squad" | "stats";
 
-export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenProps & { onExit: () => void }) {
+export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
   const [stage, setStage] = useState<Stage>({ kind: "idle" });
+  const [tab, setTab] = useState<Tab>("overview");
   const [fullTable, setFullTable] = useState(false);
   // While the end-of-season summary is open, show the finished season's numbers.
   const view = stage.kind === "summary" && stage.pending ? stage.pending : save;
@@ -30,38 +38,29 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
     // Small delay so the "playing matches" state is visible.
     setTimeout(() => {
       const { save: next, events } = playHalf(save, world);
-      const half = next.season!.halvesPlayed;
-      const items = next.season!.highlights.filter((h) => h.half === half);
-      setStage({ kind: "highlights", items, events, next });
-    }, 700);
+      setStage({ kind: "playing", events, next });
+    }, 500);
   }
 
-  if (stage.kind === "highlights") {
+  if (stage.kind === "playing") {
     return (
-      <section className="mx-auto max-w-5xl px-4 py-6">
-        <h1 className="mb-4 flex items-center gap-2 font-heading text-2xl font-extrabold">
-          <SparklesIcon className="text-amber-500" aria-hidden /> {t.highlights.title}
-        </h1>
-        <Highlights
-          items={stage.items}
-          world={world}
-          myClubId={contract.clubId}
-          playerName={save.player.name}
-          isKeeper={save.player.position === "GK"}
-          t={t}
-          locale={locale}
-          onDone={() => {
-            // Save only after the highlights, so a refresh mid-reel replays the half.
-            // After the second half, keep the summary on screen until the player moves on.
-            const { events, next } = stage;
-            if (next.phase === "season-end") setStage({ kind: "summary", events, pending: next });
-            else {
-              onChange(next);
-              setStage({ kind: "summary", events });
-            }
-          }}
-        />
-      </section>
+      <SeasonPlay
+        before={save}
+        after={stage.next}
+        world={world}
+        t={t}
+        locale={locale}
+        onFinish={(final) => {
+          // Save only after the half is watched, so a refresh mid-way replays it.
+          // After the second half, keep the summary on screen until the player moves on.
+          if (final.phase === "season-end") setStage({ kind: "summary", events: stage.events, pending: final });
+          else {
+            onChange(final);
+            setStage({ kind: "summary", events: stage.events });
+          }
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     );
   }
 
@@ -78,9 +77,11 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
       {/* Player card */}
       <div className="rounded-2xl border bg-gradient-to-br from-primary/15 via-card to-card p-5 shadow-sm lg:col-span-2">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="grid size-20 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
-            <span className="text-xs font-semibold opacity-80">{d.world}</span>
-            <span className="-mt-2 font-heading text-4xl font-black tabular-nums">{view.player.rating}</span>
+          <div className="relative shrink-0">
+            <Face seed={view.player.face} kit={clubKit(club)} number={view.player.kit} className="animate-pop size-24 overflow-hidden rounded-2xl shadow-lg" title={view.player.name} />
+            <span key={view.player.rating} className="animate-pop absolute -end-2 -bottom-2 grid size-11 place-items-center rounded-xl bg-primary font-heading text-xl font-black text-primary-foreground tabular-nums shadow-lg ring-2 ring-background" title={d.world}>
+              {view.player.rating}
+            </span>
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-heading text-2xl font-extrabold sm:text-3xl">
@@ -89,9 +90,12 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
             <p className="text-muted-foreground">
               {t.positions[view.player.position]} · {fill(d.ageYears, { age: view.player.age })} · {d.leagueRating} <strong className="text-foreground tabular-nums">{leagueRating(world, view)}</strong>
             </p>
-            <p className="mt-1 text-sm">
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+              <Crest club={club} className="size-6" />
               <strong>{clubName(world, club.id, locale)}</strong>
-              <span className="ms-2 rounded-full bg-muted px-2 py-0.5 text-xs">{t.offers.level[contract.level]}</span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{t.offers.level[contract.level]}</span>
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-xs font-bold text-primary">{t.roles[roleFor(view.player.rating, teamStrength(club, contract.level), view.bars.trust)]}</span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums">#{view.player.kit}</span>
             </p>
           </div>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:text-end">
@@ -106,10 +110,43 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
         <div className="mt-5">
           <StatusBars bars={view.bars} t={t} />
         </div>
+        <nav className="mt-5 flex gap-1 rounded-xl bg-muted p-1" aria-label={t.tabs.label}>
+          {(
+            [
+              ["overview", LayoutDashboardIcon],
+              ["squad", UsersIcon],
+              ["stats", BarChart3Icon],
+            ] as const
+          ).map(([k, Icon]) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setTab(k)}
+              aria-pressed={tab === k}
+              className={cn("relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold transition", tab === k ? "bg-background shadow" : "text-muted-foreground hover:text-foreground")}
+            >
+              <Icon className="size-4" aria-hidden /> {t.tabs[k]}
+              {k === "stats" && view.player.trainingPoints > 0 && <span className="absolute end-2 top-1 size-2 animate-ping rounded-full bg-primary" />}
+            </button>
+          ))}
+        </nav>
       </div>
 
+      {tab === "squad" && (
+        <div className="animate-rise lg:col-span-2">
+          <Squad save={view} world={world} t={t} locale={locale} />
+        </div>
+      )}
+      {tab === "stats" && (
+        <div className="animate-rise lg:col-span-2">
+          <PlayerStats save={save} t={t} onChange={onChange} />
+        </div>
+      )}
+      {tab === "overview" && (
+        <>
+
       {/* Season actions */}
-      <div className="flex flex-col gap-4 rounded-2xl border bg-card p-5">
+      <div className="animate-rise flex flex-col gap-4 rounded-2xl border bg-card p-5">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-bold">
             {fill(d.season, { year: `${season.year}/${String((season.year + 1) % 100).padStart(2, "0")}` })}
@@ -123,7 +160,7 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
         </div>
 
         {stage.kind === "summary" && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <div className="animate-rise rounded-xl border border-primary/30 bg-primary/5 p-4">
             <h3 className="mb-2 font-bold">{t.highlights.summary}</h3>
             <ul className="grid gap-1 text-sm">
               {stage.events.map((e, i) => (
@@ -156,7 +193,7 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
         </dl>
 
         {view.phase === "season" && season.halvesPlayed < 2 && (
-          <Button size="lg" className="h-14 text-base" disabled={stage.kind === "simulating"} onClick={play}>
+          <Button size="lg" className="shine h-14 text-base" disabled={stage.kind === "simulating"} onClick={play}>
             <PlayIcon aria-hidden />
             {stage.kind === "simulating" ? d.simulating : season.halvesPlayed === 0 ? d.playFirst : d.playSecond}
           </Button>
@@ -181,13 +218,10 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
           </div>
         )}
 
-        <Button variant="ghost" className="mt-auto self-start" onClick={onExit}>
-          {t.back}
-        </Button>
       </div>
 
       {/* League table */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="animate-rise rounded-2xl border bg-card p-5" style={{ animationDelay: "80ms" }}>
         <h2 className="mb-3 font-heading text-xl font-bold">{d.table}</h2>
         {table.length === 0 ? (
           <p className="text-sm text-muted-foreground">–</p>
@@ -210,7 +244,12 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
                   return (
                     <tr key={r.clubId} className={cn("border-t", mine && "bg-primary/10 font-bold")}>
                       <td className="py-1.5">{pos}</td>
-                      <td className="max-w-0 truncate py-1.5">{clubName(world, r.clubId, locale)}</td>
+                      <td className="max-w-0 truncate py-1.5">
+                        <span className="flex items-center gap-1.5">
+                          <Crest club={world.clubs.find((c) => c.id === r.clubId)!} className="size-4" />
+                          <span className="truncate">{clubName(world, r.clubId, locale)}</span>
+                        </span>
+                      </td>
                       <td className="text-center">{r.p}</td>
                       <td className="text-center">{r.gf - r.ga}</td>
                       <td className="text-center font-bold">{r.pts}</td>
@@ -243,6 +282,8 @@ export function Dashboard({ save, world, t, locale, onChange, onExit }: ScreenPr
           </div>
         )}
       </div>
+        </>
+      )}
     </section>
   );
 }

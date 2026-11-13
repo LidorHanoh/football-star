@@ -1,5 +1,6 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { migrateSave } from "@/lib/engine/career";
 import type { CareerSave, Localized, World } from "@/lib/engine/types";
 
 export type CareerDict = Dictionary["career"];
@@ -42,7 +43,7 @@ const KEY = "fs-player-careers-v1";
 export function loadSaves(): CareerSave[] {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as CareerSave[]) : [];
+    return raw ? (JSON.parse(raw) as CareerSave[]).map(migrateSave) : [];
   } catch {
     return [];
   }

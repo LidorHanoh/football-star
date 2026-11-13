@@ -1,9 +1,11 @@
 "use client";
 
-import { BriefcaseIcon, UserXIcon } from "lucide-react";
+import { UserXIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { hireAgent, rollAgents } from "@/lib/engine/career";
 import type { ScreenProps } from "./career-app";
+import { Face } from "./face";
+import { fill } from "./helpers";
 
 export function AgentPicker({ save, t, onChange }: ScreenProps) {
   const agents = save.agentsOnOffer.length ? save.agentsOnOffer : rollAgents(save).agentsOnOffer;
@@ -12,12 +14,10 @@ export function AgentPicker({ save, t, onChange }: ScreenProps) {
       <h1 className="font-heading text-3xl font-extrabold">{t.agent.title}</h1>
       <p className="mb-6 text-muted-foreground">{t.agent.subtitle}</p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {agents.map((a) => (
-          <li key={a.id} className="flex flex-col gap-3 rounded-2xl border bg-card p-5">
+        {agents.map((a, i) => (
+          <li key={a.id} className="animate-rise flex flex-col gap-3 rounded-2xl border bg-card p-5 transition hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: `${i * 80}ms` }}>
             <div className="flex items-center gap-3">
-              <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
-                <BriefcaseIcon aria-hidden />
-              </span>
+              <Face seed={a.face} kind="agent" className="size-16 shrink-0 overflow-hidden rounded-xl shadow" title={a.name} />
               <div>
                 <p className="font-bold">{a.name}</p>
                 <p className="text-sm text-amber-500" aria-label={`${t.agent.quality} ${a.quality}/5`}>
@@ -29,6 +29,7 @@ export function AgentPicker({ save, t, onChange }: ScreenProps) {
             <p className="text-sm">
               {t.agent.commission}: <strong className="tabular-nums">{a.commission}%</strong>
             </p>
+            <p className="text-xs text-muted-foreground">{fill(t.agent.pitch[a.quality - 1], {})}</p>
             <Button size="lg" className="mt-auto h-11" onClick={() => onChange(hireAgent({ ...save, agentsOnOffer: agents }, a.id))}>
               {t.agent.hire}
             </Button>

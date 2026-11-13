@@ -5,7 +5,7 @@
 /** League strength 1..100: used for offers, board expectations and as a fallback. */
 export const LEAGUE_STRENGTH = {
   eng1: 92, esp: 88, ita: 86, ger: 86, fra: 82, por: 76, ned: 75, bra: 75, eng2: 70,
-  bel: 72, tur: 72, arg: 72, ksa: 68, usa: 66, aut: 66, gre: 66, sui: 65, den: 64, sco: 64, isr: 58,
+  bel: 72, tur: 72, arg: 72, ksa: 68, usa: 66, aut: 66, gre: 66, sui: 65, den: 64, sco: 64, isr: 58, isr2: 48,
 };
 
 /** Transfermarkt position → our position code. */

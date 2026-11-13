@@ -27,6 +27,20 @@ export interface World {
 
 export type Level = "youth" | "first";
 
+/** Where you stand in the squad: decides how often you play. */
+export type Role = "star" | "starter" | "rotation" | "bench";
+
+/** Six attributes 1..99. For keepers they read as diving/handling/kicking/reflexes/positioning/physical. */
+export interface Attrs {
+  pace: number;
+  shooting: number;
+  passing: number;
+  dribbling: number;
+  defending: number;
+  physical: number;
+}
+export const ATTRS: (keyof Attrs)[] = ["pace", "shooting", "passing", "dribbling", "defending", "physical"];
+
 export interface Offer {
   id: string;
   clubId: string;
@@ -39,11 +53,15 @@ export interface Offer {
   negotiated?: "won" | "lost";
   /** Short label key for the UI: big club / steady path / fast track. */
   tag: "big" | "steady" | "fast" | "renew" | "transfer";
+  /** Your expected place in that squad when you arrive. */
+  role: Role;
 }
 
 export interface Agent {
   id: string;
   name: string;
+  /** Seed for the generated portrait. */
+  face: number;
   quality: number; // 1..5
   commission: number; // % of wage
 }
@@ -63,10 +81,15 @@ export interface CareerPlayer {
   position: Position;
   foot: "right" | "left";
   age: number;
-  rating: number; // world rating 1..99 (league rating is derived in the UI)
+  rating: number; // world rating 1..99 = position-weighted average of attrs
+  attrs: Attrs;
   /** Hidden potential, stored obfuscated so casual players don't see it. */
   p: string;
+  /** Points earned by playing and training; spent on attributes. */
   trainingPoints: number;
+  kit: number;
+  /** Seed for the generated portrait (each career looks different). */
+  face: number;
 }
 
 export interface Contract {
@@ -90,6 +113,19 @@ export interface MatchResult {
   goals: number;
   assists: number;
   rating: number | null; // 3..10 match rating
+  /** A penalty / free kick you take (or a penalty you face as a keeper), decided by you. */
+  setPiece?: SetPiece;
+}
+
+export type SetPieceKind = "penalty" | "freekick" | "penaltySave";
+/** Goal target zones, seen from the shooter: 0 top-left, 1 top-centre, 2 top-right, 3 bottom-left, 4 bottom-centre, 5 bottom-right. */
+export type Zone = 0 | 1 | 2 | 3 | 4 | 5;
+export interface SetPiece {
+  kind: SetPieceKind;
+  minute: number;
+  seed: number;
+  /** Filled once played. */
+  result?: { outcome: "goal" | "saved" | "miss"; zone: Zone; keeper: Zone };
 }
 
 export interface Highlight {
@@ -141,7 +177,7 @@ export interface SeasonSummary {
 export type Phase = "offers" | "agent" | "season" | "season-end" | "retired";
 
 export interface CareerSave {
-  version: 1;
+  version: 2;
   id: string;
   createdAt: string;
   updatedAt: string;

@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, CalendarCheckIcon, ClipboardListIcon, ShirtIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import heroLogo from "../../../public/logo.webp";
+import heroLogo from "../../../../public/logo.webp";
 import { buttonVariants } from "@/components/ui/button";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
 import { cn } from "@/lib/utils";

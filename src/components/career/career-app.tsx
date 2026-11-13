@@ -1,14 +1,19 @@
 "use client";
 
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { Button } from "@/components/ui/button";
-import type { Locale } from "@/i18n/config";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { getDir, type Locale } from "@/i18n/config";
 import { createCareer, startOffers, type NewPlayerInput } from "@/lib/engine/career";
+import { clubKit } from "@/lib/engine/people";
 import type { CareerSave, World } from "@/lib/engine/types";
+import { cn } from "@/lib/utils";
 import { AgentPicker } from "./agent-picker";
 import { CreatePlayer } from "./create-player";
+import { Crest } from "./crest";
 import { Dashboard } from "./dashboard";
+import { Face } from "./face";
 import { type CareerDict, clubName, fill, loadSaves, storeSaves } from "./helpers";
 import { LeaguePicker } from "./league-picker";
 import { OffersScreen } from "./offers";
@@ -18,6 +23,10 @@ type Screen = { kind: "list" } | { kind: "create" } | { kind: "league"; input: N
 
 const subscribe = () => () => {};
 
+/**
+ * Player Career runs full-screen without the site's menus: a slim top bar with
+ * a back button is all the chrome there is.
+ */
 export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; locale: Locale }) {
   // localStorage only exists in the browser: render the list after hydration.
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
@@ -27,6 +36,10 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
   useEffect(() => {
     if (hydrated) setSaves(loadSaves()); // eslint-disable-line react-hooks/set-state-in-effect -- one-time load from device storage
   }, [hydrated]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [screen.kind]);
 
   const active = screen.kind === "career" ? saves.find((s) => s.id === screen.id) : undefined;
 
@@ -47,17 +60,18 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
     });
   }
 
-  if (screen.kind === "create") {
-    return <CreatePlayer t={t} onBack={() => setScreen({ kind: "list" })} onDone={(input) => setScreen({ kind: "league", input })} />;
-  }
+  const back = screen.kind === "list" ? null : screen.kind === "league" ? () => setScreen({ kind: "create" }) : () => setScreen({ kind: "list" });
+  const BackIcon = getDir(locale) === "rtl" ? ArrowRightIcon : ArrowLeftIcon;
 
-  if (screen.kind === "league") {
-    return (
+  let body: React.ReactNode;
+  if (screen.kind === "create") {
+    body = <CreatePlayer t={t} onDone={(input) => setScreen({ kind: "league", input })} />;
+  } else if (screen.kind === "league") {
+    body = (
       <LeaguePicker
         t={t}
         world={world}
         locale={locale}
-        onBack={() => setScreen({ kind: "create" })}
         onPick={(leagueKey) => {
           const save = startOffers(createCareer(screen.input), world, leagueKey);
           update(save);
@@ -65,51 +79,99 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
         }}
       />
     );
-  }
-
-  if (active) {
+  } else if (active) {
     const props = { save: active, world, t, locale, onChange: update };
-    switch (active.phase) {
-      case "offers":
-        return <OffersScreen {...props} />;
-      case "agent":
-        return <AgentPicker {...props} />;
-      case "season-end":
-        return <SeasonEnd {...props} />;
-      default:
-        return <Dashboard {...props} onExit={() => setScreen({ kind: "list" })} />;
-    }
+    body =
+      active.phase === "offers" ? (
+        <OffersScreen {...props} />
+      ) : active.phase === "agent" ? (
+        <AgentPicker {...props} />
+      ) : active.phase === "season-end" ? (
+        <SeasonEnd {...props} />
+      ) : (
+        <Dashboard key={active.id} {...props} />
+      );
+  } else {
+    body = <CareerList saves={saves} hydrated={hydrated} world={world} t={t} locale={locale} onNew={() => setScreen({ kind: "create" })} onOpen={(id) => setScreen({ kind: "career", id })} onDelete={remove} />;
   }
 
-  // --- Career list ---------------------------------------------------------
+  const club = active?.contract ? world.clubs.find((c) => c.id === active.contract!.clubId) : undefined;
+
+  return (
+    <div className="flex min-h-dvh flex-col bg-gradient-to-b from-primary/5 via-background to-background">
+      <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+          {back ? (
+            <Button variant="ghost" size="sm" onClick={back} className="gap-1.5">
+              <BackIcon aria-hidden /> {t.back}
+            </Button>
+          ) : (
+            <Link href={`/${locale}`} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1.5")}>
+              <BackIcon aria-hidden /> {t.exit}
+            </Link>
+          )}
+          <p className="min-w-0 flex-1 truncate text-center font-heading font-extrabold">{active ? active.player.name : t.title}</p>
+          {active ? (
+            <span className="flex items-center gap-1.5">
+              {club && <Crest club={club} className="size-7" />}
+              <Face seed={active.player.face} kit={club ? clubKit(club) : undefined} className="size-9 overflow-hidden rounded-full" />
+            </span>
+          ) : (
+            <span className="w-16" />
+          )}
+        </div>
+      </header>
+      <main key={screen.kind === "career" ? `${screen.id}-${active?.phase}` : screen.kind} className="animate-rise flex-1 pb-10">
+        {body}
+      </main>
+    </div>
+  );
+}
+
+function CareerList({ saves, hydrated, world, t, locale, onNew, onOpen, onDelete }: { saves: CareerSave[]; hydrated: boolean; world: World; t: CareerDict; locale: Locale; onNew: () => void; onOpen: (id: string) => void; onDelete: (id: string) => void }) {
   return (
     <section className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-heading text-3xl font-extrabold">{t.title}</h1>
-        <Button size="lg" onClick={() => setScreen({ kind: "create" })}>
+        <Button size="lg" className="shine h-12" onClick={onNew}>
           <PlusIcon aria-hidden /> {t.newCareer}
         </Button>
       </div>
       {!hydrated ? null : saves.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">{t.noCareers}</div>
+        <button onClick={onNew} className="flex w-full flex-col items-center gap-3 rounded-2xl border-2 border-dashed p-10 text-center text-muted-foreground transition hover:border-primary hover:text-foreground">
+          <span className="animate-float text-5xl">⚽</span>
+          {t.noCareers}
+        </button>
       ) : (
         <ul className="grid gap-3">
-          {saves.map((s) => (
-            <li key={s.id} className="flex items-center gap-3 rounded-xl border bg-card p-4">
-              <div className="grid size-12 shrink-0 place-items-center rounded-full bg-primary/15 font-heading text-lg font-extrabold text-primary">{s.player.rating}</div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">{s.player.name}</p>
-                <p className="truncate text-sm text-muted-foreground">
-                  {t.positions[s.player.position]} · {fill(t.dashboard.ageYears, { age: s.player.age })}
-                  {s.contract ? ` · ${clubName(world, s.contract.clubId, locale)}` : ""}
-                </p>
-              </div>
-              <Button onClick={() => setScreen({ kind: "career", id: s.id })}>{t.continue}</Button>
-              <Button variant="ghost" size="icon" aria-label={t.delete} onClick={() => remove(s.id)}>
-                <Trash2Icon aria-hidden />
-              </Button>
-            </li>
-          ))}
+          {saves.map((s, i) => {
+            const club = s.contract ? world.clubs.find((c) => c.id === s.contract!.clubId) : undefined;
+            return (
+              <li key={s.id} className="animate-rise flex items-center gap-3 rounded-2xl border bg-card p-3 shadow-sm transition hover:shadow-md" style={{ animationDelay: `${i * 60}ms` }}>
+                <button className="flex min-w-0 flex-1 items-center gap-3 text-start" onClick={() => onOpen(s.id)}>
+                  <span className="relative shrink-0">
+                    <Face seed={s.player.face} kit={club ? clubKit(club) : undefined} number={s.player.kit} className="size-16 overflow-hidden rounded-xl" />
+                    <span className="absolute -end-1.5 -bottom-1.5 grid size-7 place-items-center rounded-lg bg-primary text-xs font-black text-primary-foreground ring-2 ring-card">{s.player.rating}</span>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-bold">{s.player.name}</span>
+                    <span className="block truncate text-sm text-muted-foreground">
+                      {t.positions[s.player.position]} · {fill(t.dashboard.ageYears, { age: s.player.age })}
+                    </span>
+                    {club && (
+                      <span className="mt-0.5 flex items-center gap-1.5 text-sm">
+                        <Crest club={club} className="size-4" /> <span className="truncate">{clubName(world, club.id, locale)}</span>
+                      </span>
+                    )}
+                  </span>
+                </button>
+                <Button onClick={() => onOpen(s.id)}>{t.continue}</Button>
+                <Button variant="ghost" size="icon" aria-label={t.delete} onClick={() => onDelete(s.id)}>
+                  <Trash2Icon aria-hidden />
+                </Button>
+              </li>
+            );
+          })}
         </ul>
       )}
       <p className="mt-4 text-xs text-muted-foreground">{t.savedOnDevice}</p>
