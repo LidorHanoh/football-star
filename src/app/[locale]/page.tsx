@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, BrainIcon, CalendarCheckIcon, ClipboardListIcon, ShirtIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarCheckIcon, ClipboardListIcon, ShirtIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import heroLogo from "../../../public/logo.webp";
@@ -11,7 +11,6 @@ export default async function HomePage() {
   const t = dict.home;
 
   const modes = [
-    { href: `/${locale}/trivia`, title: t.triviaTitle, desc: t.triviaDesc, icon: BrainIcon, accent: "from-amber-500/20" },
     { href: `/${locale}/player-career`, title: t.playerTitle, desc: t.playerDesc, icon: ShirtIcon, accent: "from-emerald-500/20" },
     { href: `/${locale}/manager-career`, title: t.managerTitle, desc: t.managerDesc, icon: ClipboardListIcon, accent: "from-sky-500/20" },
   ];
@@ -42,7 +41,7 @@ export default async function HomePage() {
       {/* Game modes */}
       <section id="modes" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-10">
         <h2 className="mb-5 font-heading text-2xl font-bold">{t.modesTitle}</h2>
-        <ul className="grid gap-4 sm:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {modes.map(({ href, title, desc, icon: Icon, accent }) => (
             <li key={href}>
               <Link

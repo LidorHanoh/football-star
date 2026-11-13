@@ -1,0 +1,3662 @@
+[
+ {
+  "league": "isr",
+  "name": "Beitar Jerusalem",
+  "api": 657,
+  "apiName": "Beitar Jerusalem",
+  "founded": 1936,
+  "venue": "Teddi Malcha Stadium",
+  "capacity": 33500,
+  "city": "Jerusalem"
+ },
+ {
+  "league": "isr",
+  "name": "Bnei Sakhnin",
+  "api": 4481,
+  "apiName": "Bnei Sakhnin",
+  "founded": 1991,
+  "venue": "Doha Stadium",
+  "capacity": 8500,
+  "city": "Sakhnin"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Be'er Sheva",
+  "api": 563,
+  "apiName": "Hapoel Beer Sheva",
+  "founded": 1949,
+  "venue": "Yaakov Turner Toto Stadium",
+  "capacity": 16126,
+  "city": "Be&apos;er Sheva"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Haifa",
+  "api": 2253,
+  "apiName": "Hapoel Haifa",
+  "founded": 1924,
+  "venue": "Sammy Ofer Stadium",
+  "capacity": 30820,
+  "city": "Haifa"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Jerusalem",
+  "api": 4504,
+  "apiName": "Hapoel Jerusalem",
+  "founded": null,
+  "venue": "Teddi Malcha Stadium",
+  "capacity": 33500,
+  "city": "Jerusalem"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Petah Tikva",
+  "api": 4488,
+  "apiName": "Hapoel Petah Tikva",
+  "founded": 1934,
+  "venue": "HaMoshava Stadium",
+  "capacity": 12500,
+  "city": "Petach-Tikva"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Ramat Gan Givatayim",
+  "api": 4489,
+  "apiName": "Hapoel Ramat Gan",
+  "founded": 1927,
+  "venue": "National Stadium Ramat Gan",
+  "capacity": 41583,
+  "city": "Ramat Gan"
+ },
+ {
+  "league": "isr",
+  "name": "Hapoel Tel Aviv",
+  "api": 4501,
+  "apiName": "Hapoel Tel Aviv",
+  "founded": 1926,
+  "venue": "Bloomfield Stadium",
+  "capacity": 29400,
+  "city": "Tel-Aviv"
+ },
+ {
+  "league": "isr",
+  "name": "Ironi Kiryat Shmona",
+  "api": 4510,
+  "apiName": "Ironi Kiryat Shmona",
+  "founded": null,
+  "venue": "Kiryat-Shmona Municipal Stadium",
+  "capacity": 5300,
+  "city": "Kiryat-Shmona"
+ },
+ {
+  "league": "isr",
+  "name": "Ironi Tiberias",
+  "api": 6181,
+  "apiName": "Ironi Tiberias",
+  "founded": 2006,
+  "venue": "Tiberias Municipal Stadium",
+  "capacity": 5000,
+  "city": "Tiberias"
+ },
+ {
+  "league": "isr",
+  "name": "Maccabi Haifa",
+  "api": 4195,
+  "apiName": "Maccabi Haifa",
+  "founded": 1913,
+  "venue": "Sammy Ofer Stadium",
+  "capacity": 30820,
+  "city": "Haifa"
+ },
+ {
+  "league": "isr",
+  "name": "Maccabi Netanya",
+  "api": 4505,
+  "apiName": "Maccabi Netanya",
+  "founded": 1934,
+  "venue": "Netanya Stadium",
+  "capacity": 13610,
+  "city": "Netanya"
+ },
+ {
+  "league": "isr",
+  "name": "Maccabi Petah Tikva",
+  "api": 4495,
+  "apiName": "Maccabi Petah Tikva",
+  "founded": 1912,
+  "venue": "HaMoshava Stadium",
+  "capacity": 12500,
+  "city": "Petach-Tikva"
+ },
+ {
+  "league": "isr",
+  "name": "Maccabi Tel Aviv",
+  "api": 604,
+  "apiName": "Maccabi Tel Aviv",
+  "founded": 1906,
+  "venue": "Bloomfield Stadium",
+  "capacity": 29400,
+  "city": "Tel-Aviv-Yāfā (Tel-Aviv)"
+ },
+ {
+  "league": "eng1",
+  "name": "Arsenal",
+  "api": 42,
+  "apiName": "Arsenal",
+  "founded": 1886,
+  "venue": "Emirates Stadium",
+  "capacity": 60383,
+  "city": "London"
+ },
+ {
+  "league": "eng1",
+  "name": "Aston Villa",
+  "api": 66,
+  "apiName": "Aston Villa",
+  "founded": 1874,
+  "venue": "Villa Park",
+  "capacity": 42824,
+  "city": "Birmingham"
+ },
+ {
+  "league": "eng1",
+  "name": "Bournemouth",
+  "api": 35,
+  "apiName": "Bournemouth",
+  "founded": 1899,
+  "venue": "Vitality Stadium",
+  "capacity": 12000,
+  "city": "Bournemouth, Dorset"
+ },
+ {
+  "league": "eng1",
+  "name": "Brentford",
+  "api": 55,
+  "apiName": "Brentford",
+  "founded": 1889,
+  "venue": "Gtech Community Stadium",
+  "capacity": 17250,
+  "city": "Brentford, Middlesex"
+ },
+ {
+  "league": "eng1",
+  "name": "Brighton",
+  "api": 51,
+  "apiName": "Brighton",
+  "founded": 1901,
+  "venue": "American Express Stadium",
+  "capacity": 31872,
+  "city": "Falmer, East Sussex"
+ },
+ {
+  "league": "eng1",
+  "name": "Chelsea",
+  "api": 49,
+  "apiName": "Chelsea",
+  "founded": 1905,
+  "venue": "Stamford Bridge",
+  "capacity": 41841,
+  "city": "London"
+ },
+ {
+  "league": "eng1",
+  "name": "Coventry",
+  "api": 1346,
+  "apiName": "Coventry",
+  "founded": 1883,
+  "venue": "The Coventry Building Society Arena",
+  "capacity": 32609,
+  "city": "Coventry, West Midlands"
+ },
+ {
+  "league": "eng1",
+  "name": "Crystal Palace",
+  "api": 52,
+  "apiName": "Crystal Palace",
+  "founded": 1861,
+  "venue": "Selhurst Park",
+  "capacity": 26309,
+  "city": "London"
+ },
+ {
+  "league": "eng1",
+  "name": "Everton",
+  "api": 45,
+  "apiName": "Everton",
+  "founded": 1878,
+  "venue": "Hill Dickinson Stadium",
+  "capacity": 52888,
+  "city": "Liverpool, Merseyside"
+ },
+ {
+  "league": "eng1",
+  "name": "Fulham",
+  "api": 36,
+  "apiName": "Fulham",
+  "founded": 1879,
+  "venue": "Craven Cottage",
+  "capacity": 29589,
+  "city": "London"
+ },
+ {
+  "league": "eng1",
+  "name": "Hull City",
+  "api": 64,
+  "apiName": "Hull City",
+  "founded": 1904,
+  "venue": "The MKM Stadium",
+  "capacity": 25504,
+  "city": "Hull"
+ },
+ {
+  "league": "eng1",
+  "name": "Ipswich",
+  "api": 57,
+  "apiName": "Ipswich",
+  "founded": 1878,
+  "venue": "Portman Road",
+  "capacity": 30311,
+  "city": "Ipswich, Suffolk"
+ },
+ {
+  "league": "eng1",
+  "name": "Leeds",
+  "api": 63,
+  "apiName": "Leeds",
+  "founded": 1919,
+  "venue": "Elland Road",
+  "capacity": 40204,
+  "city": "Leeds, West Yorkshire"
+ },
+ {
+  "league": "eng1",
+  "name": "Liverpool",
+  "api": 40,
+  "apiName": "Liverpool",
+  "founded": 1892,
+  "venue": "Anfield",
+  "capacity": 61276,
+  "city": "Liverpool"
+ },
+ {
+  "league": "eng1",
+  "name": "Manchester City",
+  "api": 50,
+  "apiName": "Manchester City",
+  "founded": 1880,
+  "venue": "Etihad Stadium",
+  "capacity": 55097,
+  "city": "Manchester"
+ },
+ {
+  "league": "eng1",
+  "name": "Manchester United",
+  "api": 33,
+  "apiName": "Manchester United",
+  "founded": 1878,
+  "venue": "Old Trafford",
+  "capacity": 76212,
+  "city": "Manchester"
+ },
+ {
+  "league": "eng1",
+  "name": "Newcastle",
+  "api": 34,
+  "apiName": "Newcastle",
+  "founded": 1892,
+  "venue": "St. James' Park",
+  "capacity": 52758,
+  "city": "Newcastle upon Tyne"
+ },
+ {
+  "league": "eng1",
+  "name": "Nottingham Forest",
+  "api": 65,
+  "apiName": "Nottingham Forest",
+  "founded": 1865,
+  "venue": "The City Ground",
+  "capacity": 30576,
+  "city": "Nottingham, Nottinghamshire"
+ },
+ {
+  "league": "eng1",
+  "name": "Sunderland",
+  "api": 746,
+  "apiName": "Sunderland",
+  "founded": 1879,
+  "venue": "Stadium of Light",
+  "capacity": 49000,
+  "city": "Sunderland"
+ },
+ {
+  "league": "eng1",
+  "name": "Tottenham",
+  "api": 47,
+  "apiName": "Tottenham",
+  "founded": 1882,
+  "venue": "Tottenham Hotspur Stadium",
+  "capacity": 62850,
+  "city": "London"
+ },
+ {
+  "league": "eng2",
+  "name": "Birmingham",
+  "api": 54,
+  "apiName": "Birmingham",
+  "founded": 1875,
+  "venue": "St Andrew's Stadium",
+  "capacity": 30009,
+  "city": "Birmingham"
+ },
+ {
+  "league": "eng2",
+  "name": "Blackburn",
+  "api": 67,
+  "apiName": "Blackburn",
+  "founded": 1875,
+  "venue": "Ewood Park",
+  "capacity": 31367,
+  "city": "Blackburn, Lancashire"
+ },
+ {
+  "league": "eng2",
+  "name": "Bolton",
+  "api": 68,
+  "apiName": "Bolton",
+  "founded": 1874,
+  "venue": "Toughsheet Community Stadium",
+  "capacity": 28723,
+  "city": "Bolton"
+ },
+ {
+  "league": "eng2",
+  "name": "Bristol City",
+  "api": 56,
+  "apiName": "Bristol City",
+  "founded": 1894,
+  "venue": "Ashton Gate Stadium",
+  "capacity": 27000,
+  "city": "Bristol"
+ },
+ {
+  "league": "eng2",
+  "name": "Burnley",
+  "api": 44,
+  "apiName": "Burnley",
+  "founded": 1882,
+  "venue": "Turf Moor",
+  "capacity": 22546,
+  "city": "Burnley"
+ },
+ {
+  "league": "eng2",
+  "name": "Cardiff",
+  "api": 43,
+  "apiName": "Cardiff",
+  "founded": 1889,
+  "venue": "Cardiff City Stadium",
+  "capacity": 33280,
+  "city": "Caerdydd"
+ },
+ {
+  "league": "eng2",
+  "name": "Charlton",
+  "api": 1335,
+  "apiName": "Charlton",
+  "founded": 1905,
+  "venue": "The Valley",
+  "capacity": 27111,
+  "city": "London"
+ },
+ {
+  "league": "eng2",
+  "name": "Derby",
+  "api": 69,
+  "apiName": "Derby",
+  "founded": 1884,
+  "venue": "Pride Park Stadium",
+  "capacity": 33597,
+  "city": "Derby"
+ },
+ {
+  "league": "eng2",
+  "name": "Lincoln",
+  "api": 1379,
+  "apiName": "Lincoln",
+  "founded": 1884,
+  "venue": "LNER Stadium",
+  "capacity": 10780,
+  "city": "Lincoln, Lincolnshire"
+ },
+ {
+  "league": "eng2",
+  "name": "Middlesbrough",
+  "api": 70,
+  "apiName": "Middlesbrough",
+  "founded": 1876,
+  "venue": "Riverside Stadium",
+  "capacity": 34988,
+  "city": "Middlesbrough"
+ },
+ {
+  "league": "eng2",
+  "name": "Millwall",
+  "api": 58,
+  "apiName": "Millwall",
+  "founded": 1885,
+  "venue": "The Den",
+  "capacity": 20146,
+  "city": "London"
+ },
+ {
+  "league": "eng2",
+  "name": "Norwich",
+  "api": 71,
+  "apiName": "Norwich",
+  "founded": 1902,
+  "venue": "Carrow Road",
+  "capacity": 27606,
+  "city": "Norwich, Norfolk"
+ },
+ {
+  "league": "eng2",
+  "name": "Portsmouth",
+  "api": 1355,
+  "apiName": "Portsmouth",
+  "founded": 1898,
+  "venue": "Fratton Park",
+  "capacity": 20821,
+  "city": "Portsmouth"
+ },
+ {
+  "league": "eng2",
+  "name": "Preston",
+  "api": 59,
+  "apiName": "Preston",
+  "founded": 1863,
+  "venue": "Deepdale",
+  "capacity": 23408,
+  "city": "Preston"
+ },
+ {
+  "league": "eng2",
+  "name": "QPR",
+  "api": 72,
+  "apiName": "QPR",
+  "founded": 1885,
+  "venue": "MATRADE Loftus Road",
+  "capacity": 18360,
+  "city": "London"
+ },
+ {
+  "league": "eng2",
+  "name": "Sheffield Utd",
+  "api": 62,
+  "apiName": "Sheffield Utd",
+  "founded": 1889,
+  "venue": "Bramall Lane",
+  "capacity": 32702,
+  "city": "Sheffield"
+ },
+ {
+  "league": "eng2",
+  "name": "Southampton",
+  "api": 41,
+  "apiName": "Southampton",
+  "founded": 1885,
+  "venue": "St. Mary's Stadium",
+  "capacity": 32689,
+  "city": "Southampton, Hampshire"
+ },
+ {
+  "league": "eng2",
+  "name": "Stoke City",
+  "api": 75,
+  "apiName": "Stoke City",
+  "founded": 1868,
+  "venue": "bet365 Stadium",
+  "capacity": 30089,
+  "city": "Stoke-on-Trent, Staffordshire"
+ },
+ {
+  "league": "eng2",
+  "name": "Swansea",
+  "api": 76,
+  "apiName": "Swansea",
+  "founded": 1912,
+  "venue": "Swansea.com Stadium",
+  "capacity": 21028,
+  "city": "Swansea"
+ },
+ {
+  "league": "eng2",
+  "name": "Watford",
+  "api": 38,
+  "apiName": "Watford",
+  "founded": 1881,
+  "venue": "Vicarage Road",
+  "capacity": 22200,
+  "city": "Watford"
+ },
+ {
+  "league": "eng2",
+  "name": "West Brom",
+  "api": 60,
+  "apiName": "West Brom",
+  "founded": 1878,
+  "venue": "The Hawthorns",
+  "capacity": 28003,
+  "city": "West Bromwich"
+ },
+ {
+  "league": "eng2",
+  "name": "West Ham",
+  "api": 48,
+  "apiName": "West Ham",
+  "founded": 1895,
+  "venue": "London Stadium",
+  "capacity": 64472,
+  "city": "London"
+ },
+ {
+  "league": "eng2",
+  "name": "Wolves",
+  "api": 39,
+  "apiName": "Wolves",
+  "founded": 1877,
+  "venue": "Molineux Stadium",
+  "capacity": 34624,
+  "city": "Wolverhampton, West Midlands"
+ },
+ {
+  "league": "eng2",
+  "name": "Wrexham",
+  "api": 1837,
+  "apiName": "Wrexham",
+  "founded": 1872,
+  "venue": "STōK Cae Ras",
+  "capacity": 19118,
+  "city": "Wrecsam"
+ },
+ {
+  "league": "esp",
+  "name": "Alaves",
+  "api": 542,
+  "apiName": "Alaves",
+  "founded": 1921,
+  "venue": "Estadio de Mendizorroza",
+  "capacity": 19840,
+  "city": "Vitoria-Gasteiz"
+ },
+ {
+  "league": "esp",
+  "name": "Athletic Club",
+  "api": 531,
+  "apiName": "Athletic Club",
+  "founded": 1898,
+  "venue": "San Mamés Barria",
+  "capacity": 53289,
+  "city": "Bilbao"
+ },
+ {
+  "league": "esp",
+  "name": "Atletico Madrid",
+  "api": 530,
+  "apiName": "Atletico Madrid",
+  "founded": 1903,
+  "venue": "Estádio Cívitas Metropolitano",
+  "capacity": 70460,
+  "city": "Madrid"
+ },
+ {
+  "league": "esp",
+  "name": "Barcelona",
+  "api": 529,
+  "apiName": "Barcelona",
+  "founded": 1899,
+  "venue": "Camp Nou",
+  "capacity": 55926,
+  "city": "Barcelona"
+ },
+ {
+  "league": "esp",
+  "name": "Celta Vigo",
+  "api": 538,
+  "apiName": "Celta Vigo",
+  "founded": 1923,
+  "venue": "Estadio Abanca-Balaídos",
+  "capacity": 24791,
+  "city": "Vigo"
+ },
+ {
+  "league": "esp",
+  "name": "Deportivo La Coruna",
+  "api": 544,
+  "apiName": "Deportivo La Coruna",
+  "founded": 1906,
+  "venue": "Estadio Abanca-Riazor",
+  "capacity": 34611,
+  "city": "La Coruña"
+ },
+ {
+  "league": "esp",
+  "name": "Elche",
+  "api": 797,
+  "apiName": "Elche",
+  "founded": 1923,
+  "venue": "Estadio Manuel Martínez Valero",
+  "capacity": 36017,
+  "city": "Elche"
+ },
+ {
+  "league": "esp",
+  "name": "Espanyol",
+  "api": 540,
+  "apiName": "Espanyol",
+  "founded": 1900,
+  "venue": "Stage Front Stadium",
+  "capacity": 40423,
+  "city": "Cornella de Llobregat"
+ },
+ {
+  "league": "esp",
+  "name": "Getafe",
+  "api": 546,
+  "apiName": "Getafe",
+  "founded": 1983,
+  "venue": "Estadio Coliseum",
+  "capacity": 17393,
+  "city": "Getafe"
+ },
+ {
+  "league": "esp",
+  "name": "Levante",
+  "api": 539,
+  "apiName": "Levante",
+  "founded": 1909,
+  "venue": "Estadio Ciudad de Valencia",
+  "capacity": 25534,
+  "city": "Valencia"
+ },
+ {
+  "league": "esp",
+  "name": "Malaga",
+  "api": 535,
+  "apiName": "Malaga",
+  "founded": 1948,
+  "venue": "Estadio La Rosaleda",
+  "capacity": 30389,
+  "city": "Málaga"
+ },
+ {
+  "league": "esp",
+  "name": "Osasuna",
+  "api": 727,
+  "apiName": "Osasuna",
+  "founded": 1920,
+  "venue": "Estadio El Sadar",
+  "capacity": 23576,
+  "city": "Iruñea"
+ },
+ {
+  "league": "esp",
+  "name": "Racing Santander",
+  "api": 4665,
+  "apiName": "Racing Santander",
+  "founded": 1913,
+  "venue": "Campos de Sport de El Sardinero",
+  "capacity": 22271,
+  "city": "Santander"
+ },
+ {
+  "league": "esp",
+  "name": "Rayo Vallecano",
+  "api": 728,
+  "apiName": "Rayo Vallecano",
+  "founded": 1924,
+  "venue": "Estadio de Vallecas",
+  "capacity": 15500,
+  "city": "Madrid"
+ },
+ {
+  "league": "esp",
+  "name": "Real Betis",
+  "api": 543,
+  "apiName": "Real Betis",
+  "founded": 1907,
+  "venue": "Estadio La Cartuja de Sevilla",
+  "capacity": 72000,
+  "city": "Sevilla"
+ },
+ {
+  "league": "esp",
+  "name": "Real Madrid",
+  "api": 541,
+  "apiName": "Real Madrid",
+  "founded": 1902,
+  "venue": "Estadio Santiago Bernabéu",
+  "capacity": 85454,
+  "city": "Madrid"
+ },
+ {
+  "league": "esp",
+  "name": "Real Sociedad",
+  "api": 548,
+  "apiName": "Real Sociedad",
+  "founded": 1909,
+  "venue": "Reale Arena",
+  "capacity": 40000,
+  "city": "Donostia-San Sebastián"
+ },
+ {
+  "league": "esp",
+  "name": "Sevilla",
+  "api": 536,
+  "apiName": "Sevilla",
+  "founded": 1890,
+  "venue": "Estadio Ramón Sánchez Pizjuán",
+  "capacity": 48649,
+  "city": "Sevilla"
+ },
+ {
+  "league": "esp",
+  "name": "Valencia",
+  "api": 532,
+  "apiName": "Valencia",
+  "founded": 1919,
+  "venue": "Estadio de Mestalla",
+  "capacity": 55000,
+  "city": "Valencia"
+ },
+ {
+  "league": "esp",
+  "name": "Villarreal",
+  "api": 533,
+  "apiName": "Villarreal",
+  "founded": 1923,
+  "venue": "Estadio de la Cerámica",
+  "capacity": 24500,
+  "city": "Villarreal"
+ },
+ {
+  "league": "ita",
+  "name": "Atalanta",
+  "api": 499,
+  "apiName": "Atalanta",
+  "founded": 1907,
+  "venue": "Gewiss Stadium",
+  "capacity": 21300,
+  "city": "Bergamo"
+ },
+ {
+  "league": "ita",
+  "name": "Bologna",
+  "api": 500,
+  "apiName": "Bologna",
+  "founded": 1909,
+  "venue": "Stadio Renato Dall'Ara",
+  "capacity": 39279,
+  "city": "Bologna"
+ },
+ {
+  "league": "ita",
+  "name": "Cagliari",
+  "api": 490,
+  "apiName": "Cagliari",
+  "founded": 1920,
+  "venue": "Unipol Domus",
+  "capacity": 16416,
+  "city": "Cagliari"
+ },
+ {
+  "league": "ita",
+  "name": "Como",
+  "api": 895,
+  "apiName": "Como",
+  "founded": 1907,
+  "venue": "Stadio Giuseppe Sinigaglia",
+  "capacity": 13602,
+  "city": "Como"
+ },
+ {
+  "league": "ita",
+  "name": "Fiorentina",
+  "api": 502,
+  "apiName": "Fiorentina",
+  "founded": 1926,
+  "venue": "Stadio Artemio Franchi",
+  "capacity": 43147,
+  "city": "Firenze"
+ },
+ {
+  "league": "ita",
+  "name": "Frosinone",
+  "api": 512,
+  "apiName": "Frosinone",
+  "founded": 1928,
+  "venue": "Stadio Benito Stirpe",
+  "capacity": 16310,
+  "city": "Frosinone"
+ },
+ {
+  "league": "ita",
+  "name": "Genoa",
+  "api": 495,
+  "apiName": "Genoa",
+  "founded": 1893,
+  "venue": "Stadio Comunale Luigi Ferraris",
+  "capacity": 36703,
+  "city": "Genova"
+ },
+ {
+  "league": "ita",
+  "name": "Inter",
+  "api": 505,
+  "apiName": "Inter",
+  "founded": 1908,
+  "venue": "Stadio Giuseppe Meazza",
+  "capacity": 80018,
+  "city": "Milano"
+ },
+ {
+  "league": "ita",
+  "name": "Juventus",
+  "api": 496,
+  "apiName": "Juventus",
+  "founded": 1897,
+  "venue": "Allianz Stadium",
+  "capacity": 45666,
+  "city": "Torino"
+ },
+ {
+  "league": "ita",
+  "name": "Lazio",
+  "api": 487,
+  "apiName": "Lazio",
+  "founded": 1900,
+  "venue": "Stadio Olimpico",
+  "capacity": 68530,
+  "city": "Roma"
+ },
+ {
+  "league": "ita",
+  "name": "Lecce",
+  "api": 867,
+  "apiName": "Lecce",
+  "founded": 1908,
+  "venue": "Stadio Comunale Via del Mare",
+  "capacity": 33876,
+  "city": "Lecce"
+ },
+ {
+  "league": "ita",
+  "name": "AC Milan",
+  "api": 489,
+  "apiName": "AC Milan",
+  "founded": 1899,
+  "venue": "Stadio Giuseppe Meazza",
+  "capacity": 80018,
+  "city": "Milano"
+ },
+ {
+  "league": "ita",
+  "name": "Monza",
+  "api": 1579,
+  "apiName": "Monza",
+  "founded": 1912,
+  "venue": "U-Power Stadium",
+  "capacity": 18568,
+  "city": "Monza"
+ },
+ {
+  "league": "ita",
+  "name": "Napoli",
+  "api": 492,
+  "apiName": "Napoli",
+  "founded": 1904,
+  "venue": "Stadio Diego Armando Maradona",
+  "capacity": 60240,
+  "city": "Napoli"
+ },
+ {
+  "league": "ita",
+  "name": "Parma",
+  "api": 523,
+  "apiName": "Parma",
+  "founded": 1913,
+  "venue": "Stadio Ennio Tardini",
+  "capacity": 22885,
+  "city": "Parma"
+ },
+ {
+  "league": "ita",
+  "name": "AS Roma",
+  "api": 497,
+  "apiName": "AS Roma",
+  "founded": 1927,
+  "venue": "Stadio Olimpico",
+  "capacity": 68530,
+  "city": "Roma"
+ },
+ {
+  "league": "ita",
+  "name": "Sassuolo",
+  "api": 488,
+  "apiName": "Sassuolo",
+  "founded": 1922,
+  "venue": "MAPEI Stadium - Città del Tricolore",
+  "capacity": 23717,
+  "city": "Reggio Emilia"
+ },
+ {
+  "league": "ita",
+  "name": "Torino",
+  "api": 503,
+  "apiName": "Torino",
+  "founded": 1906,
+  "venue": "Stadio Olimpico Grande Torino",
+  "capacity": 27958,
+  "city": "Torino"
+ },
+ {
+  "league": "ita",
+  "name": "Udinese",
+  "api": 494,
+  "apiName": "Udinese",
+  "founded": 1896,
+  "venue": "Bluenergy Stadium",
+  "capacity": 25952,
+  "city": "Udine"
+ },
+ {
+  "league": "ita",
+  "name": "Venezia",
+  "api": 517,
+  "apiName": "Venezia",
+  "founded": 1907,
+  "venue": "Stadio Pierluigi Penzo",
+  "capacity": 11150,
+  "city": "Venezia"
+ },
+ {
+  "league": "ger",
+  "name": "FC Augsburg",
+  "api": 170,
+  "apiName": "FC Augsburg",
+  "founded": 1907,
+  "venue": "WWK Arena",
+  "capacity": 30662,
+  "city": "Augsburg"
+ },
+ {
+  "league": "ger",
+  "name": "Union Berlin",
+  "api": 182,
+  "apiName": "Union Berlin",
+  "founded": 1966,
+  "venue": "Stadion An der Alten Försterei",
+  "capacity": 22467,
+  "city": "Berlin"
+ },
+ {
+  "league": "ger",
+  "name": "Werder Bremen",
+  "api": 162,
+  "apiName": "Werder Bremen",
+  "founded": 1899,
+  "venue": "Weserstadion",
+  "capacity": 42100,
+  "city": "Bremen"
+ },
+ {
+  "league": "ger",
+  "name": "Borussia Dortmund",
+  "api": 165,
+  "apiName": "Borussia Dortmund",
+  "founded": 1909,
+  "venue": "SIGNAL IDUNA PARK",
+  "capacity": 81365,
+  "city": "Dortmund"
+ },
+ {
+  "league": "ger",
+  "name": "SV Elversberg",
+  "api": 1660,
+  "apiName": "SV Elversberg",
+  "founded": 1907,
+  "venue": "URSAPHARM-Arena an der Kaiserlinde",
+  "capacity": 11150,
+  "city": "Spiesen-Elversberg"
+ },
+ {
+  "league": "ger",
+  "name": "Eintracht Frankfurt",
+  "api": 169,
+  "apiName": "Eintracht Frankfurt",
+  "founded": 1899,
+  "venue": "Deutsche Bank Park",
+  "capacity": 59500,
+  "city": "Frankfurt am Main"
+ },
+ {
+  "league": "ger",
+  "name": "SC Freiburg",
+  "api": 160,
+  "apiName": "SC Freiburg",
+  "founded": 1904,
+  "venue": "Europa-Park Stadion",
+  "capacity": 34700,
+  "city": "Freiburg im Breisgau"
+ },
+ {
+  "league": "ger",
+  "name": "Hamburger SV",
+  "api": 175,
+  "apiName": "Hamburger SV",
+  "founded": 1887,
+  "venue": "Volksparkstadion",
+  "capacity": 57000,
+  "city": "Hamburg"
+ },
+ {
+  "league": "ger",
+  "name": "1899 Hoffenheim",
+  "api": 167,
+  "apiName": "1899 Hoffenheim",
+  "founded": 1899,
+  "venue": "PreZero Arena",
+  "capacity": 30164,
+  "city": "Sinsheim"
+ },
+ {
+  "league": "ger",
+  "name": "1. FC Köln",
+  "api": 192,
+  "apiName": "1. FC Köln",
+  "founded": 1948,
+  "venue": "RheinEnergieSTADION",
+  "capacity": 50076,
+  "city": "Köln"
+ },
+ {
+  "league": "ger",
+  "name": "RB Leipzig",
+  "api": 173,
+  "apiName": "RB Leipzig",
+  "founded": 2009,
+  "venue": "Red Bull Arena",
+  "capacity": 47800,
+  "city": "Leipzig"
+ },
+ {
+  "league": "ger",
+  "name": "Bayer Leverkusen",
+  "api": 168,
+  "apiName": "Bayer Leverkusen",
+  "founded": 1904,
+  "venue": "BayArena",
+  "capacity": 30210,
+  "city": "Leverkusen"
+ },
+ {
+  "league": "ger",
+  "name": "FSV Mainz 05",
+  "api": 164,
+  "apiName": "FSV Mainz 05",
+  "founded": 1905,
+  "venue": "MEWA ARENA",
+  "capacity": 34034,
+  "city": "Mainz"
+ },
+ {
+  "league": "ger",
+  "name": "Borussia Mönchengladbach",
+  "api": 163,
+  "apiName": "Borussia Mönchengladbach",
+  "founded": 1900,
+  "venue": "BORUSSIA-PARK",
+  "capacity": 54057,
+  "city": "Mönchengladbach"
+ },
+ {
+  "league": "ger",
+  "name": "Bayern München",
+  "api": 157,
+  "apiName": "Bayern München",
+  "founded": 1900,
+  "venue": "Allianz Arena",
+  "capacity": 75024,
+  "city": "München"
+ },
+ {
+  "league": "ger",
+  "name": "SC Paderborn 07",
+  "api": 185,
+  "apiName": "SC Paderborn 07",
+  "founded": 1907,
+  "venue": "Home Deluxe Arena",
+  "capacity": 15306,
+  "city": "Paderborn"
+ },
+ {
+  "league": "ger",
+  "name": "FC Schalke 04",
+  "api": 174,
+  "apiName": "FC Schalke 04",
+  "founded": 1904,
+  "venue": "VELTINS-Arena",
+  "capacity": 62278,
+  "city": "Gelsenkirchen"
+ },
+ {
+  "league": "ger",
+  "name": "VfB Stuttgart",
+  "api": 172,
+  "apiName": "VfB Stuttgart",
+  "founded": 1893,
+  "venue": "MHPArena",
+  "capacity": 60469,
+  "city": "Stuttgart"
+ },
+ {
+  "league": "fra",
+  "name": "Angers",
+  "api": 77,
+  "apiName": "Angers",
+  "founded": 1919,
+  "venue": "Stade Raymond-Kopa",
+  "capacity": 19000,
+  "city": "Angers"
+ },
+ {
+  "league": "fra",
+  "name": "Auxerre",
+  "api": 108,
+  "apiName": "Auxerre",
+  "founded": 1905,
+  "venue": "Stade de l'Abbé Deschamps",
+  "capacity": 23467,
+  "city": "Auxerre"
+ },
+ {
+  "league": "fra",
+  "name": "Stade Brestois 29",
+  "api": 106,
+  "apiName": "Stade Brestois 29",
+  "founded": 1950,
+  "venue": "Stade Francis-Le Blé",
+  "capacity": 15931,
+  "city": "Brest"
+ },
+ {
+  "league": "fra",
+  "name": "Le Havre",
+  "api": 111,
+  "apiName": "Le Havre",
+  "founded": 1872,
+  "venue": "Stade Océane",
+  "capacity": 25178,
+  "city": "Le Havre"
+ },
+ {
+  "league": "fra",
+  "name": "Le Mans",
+  "api": 1298,
+  "apiName": "Le Mans",
+  "founded": 1985,
+  "venue": "Stade Marie-Marvingt",
+  "capacity": 25064,
+  "city": "Le Mans"
+ },
+ {
+  "league": "fra",
+  "name": "Lens",
+  "api": 116,
+  "apiName": "Lens",
+  "founded": 1906,
+  "venue": "Stade Bollaert-Delelis",
+  "capacity": 41233,
+  "city": "Lens"
+ },
+ {
+  "league": "fra",
+  "name": "Lille",
+  "api": 79,
+  "apiName": "Lille",
+  "founded": 1944,
+  "venue": "Decathlon Arena - Stade Pierre-Mauroy",
+  "capacity": 50083,
+  "city": "Villeneuve d&apos;Ascq"
+ },
+ {
+  "league": "fra",
+  "name": "Lorient",
+  "api": 97,
+  "apiName": "Lorient",
+  "founded": 1926,
+  "venue": "Stade du Moustoir - Yves Allainmat",
+  "capacity": 18970,
+  "city": "Lorient"
+ },
+ {
+  "league": "fra",
+  "name": "Lyon",
+  "api": 80,
+  "apiName": "Lyon",
+  "founded": 1950,
+  "venue": "Groupama Stadium",
+  "capacity": 61556,
+  "city": "Décines-Charpieu"
+ },
+ {
+  "league": "fra",
+  "name": "Marseille",
+  "api": 81,
+  "apiName": "Marseille",
+  "founded": 1899,
+  "venue": "Stade Orange Vélodrome",
+  "capacity": 67394,
+  "city": "Marseille"
+ },
+ {
+  "league": "fra",
+  "name": "Monaco",
+  "api": 91,
+  "apiName": "Monaco",
+  "founded": 1919,
+  "venue": "Stade Louis-II",
+  "capacity": 18523,
+  "city": "Monaco"
+ },
+ {
+  "league": "fra",
+  "name": "Nice",
+  "api": 84,
+  "apiName": "Nice",
+  "founded": 1904,
+  "venue": "Allianz Riviera",
+  "capacity": 35624,
+  "city": "Nice"
+ },
+ {
+  "league": "fra",
+  "name": "Paris FC",
+  "api": 114,
+  "apiName": "Paris FC",
+  "founded": 1969,
+  "venue": "Stade Charléty",
+  "capacity": 20000,
+  "city": "Paris"
+ },
+ {
+  "league": "fra",
+  "name": "Paris Saint Germain",
+  "api": 85,
+  "apiName": "Paris Saint Germain",
+  "founded": 1970,
+  "venue": "Parc des Princes",
+  "capacity": 47929,
+  "city": "Paris"
+ },
+ {
+  "league": "fra",
+  "name": "Rennes",
+  "api": 94,
+  "apiName": "Rennes",
+  "founded": 1901,
+  "venue": "Roazhon Park",
+  "capacity": 31127,
+  "city": "Rennes"
+ },
+ {
+  "league": "fra",
+  "name": "Strasbourg",
+  "api": 95,
+  "apiName": "Strasbourg",
+  "founded": 1906,
+  "venue": "Stade de la Meinau",
+  "capacity": 26109,
+  "city": "Strasbourg"
+ },
+ {
+  "league": "fra",
+  "name": "Toulouse",
+  "api": 96,
+  "apiName": "Toulouse",
+  "founded": 1937,
+  "venue": "Stadium de Toulouse",
+  "capacity": 33150,
+  "city": "Toulouse"
+ },
+ {
+  "league": "fra",
+  "name": "Troyes",
+  "api": 110,
+  "apiName": "Estac Troyes",
+  "founded": 1986,
+  "venue": "Stade de l'Aube",
+  "capacity": 21877,
+  "city": "Troyes"
+ },
+ {
+  "league": "por",
+  "name": "Academico Viseu",
+  "api": 238,
+  "apiName": "Academico Viseu",
+  "founded": 1914,
+  "venue": "Estádio Municipal do Fontelo",
+  "capacity": 14368,
+  "city": "Viseu"
+ },
+ {
+  "league": "por",
+  "name": "Alverca",
+  "api": 4724,
+  "apiName": "Alverca",
+  "founded": null,
+  "venue": "Complexo Desportivo FC Alverca",
+  "capacity": 7705,
+  "city": "Alverca do Ribatejo"
+ },
+ {
+  "league": "por",
+  "name": "Arouca",
+  "api": 240,
+  "apiName": "Arouca",
+  "founded": 1951,
+  "venue": "Estádio Municipal de Arouca",
+  "capacity": 7000,
+  "city": "Arouca"
+ },
+ {
+  "league": "por",
+  "name": "Benfica",
+  "api": 211,
+  "apiName": "Benfica",
+  "founded": 1904,
+  "venue": "Estádio do Sport Lisboa e Benfica (da Luz)",
+  "capacity": 65647,
+  "city": "Lisboa"
+ },
+ {
+  "league": "por",
+  "name": "SC Braga",
+  "api": 217,
+  "apiName": "SC Braga",
+  "founded": 1921,
+  "venue": "Estádio Municipal de Braga",
+  "capacity": 30286,
+  "city": "Braga"
+ },
+ {
+  "league": "por",
+  "name": "Casa Pia",
+  "api": 4716,
+  "apiName": "Casa Pia",
+  "founded": 1920,
+  "venue": "Estádio Nacional",
+  "capacity": 38000,
+  "city": "Jamor, Oeiras"
+ },
+ {
+  "league": "por",
+  "name": "Estoril",
+  "api": 230,
+  "apiName": "Estoril",
+  "founded": 1939,
+  "venue": "Estádio António Coimbra da Mota",
+  "capacity": 8015,
+  "city": "Estoril"
+ },
+ {
+  "league": "por",
+  "name": "Estrela",
+  "api": 15130,
+  "apiName": "Estrela",
+  "founded": 0,
+  "venue": "Campo Municipal dos Prazeres",
+  "capacity": 800,
+  "city": "Amadora"
+ },
+ {
+  "league": "por",
+  "name": "Famalicao",
+  "api": 242,
+  "apiName": "Famalicao",
+  "founded": 1931,
+  "venue": "Estádio Municipal 22 de Junho",
+  "capacity": 8000,
+  "city": "Vila Nova de Famalicão"
+ },
+ {
+  "league": "por",
+  "name": "GIL Vicente",
+  "api": 762,
+  "apiName": "GIL Vicente",
+  "founded": 1924,
+  "venue": "Estádio Cidade de Barcelos",
+  "capacity": 12046,
+  "city": "Barcelos"
+ },
+ {
+  "league": "por",
+  "name": "Maritimo",
+  "api": 214,
+  "apiName": "Maritimo",
+  "founded": 1910,
+  "venue": "Estádio do Marítimo",
+  "capacity": 10932,
+  "city": "Funchal (Ilha da Madeira)"
+ },
+ {
+  "league": "por",
+  "name": "Moreirense",
+  "api": 215,
+  "apiName": "Moreirense",
+  "founded": null,
+  "venue": "Parque Desportivo Comendador Joaquim de Almeida Freitas",
+  "capacity": 13000,
+  "city": "Moreira de Cónegos"
+ },
+ {
+  "league": "por",
+  "name": "Nacional",
+  "api": 225,
+  "apiName": "Nacional",
+  "founded": 1910,
+  "venue": "Estádio da Madeira",
+  "capacity": 5200,
+  "city": "Ilha da Madeira"
+ },
+ {
+  "league": "por",
+  "name": "FC Porto",
+  "api": 212,
+  "apiName": "FC Porto",
+  "founded": 1893,
+  "venue": "Estádio Do Dragão",
+  "capacity": 50399,
+  "city": "Porto"
+ },
+ {
+  "league": "por",
+  "name": "Rio Ave",
+  "api": 226,
+  "apiName": "Rio Ave",
+  "founded": 1939,
+  "venue": "Estádio do Rio Ave Futebol Clube",
+  "capacity": 12815,
+  "city": "Vila do Conde"
+ },
+ {
+  "league": "por",
+  "name": "Santa Clara",
+  "api": 227,
+  "apiName": "Santa Clara",
+  "founded": 1921,
+  "venue": "Estádio de São Miguel",
+  "capacity": 13277,
+  "city": "Ponta Delgada, Ilha de São Miguel, Açores"
+ },
+ {
+  "league": "por",
+  "name": "Sporting CP",
+  "api": 228,
+  "apiName": "Sporting CP",
+  "founded": 1906,
+  "venue": "Estádio José Alvalade",
+  "capacity": 50466,
+  "city": "Lisboa"
+ },
+ {
+  "league": "por",
+  "name": "Vitória SC",
+  "api": 224,
+  "apiName": "Vitória SC",
+  "founded": 1922,
+  "venue": "Estádio Dom Afonso Henriques",
+  "capacity": 30165,
+  "city": "Guimarães"
+ },
+ {
+  "league": "ned",
+  "name": "Ajax",
+  "api": 194,
+  "apiName": "Ajax",
+  "founded": 1900,
+  "venue": "Johan Cruijff Arena",
+  "capacity": 55885,
+  "city": "Amsterdam"
+ },
+ {
+  "league": "ned",
+  "name": "AZ Alkmaar",
+  "api": 201,
+  "apiName": "AZ Alkmaar",
+  "founded": 1967,
+  "venue": "AFAS Stadion",
+  "capacity": 19500,
+  "city": "Alkmaar"
+ },
+ {
+  "league": "ned",
+  "name": "Cambuur",
+  "api": 420,
+  "apiName": "Cambuur",
+  "founded": 1964,
+  "venue": "Cambuur Stadion",
+  "capacity": 11230,
+  "city": "Leeuwarden"
+ },
+ {
+  "league": "ned",
+  "name": "Excelsior",
+  "api": 196,
+  "apiName": "Excelsior",
+  "founded": 1902,
+  "venue": "Van Donge & De Roo Stadion",
+  "capacity": 4500,
+  "city": "Rotterdam"
+ },
+ {
+  "league": "ned",
+  "name": "Feyenoord",
+  "api": 209,
+  "apiName": "Feyenoord",
+  "founded": 1908,
+  "venue": "Stadion Feijenoord",
+  "capacity": 51117,
+  "city": "Rotterdam"
+ },
+ {
+  "league": "ned",
+  "name": "Fortuna Sittard",
+  "api": 205,
+  "apiName": "Fortuna Sittard",
+  "founded": 1968,
+  "venue": "Fortuna Sittard Stadion",
+  "capacity": 12500,
+  "city": "Sittard"
+ },
+ {
+  "league": "ned",
+  "name": "GO Ahead Eagles",
+  "api": 410,
+  "apiName": "GO Ahead Eagles",
+  "founded": 1971,
+  "venue": "De Adelaarshorst",
+  "capacity": 10400,
+  "city": "Deventer"
+ },
+ {
+  "league": "ned",
+  "name": "Groningen",
+  "api": 202,
+  "apiName": "Groningen",
+  "founded": 1971,
+  "venue": "Euroborg",
+  "capacity": 22579,
+  "city": "Groningen"
+ },
+ {
+  "league": "ned",
+  "name": "Heerenveen",
+  "api": 210,
+  "apiName": "Heerenveen",
+  "founded": 1920,
+  "venue": "Abe Lenstra Stadion",
+  "capacity": 27224,
+  "city": "Heerenveen"
+ },
+ {
+  "league": "ned",
+  "name": "NEC Nijmegen",
+  "api": 413,
+  "apiName": "NEC Nijmegen",
+  "founded": 1900,
+  "venue": "Goffertstadion",
+  "capacity": 12540,
+  "city": "Nijmegen"
+ },
+ {
+  "league": "ned",
+  "name": "PEC Zwolle",
+  "api": 193,
+  "apiName": "PEC Zwolle",
+  "founded": 1910,
+  "venue": "MAC³PARK Stadion",
+  "capacity": 14000,
+  "city": "Zwolle"
+ },
+ {
+  "league": "ned",
+  "name": "PSV Eindhoven",
+  "api": 197,
+  "apiName": "PSV Eindhoven",
+  "founded": 1913,
+  "venue": "Philips Stadion",
+  "capacity": 36500,
+  "city": "Eindhoven"
+ },
+ {
+  "league": "ned",
+  "name": "Sparta Rotterdam",
+  "api": 426,
+  "apiName": "Sparta Rotterdam",
+  "founded": 1888,
+  "venue": "Sparta-Stadion Het Kasteel",
+  "capacity": 11026,
+  "city": "Rotterdam"
+ },
+ {
+  "league": "ned",
+  "name": "Telstar",
+  "api": 427,
+  "apiName": "Telstar",
+  "founded": 1912,
+  "venue": "711 Stadion",
+  "capacity": 5200,
+  "city": "Velsen-Zuid"
+ },
+ {
+  "league": "ned",
+  "name": "Twente",
+  "api": 415,
+  "apiName": "Twente",
+  "founded": 1965,
+  "venue": "De Grolsch Veste",
+  "capacity": 30205,
+  "city": "Enschede"
+ },
+ {
+  "league": "ned",
+  "name": "Utrecht",
+  "api": 207,
+  "apiName": "Utrecht",
+  "founded": 1970,
+  "venue": "Stadion Galgenwaard",
+  "capacity": 24426,
+  "city": "Utrecht"
+ },
+ {
+  "league": "ned",
+  "name": "Willem II",
+  "api": 195,
+  "apiName": "Willem II",
+  "founded": 1896,
+  "venue": "Koning Willem II Stadion",
+  "capacity": 14700,
+  "city": "Tilburg"
+ },
+ {
+  "league": "ned",
+  "name": "ADO Den Haag",
+  "api": 198,
+  "apiName": "ADO Den Haag",
+  "founded": 1905,
+  "venue": "WerkTalent Stadion",
+  "capacity": 15000,
+  "city": "La Haye"
+ },
+ {
+  "league": "bel",
+  "name": "Anderlecht",
+  "api": 554,
+  "apiName": "Anderlecht",
+  "founded": 1908,
+  "venue": "Lotto Park",
+  "capacity": 28063,
+  "city": "Bruxelles (Brussel)"
+ },
+ {
+  "league": "bel",
+  "name": "Antwerp",
+  "api": 740,
+  "apiName": "Antwerp",
+  "founded": 1880,
+  "venue": "Bosuilstadion",
+  "capacity": 23057,
+  "city": "Deurne"
+ },
+ {
+  "league": "bel",
+  "name": "Beveren",
+  "api": 738,
+  "apiName": "SK Beveren",
+  "founded": 1936,
+  "venue": "Freethielstadion",
+  "capacity": 8235,
+  "city": "Beveren"
+ },
+ {
+  "league": "bel",
+  "name": "Cercle Brugge",
+  "api": 741,
+  "apiName": "Cercle Brugge",
+  "founded": 1899,
+  "venue": "Jan Breydelstadion",
+  "capacity": 29062,
+  "city": "Brugge"
+ },
+ {
+  "league": "bel",
+  "name": "Charleroi",
+  "api": 736,
+  "apiName": "Charleroi",
+  "founded": 1904,
+  "venue": "Stade du Pays de Charleroi",
+  "capacity": 18000,
+  "city": "Charleroi"
+ },
+ {
+  "league": "bel",
+  "name": "Club Brugge KV",
+  "api": 569,
+  "apiName": "Club Brugge KV",
+  "founded": 1891,
+  "venue": "Jan Breydelstadion",
+  "capacity": 29062,
+  "city": "Brugge"
+ },
+ {
+  "league": "bel",
+  "name": "Genk",
+  "api": 742,
+  "apiName": "Genk",
+  "founded": 1988,
+  "venue": "Cegeka Arena",
+  "capacity": 24956,
+  "city": "Genk"
+ },
+ {
+  "league": "bel",
+  "name": "Gent",
+  "api": 631,
+  "apiName": "Gent",
+  "founded": 1900,
+  "venue": "Planet Group Arena",
+  "capacity": 20185,
+  "city": "Gent"
+ },
+ {
+  "league": "bel",
+  "name": "Kortrijk",
+  "api": 734,
+  "apiName": "Kortrijk",
+  "founded": 1901,
+  "venue": "Guldensporenstadion",
+  "capacity": 9399,
+  "city": "Kortrijk"
+ },
+ {
+  "league": "bel",
+  "name": "RAAL La Louvière",
+  "api": 5902,
+  "apiName": "RAAL La Louvière",
+  "founded": 2017,
+  "venue": "Stade Communal du Tivoli",
+  "capacity": 13500,
+  "city": "La Louvière"
+ },
+ {
+  "league": "bel",
+  "name": "Lommel SK",
+  "api": 259,
+  "apiName": "Lommel United",
+  "founded": 1937,
+  "venue": "Soeverein Stadion",
+  "capacity": 12911,
+  "city": "Lommel"
+ },
+ {
+  "league": "bel",
+  "name": "KV Mechelen",
+  "api": 266,
+  "apiName": "KV Mechelen",
+  "founded": 1904,
+  "venue": "AFAS Stadion",
+  "capacity": 16715,
+  "city": "Malines"
+ },
+ {
+  "league": "bel",
+  "name": "OH Leuven",
+  "api": 260,
+  "apiName": "OH Leuven",
+  "founded": 1957,
+  "venue": "King Power at Den Dreef Stadion",
+  "capacity": 12500,
+  "city": "Heverlee"
+ },
+ {
+  "league": "bel",
+  "name": "St. Truiden",
+  "api": 735,
+  "apiName": "St. Truiden",
+  "founded": 1924,
+  "venue": "Daio Wasabi Stayen Stadium",
+  "capacity": 14600,
+  "city": "St.-Trond"
+ },
+ {
+  "league": "bel",
+  "name": "Standard Liege",
+  "api": 733,
+  "apiName": "Standard Liege",
+  "founded": 1898,
+  "venue": "Stade Maurice Dufrasne",
+  "capacity": 27670,
+  "city": "Luik"
+ },
+ {
+  "league": "bel",
+  "name": "Union St. Gilloise",
+  "api": 1393,
+  "apiName": "Union St. Gilloise",
+  "founded": 1897,
+  "venue": "Stade Joseph Mariën",
+  "capacity": 9400,
+  "city": "Brussels"
+ },
+ {
+  "league": "bel",
+  "name": "KVC Westerlo",
+  "api": 261,
+  "apiName": "KVC Westerlo",
+  "founded": 1933,
+  "venue": "Het Kuipje",
+  "capacity": 8035,
+  "city": "Westerlo"
+ },
+ {
+  "league": "bel",
+  "name": "Zulte Waregem",
+  "api": 600,
+  "apiName": "Zulte Waregem",
+  "founded": 2001,
+  "venue": "Elindus Arena",
+  "capacity": 12300,
+  "city": "Waregem"
+ },
+ {
+  "league": "tur",
+  "name": "Alanyaspor",
+  "api": 996,
+  "apiName": "Alanyaspor",
+  "founded": 1948,
+  "venue": "GAIN Park Stadium",
+  "capacity": 15000,
+  "city": "Antalya"
+ },
+ {
+  "league": "tur",
+  "name": "Amed",
+  "api": 3579,
+  "apiName": "Amed",
+  "founded": 1990,
+  "venue": "Seyrantepe Spor Kompleksi Stadyumu 1",
+  "capacity": 2500,
+  "city": "Diyarbakır"
+ },
+ {
+  "league": "tur",
+  "name": "Başakşehir",
+  "api": 564,
+  "apiName": "Başakşehir",
+  "founded": 1990,
+  "venue": "Başakşehir Fatih Terim Stadyumu",
+  "capacity": 17319,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Beşiktaş",
+  "api": 549,
+  "apiName": "Beşiktaş",
+  "founded": 1903,
+  "venue": "Tüpraş Stadyumu",
+  "capacity": 43500,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Çorum FK",
+  "api": 6343,
+  "apiName": "Çorum FK",
+  "founded": 1997,
+  "venue": "Çorum Şehir Stadyumu",
+  "capacity": 15000,
+  "city": "Çorum"
+ },
+ {
+  "league": "tur",
+  "name": "Erzurumspor",
+  "api": 1009,
+  "apiName": "Erzurumspor FK",
+  "founded": 2005,
+  "venue": "Kazım Karabekir Stadyumu",
+  "capacity": 23700,
+  "city": "Erzurum"
+ },
+ {
+  "league": "tur",
+  "name": "Eyüpspor",
+  "api": 3588,
+  "apiName": "Eyüpspor",
+  "founded": 1919,
+  "venue": "Recep Tayyip Erdoğan Stadyumu",
+  "capacity": 14234,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Fenerbahçe",
+  "api": 611,
+  "apiName": "Fenerbahçe",
+  "founded": 1907,
+  "venue": "Chobani Stadyumu Fenerbahçe Şükrü Saracoğlu Spor Kompleksi",
+  "capacity": 47834,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Galatasaray",
+  "api": 645,
+  "apiName": "Galatasaray",
+  "founded": 1905,
+  "venue": "RAMS Park",
+  "capacity": 53798,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Gaziantep FK",
+  "api": 3573,
+  "apiName": "Gaziantep FK",
+  "founded": 1988,
+  "venue": "Gaziantep Stadyumu",
+  "capacity": 35558,
+  "city": "Gaziantep"
+ },
+ {
+  "league": "tur",
+  "name": "Gençlerbirliği",
+  "api": 997,
+  "apiName": "Gençlerbirliği S.K.",
+  "founded": 1923,
+  "venue": "Eryaman Stadyumu",
+  "capacity": 20560,
+  "city": "Ankara"
+ },
+ {
+  "league": "tur",
+  "name": "Göztepe",
+  "api": 994,
+  "apiName": "Göztepe",
+  "founded": 1925,
+  "venue": "Gürsel Aksel Stadyumu",
+  "capacity": 30035,
+  "city": "İzmir"
+ },
+ {
+  "league": "tur",
+  "name": "Kasımpaşa",
+  "api": 1004,
+  "apiName": "Kasımpaşa",
+  "founded": 1921,
+  "venue": "Recep Tayyip Erdoğan Stadyumu",
+  "capacity": 14234,
+  "city": "İstanbul"
+ },
+ {
+  "league": "tur",
+  "name": "Kocaelispor",
+  "api": 7411,
+  "apiName": "Kocaelispor",
+  "founded": 1966,
+  "venue": "Yıldız Entegre Kocaeli Stadyumu",
+  "capacity": 35000,
+  "city": "Kocaeli"
+ },
+ {
+  "league": "tur",
+  "name": "Konyaspor",
+  "api": 607,
+  "apiName": "Konyaspor",
+  "founded": 1922,
+  "venue": "Medaş Konya Büyükşehir Stadyumu",
+  "capacity": 42276,
+  "city": "Konya"
+ },
+ {
+  "league": "tur",
+  "name": "Rizespor",
+  "api": 1007,
+  "apiName": "Rizespor",
+  "founded": 1953,
+  "venue": "Çaykur Didi Stadyumu",
+  "capacity": 15558,
+  "city": "Rize"
+ },
+ {
+  "league": "tur",
+  "name": "Samsunspor",
+  "api": 3603,
+  "apiName": "Samsunspor",
+  "founded": 1965,
+  "venue": "Samsun Yeni 19 Mayıs Stadyumu",
+  "capacity": 34658,
+  "city": "Samsun"
+ },
+ {
+  "league": "tur",
+  "name": "Trabzonspor",
+  "api": 998,
+  "apiName": "Trabzonspor",
+  "founded": 1967,
+  "venue": "Papara Park",
+  "capacity": 41513,
+  "city": "Trabzon"
+ },
+ {
+  "league": "sco",
+  "name": "Aberdeen",
+  "api": 252,
+  "apiName": "Aberdeen",
+  "founded": 1903,
+  "venue": "Pittodrie Stadium",
+  "capacity": 22199,
+  "city": "Aberdeen"
+ },
+ {
+  "league": "sco",
+  "name": "Celtic",
+  "api": 247,
+  "apiName": "Celtic",
+  "founded": 1888,
+  "venue": "Celtic Park",
+  "capacity": 60832,
+  "city": "Glasgow"
+ },
+ {
+  "league": "sco",
+  "name": "Dundee",
+  "api": 253,
+  "apiName": "Dundee",
+  "founded": 1893,
+  "venue": "The Scot Foam Stadium at Dens Park",
+  "capacity": 12085,
+  "city": "Dundee"
+ },
+ {
+  "league": "sco",
+  "name": "Dundee Utd",
+  "api": 1386,
+  "apiName": "Dundee Utd",
+  "founded": 1909,
+  "venue": "Tannadice Park",
+  "capacity": 14209,
+  "city": "Dundee"
+ },
+ {
+  "league": "sco",
+  "name": "Falkirk",
+  "api": 1389,
+  "apiName": "Falkirk",
+  "founded": 1876,
+  "venue": "Falkirk Community Stadium",
+  "capacity": 9008,
+  "city": "Falkirk"
+ },
+ {
+  "league": "sco",
+  "name": "Heart Of Midlothian",
+  "api": 254,
+  "apiName": "Heart Of Midlothian",
+  "founded": 1874,
+  "venue": "Tynecastle Park",
+  "capacity": 20099,
+  "city": "Edinburgh"
+ },
+ {
+  "league": "sco",
+  "name": "Hibernian",
+  "api": 249,
+  "apiName": "Hibernian",
+  "founded": 1875,
+  "venue": "Easter Road Stadium",
+  "capacity": 20421,
+  "city": "Edinburgh"
+ },
+ {
+  "league": "sco",
+  "name": "Kilmarnock",
+  "api": 250,
+  "apiName": "Kilmarnock",
+  "founded": 1869,
+  "venue": "The BBSP Stadium Rugby Park",
+  "capacity": 18128,
+  "city": "Kilmarnock"
+ },
+ {
+  "league": "sco",
+  "name": "Motherwell",
+  "api": 256,
+  "apiName": "Motherwell",
+  "founded": 1886,
+  "venue": "Fir Park",
+  "capacity": 13742,
+  "city": "Motherwell"
+ },
+ {
+  "league": "sco",
+  "name": "Rangers",
+  "api": 257,
+  "apiName": "Rangers",
+  "founded": 1873,
+  "venue": "Ibrox Stadium",
+  "capacity": 51082,
+  "city": "Glasgow"
+ },
+ {
+  "league": "sco",
+  "name": "ST Johnstone",
+  "api": 258,
+  "apiName": "ST Johnstone",
+  "founded": 1885,
+  "venue": "McDiarmid Park",
+  "capacity": 10673,
+  "city": "Perth"
+ },
+ {
+  "league": "sco",
+  "name": "ST Mirren",
+  "api": 251,
+  "apiName": "ST Mirren",
+  "founded": 1877,
+  "venue": "The SMISA Stadium",
+  "capacity": 8016,
+  "city": "Paisley"
+ },
+ {
+  "league": "aut",
+  "name": "Austria Lustenau",
+  "api": 1399,
+  "apiName": "Austria Lustenau",
+  "founded": 1914,
+  "venue": "ImmoAgentur Stadion Bregenz",
+  "capacity": 11112,
+  "city": "Bregenz"
+ },
+ {
+  "league": "aut",
+  "name": "Austria Vienna",
+  "api": 601,
+  "apiName": "Austria Vienna",
+  "founded": 1911,
+  "venue": "Generali Arena",
+  "capacity": 18944,
+  "city": "Wien"
+ },
+ {
+  "league": "aut",
+  "name": "Grazer AK",
+  "api": 4256,
+  "apiName": "Grazer AK",
+  "founded": 1902,
+  "venue": "Merkur Arena",
+  "capacity": 16764,
+  "city": "Graz"
+ },
+ {
+  "league": "aut",
+  "name": "Lask Linz",
+  "api": 1026,
+  "apiName": "Lask Linz",
+  "founded": 1908,
+  "venue": "Raiffeisen Arena",
+  "capacity": 19080,
+  "city": "Linz"
+ },
+ {
+  "league": "aut",
+  "name": "Red Bull Salzburg",
+  "api": 571,
+  "apiName": "Red Bull Salzburg",
+  "founded": 1933,
+  "venue": "Red Bull Arena",
+  "capacity": 31895,
+  "city": "Wals-Siezenheim"
+ },
+ {
+  "league": "aut",
+  "name": "Rapid Vienna",
+  "api": 781,
+  "apiName": "Rapid Vienna",
+  "founded": 1899,
+  "venue": "Allianz Stadion",
+  "capacity": 28345,
+  "city": "Wien"
+ },
+ {
+  "league": "aut",
+  "name": "Sturm Graz",
+  "api": 637,
+  "apiName": "Sturm Graz",
+  "founded": 1909,
+  "venue": "Merkur Arena",
+  "capacity": 16764,
+  "city": "Graz"
+ },
+ {
+  "league": "aut",
+  "name": "SV Ried",
+  "api": 1028,
+  "apiName": "Ried",
+  "founded": 1912,
+  "venue": "Innviertel Arena",
+  "capacity": 7680,
+  "city": "Ried Im Innkreis"
+ },
+ {
+  "league": "aut",
+  "name": "SCR Altach",
+  "api": 618,
+  "apiName": "SCR Altach",
+  "founded": 1929,
+  "venue": "CASHPOINT Arena",
+  "capacity": 8500,
+  "city": "Altach"
+ },
+ {
+  "league": "aut",
+  "name": "TSV Hartberg",
+  "api": 1072,
+  "apiName": "TSV Hartberg",
+  "founded": 1946,
+  "venue": "PROfertil ARENA",
+  "capacity": 5420,
+  "city": "Hartberg"
+ },
+ {
+  "league": "aut",
+  "name": "WSG Wattens",
+  "api": 1398,
+  "apiName": "WSG Wattens",
+  "founded": 1930,
+  "venue": "Tivoli Stadion Tirol",
+  "capacity": 16008,
+  "city": "Innsbruck"
+ },
+ {
+  "league": "aut",
+  "name": "Wolfsberger AC",
+  "api": 1025,
+  "apiName": "Wolfsberger AC",
+  "founded": 1931,
+  "venue": "Lavanttal Arena",
+  "capacity": 9000,
+  "city": "Wolfsberg"
+ },
+ {
+  "league": "sui",
+  "name": "FC Basel 1893",
+  "api": 551,
+  "apiName": "FC Basel 1893",
+  "founded": 1893,
+  "venue": "St. Jakob-Park",
+  "capacity": 37994,
+  "city": "Basel"
+ },
+ {
+  "league": "sui",
+  "name": "Grasshoppers",
+  "api": 1013,
+  "apiName": "Grasshoppers",
+  "founded": 1886,
+  "venue": "Stadion Letzigrund",
+  "capacity": 26114,
+  "city": "Zürich"
+ },
+ {
+  "league": "sui",
+  "name": "Lausanne",
+  "api": 1014,
+  "apiName": "Lausanne",
+  "founded": 1896,
+  "venue": "Stade de la Tuilière",
+  "capacity": 13132,
+  "city": "Lausanne"
+ },
+ {
+  "league": "sui",
+  "name": "FC Lugano",
+  "api": 606,
+  "apiName": "FC Lugano",
+  "founded": 1908,
+  "venue": "Stadio di Cornaredo",
+  "capacity": 5476,
+  "city": "Lugano"
+ },
+ {
+  "league": "sui",
+  "name": "FC Luzern",
+  "api": 644,
+  "apiName": "FC Luzern",
+  "founded": 1901,
+  "venue": "swissporarena",
+  "capacity": 16490,
+  "city": "Luzern"
+ },
+ {
+  "league": "sui",
+  "name": "Servette FC",
+  "api": 2184,
+  "apiName": "Servette FC",
+  "founded": 1890,
+  "venue": "Stade de Genève",
+  "capacity": 28229,
+  "city": "Lancy"
+ },
+ {
+  "league": "sui",
+  "name": "FC Sion",
+  "api": 630,
+  "apiName": "FC Sion",
+  "founded": 1909,
+  "venue": "Stade de Tourbillon",
+  "capacity": 14283,
+  "city": "Sion"
+ },
+ {
+  "league": "sui",
+  "name": "FC ST. Gallen",
+  "api": 1011,
+  "apiName": "FC ST. Gallen",
+  "founded": 1879,
+  "venue": "kybunpark",
+  "capacity": 20029,
+  "city": "St. Gallen"
+ },
+ {
+  "league": "sui",
+  "name": "FC Thun",
+  "api": 1012,
+  "apiName": "FC Thun",
+  "founded": 1898,
+  "venue": "Stockhorn Arena",
+  "capacity": 10014,
+  "city": "Thun"
+ },
+ {
+  "league": "sui",
+  "name": "FC Vaduz",
+  "api": 660,
+  "apiName": "FC Vaduz",
+  "founded": 1932,
+  "venue": "Rheinpark Stadion",
+  "capacity": 7564,
+  "city": "Vaduz"
+ },
+ {
+  "league": "sui",
+  "name": "BSC Young Boys",
+  "api": 565,
+  "apiName": "BSC Young Boys",
+  "founded": 1898,
+  "venue": "Stadion Wankdorf",
+  "capacity": 31700,
+  "city": "Bern"
+ },
+ {
+  "league": "sui",
+  "name": "FC Zurich",
+  "api": 783,
+  "apiName": "FC Zurich",
+  "founded": 1896,
+  "venue": "Stadion Letzigrund",
+  "capacity": 26114,
+  "city": "Zürich"
+ },
+ {
+  "league": "gre",
+  "name": "AEK Athens FC",
+  "api": 575,
+  "apiName": "AEK Athens FC",
+  "founded": 1924,
+  "venue": "OPAP Arena",
+  "capacity": 33000,
+  "city": "Athens"
+ },
+ {
+  "league": "gre",
+  "name": "Kifisia",
+  "api": 5050,
+  "apiName": "Kifisia",
+  "founded": null,
+  "venue": "Stadio Kaisarianis Michalis Kritikopoulos",
+  "capacity": 4851,
+  "city": "Athens"
+ },
+ {
+  "league": "gre",
+  "name": "Aris Thessalonikis",
+  "api": 1123,
+  "apiName": "Aris Thessalonikis",
+  "founded": 1914,
+  "venue": "Stadio Harilaou Kleánthis Vikelídis",
+  "capacity": 23220,
+  "city": "Thessaloníki"
+ },
+ {
+  "league": "gre",
+  "name": "Asteras Tripolis",
+  "api": 955,
+  "apiName": "Asteras Tripolis",
+  "founded": 1930,
+  "venue": "Stadio Theodoros Kolokotronis",
+  "capacity": 7717,
+  "city": "Tripoli"
+ },
+ {
+  "league": "gre",
+  "name": "Atromitos",
+  "api": 12260,
+  "apiName": "Atromitos",
+  "founded": 1923,
+  "venue": "Stadio Peristeriou",
+  "capacity": 9035,
+  "city": "Athens"
+ },
+ {
+  "league": "gre",
+  "name": "Iraklis",
+  "api": 2109,
+  "apiName": "Iraklis",
+  "founded": 1908,
+  "venue": "Kaftanzoglio Stadio",
+  "capacity": 27770,
+  "city": "Thessaloníki"
+ },
+ {
+  "league": "gre",
+  "name": "Kalamata",
+  "api": 5046,
+  "apiName": "Kalamata",
+  "founded": null,
+  "venue": "Gipedo Messiniakos",
+  "capacity": 5613,
+  "city": "Kalamata"
+ },
+ {
+  "league": "gre",
+  "name": "Levadiakos",
+  "api": 957,
+  "apiName": "Levadiakos",
+  "founded": 1961,
+  "venue": "Stadio Levadias",
+  "capacity": 5915,
+  "city": "Levadia"
+ },
+ {
+  "league": "gre",
+  "name": "OFI",
+  "api": 1124,
+  "apiName": "OFI",
+  "founded": 1925,
+  "venue": "Stadio Thódoros Vardinoyánnis",
+  "capacity": 9000,
+  "city": "Heraklion"
+ },
+ {
+  "league": "gre",
+  "name": "Olympiakos Piraeus",
+  "api": 553,
+  "apiName": "Olympiakos Piraeus",
+  "founded": 1925,
+  "venue": "Stadio Georgios Karaiskáki",
+  "capacity": 33296,
+  "city": "Piraeus"
+ },
+ {
+  "league": "gre",
+  "name": "Panathinaikos",
+  "api": 617,
+  "apiName": "Panathinaikos",
+  "founded": 1908,
+  "venue": "Stadio Apóstolos Nikolaidis",
+  "capacity": 16620,
+  "city": "Athína (Athens)"
+ },
+ {
+  "league": "gre",
+  "name": "Panetolikos",
+  "api": 949,
+  "apiName": "Panetolikos",
+  "founded": 1926,
+  "venue": "Stadio Panetolikou",
+  "capacity": 7200,
+  "city": "Agrinio"
+ },
+ {
+  "league": "gre",
+  "name": "PAOK",
+  "api": 619,
+  "apiName": "PAOK",
+  "founded": 1926,
+  "venue": "Stadio Toumbas",
+  "capacity": 28803,
+  "city": "Thessaloníki"
+ },
+ {
+  "league": "gre",
+  "name": "Volos NFC",
+  "api": 2110,
+  "apiName": "Volos NFC",
+  "founded": 2017,
+  "venue": "Panthessaliko Stadio",
+  "capacity": 22700,
+  "city": "Volos"
+ },
+ {
+  "league": "den",
+  "name": "Aarhus",
+  "api": 406,
+  "apiName": "Aarhus",
+  "founded": 1902,
+  "venue": "Ceres Park & Arena",
+  "capacity": 22175,
+  "city": "Århus"
+ },
+ {
+  "league": "den",
+  "name": "Brondby",
+  "api": 407,
+  "apiName": "Brondby",
+  "founded": 1964,
+  "venue": "Brøndby Stadion",
+  "capacity": 29000,
+  "city": "Brøndby"
+ },
+ {
+  "league": "den",
+  "name": "FC Copenhagen",
+  "api": 400,
+  "apiName": "FC Copenhagen",
+  "founded": 1992,
+  "venue": "Parken",
+  "capacity": 38065,
+  "city": "København"
+ },
+ {
+  "league": "den",
+  "name": "Horsens",
+  "api": 404,
+  "apiName": "AC Horsens",
+  "founded": 1994,
+  "venue": "Nordstern Arena Horsens",
+  "capacity": 12452,
+  "city": "Horsens"
+ },
+ {
+  "league": "den",
+  "name": "Lyngby",
+  "api": 625,
+  "apiName": "Lyngby",
+  "founded": 1921,
+  "venue": "Lyngby Stadion",
+  "capacity": 10100,
+  "city": "Lyngby"
+ },
+ {
+  "league": "den",
+  "name": "FC Midtjylland",
+  "api": 397,
+  "apiName": "FC Midtjylland",
+  "founded": 1999,
+  "venue": "MCH Arena",
+  "capacity": 12152,
+  "city": "Herning"
+ },
+ {
+  "league": "den",
+  "name": "FC Nordsjaelland",
+  "api": 398,
+  "apiName": "FC Nordsjaelland",
+  "founded": 2003,
+  "venue": "Right to Dream Park",
+  "capacity": 10300,
+  "city": "Farum"
+ },
+ {
+  "league": "den",
+  "name": "Odense",
+  "api": 405,
+  "apiName": "Odense",
+  "founded": 1889,
+  "venue": "Nature Energy Park",
+  "capacity": 15790,
+  "city": "Odense"
+ },
+ {
+  "league": "den",
+  "name": "Randers FC",
+  "api": 401,
+  "apiName": "Randers FC",
+  "founded": 2003,
+  "venue": "Cepheus Park Randers",
+  "capacity": 12000,
+  "city": "Randers"
+ },
+ {
+  "league": "den",
+  "name": "Silkeborg",
+  "api": 2073,
+  "apiName": "Silkeborg",
+  "founded": 1917,
+  "venue": "JYSK park",
+  "capacity": 10000,
+  "city": "Silkeborg"
+ },
+ {
+  "league": "den",
+  "name": "Sonderjyske",
+  "api": 396,
+  "apiName": "Sonderjyske",
+  "founded": 2004,
+  "venue": "Sydbank Park",
+  "capacity": 10000,
+  "city": "Haderslev"
+ },
+ {
+  "league": "den",
+  "name": "Viborg",
+  "api": 2070,
+  "apiName": "Viborg",
+  "founded": 1896,
+  "venue": "Energi Viborg Arena",
+  "capacity": 9566,
+  "city": "Viborg"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Ahli Jeddah",
+  "api": 2929,
+  "apiName": "Al-Ahli Jeddah",
+  "founded": 1937,
+  "venue": "Prince Abdullah al-Faisal Stadium",
+  "capacity": 27000,
+  "city": "Jeddah"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Diriyah",
+  "api": 26738,
+  "apiName": "Al Diriyah",
+  "founded": null,
+  "venue": null,
+  "capacity": null,
+  "city": null
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Ettifaq",
+  "api": 2934,
+  "apiName": "Al-Ettifaq",
+  "founded": 1944,
+  "venue": "Prince Mohamed bin Fahd Stadium",
+  "capacity": 35000,
+  "city": "Dammam"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Faisaly",
+  "api": 2930,
+  "apiName": "Al-Faisaly FC",
+  "founded": 1954,
+  "venue": "Al Majma'ah Sports City Stadium",
+  "capacity": 7000,
+  "city": "Al Majma&apos;ah"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Fateh",
+  "api": 2931,
+  "apiName": "Al-Fateh",
+  "founded": 1958,
+  "venue": "Al Fateh Club Stadium",
+  "capacity": 27550,
+  "city": "Al-Hasa"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Fayha",
+  "api": 2944,
+  "apiName": "Al-Fayha",
+  "founded": null,
+  "venue": "Al Majma'ah Sports City Stadium",
+  "capacity": 7000,
+  "city": "Al Majma&apos;ah"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Hazem",
+  "api": 2945,
+  "apiName": "Al-Hazm",
+  "founded": 1965,
+  "venue": "Ar-Rass Stadium (Al Hazm Club Stadium)",
+  "capacity": 8000,
+  "city": "Rass"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Hilal Saudi FC",
+  "api": 2932,
+  "apiName": "Al-Hilal Saudi FC",
+  "founded": 1957,
+  "venue": "Kingdom Arena",
+  "capacity": 26000,
+  "city": "Riyadh"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Ittihad FC",
+  "api": 2938,
+  "apiName": "Al-Ittihad FC",
+  "founded": 1927,
+  "venue": "King Abdullah Sports City",
+  "capacity": 63079,
+  "city": "Jeddah"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Khaleej Saihat",
+  "api": 2928,
+  "apiName": "Al Khaleej Saihat",
+  "founded": 1945,
+  "venue": "Prince Mohamed bin Fahd Stadium",
+  "capacity": 35000,
+  "city": "Dammam"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Kholood",
+  "api": 10509,
+  "apiName": "Al Kholood",
+  "founded": 1970,
+  "venue": "Ar-Rass Stadium (Al Hazm Club Stadium)",
+  "capacity": 8000,
+  "city": "Rass"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Nassr",
+  "api": 2939,
+  "apiName": "Al-Nassr",
+  "founded": 1955,
+  "venue": "Al Awal Park at King Saud University",
+  "capacity": 25000,
+  "city": "Riyadh"
+ },
+ {
+  "league": "ksa",
+  "name": "Al-Qadisiyah FC",
+  "api": 2933,
+  "apiName": "Al-Qadisiyah FC",
+  "founded": 1967,
+  "venue": "Prince Saud bin Jalawi Stadium",
+  "capacity": 20100,
+  "city": "Khobar"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Riyadh",
+  "api": 2981,
+  "apiName": "Al-Riyadh",
+  "founded": null,
+  "venue": null,
+  "capacity": null,
+  "city": null
+ },
+ {
+  "league": "ksa",
+  "name": "Al Shabab",
+  "api": 2940,
+  "apiName": "Al Shabab",
+  "founded": 1947,
+  "venue": "SHG Arena",
+  "capacity": 15000,
+  "city": "Riyadh"
+ },
+ {
+  "league": "ksa",
+  "name": "Abha",
+  "api": 2951,
+  "apiName": "Abha",
+  "founded": null,
+  "venue": "Prince Sultan bin Abdulaziz Sports City Stadium",
+  "capacity": 20000,
+  "city": "Abha"
+ },
+ {
+  "league": "ksa",
+  "name": "Al Taawon",
+  "api": 2936,
+  "apiName": "Al Taawon",
+  "founded": 1956,
+  "venue": "Al Taawon Club Stadium",
+  "capacity": 10000,
+  "city": "Buraidah"
+ },
+ {
+  "league": "ksa",
+  "name": "NEOM",
+  "api": 10513,
+  "apiName": "NEOM",
+  "founded": 1965,
+  "venue": "King Khalid Sport City Stadium",
+  "capacity": 20000,
+  "city": "Tabouk"
+ },
+ {
+  "league": "usa",
+  "name": "Atlanta United FC",
+  "api": 1608,
+  "apiName": "Atlanta United FC",
+  "founded": 2014,
+  "venue": "Mercedes-Benz Stadium",
+  "capacity": 73019,
+  "city": "Atlanta, Georgia"
+ },
+ {
+  "league": "usa",
+  "name": "Austin",
+  "api": 16489,
+  "apiName": "Austin",
+  "founded": 2021,
+  "venue": "Q2 Stadium",
+  "capacity": 20738,
+  "city": "Austin, Texas"
+ },
+ {
+  "league": "usa",
+  "name": "CF Montreal",
+  "api": 1614,
+  "apiName": "CF Montreal",
+  "founded": 2010,
+  "venue": "Stade Saputo",
+  "capacity": 20801,
+  "city": "Montreal, Quebec"
+ },
+ {
+  "league": "usa",
+  "name": "Charlotte",
+  "api": 18310,
+  "apiName": "Charlotte",
+  "founded": 2019,
+  "venue": "Bank of America Stadium",
+  "capacity": 75412,
+  "city": "Charlotte, North Carolina"
+ },
+ {
+  "league": "usa",
+  "name": "Chicago Fire",
+  "api": 1607,
+  "apiName": "Chicago Fire",
+  "founded": 1997,
+  "venue": "Soldier Field",
+  "capacity": 62493,
+  "city": "Chicago, Illinois"
+ },
+ {
+  "league": "usa",
+  "name": "Colorado Rapids",
+  "api": 1610,
+  "apiName": "Colorado Rapids",
+  "founded": 1996,
+  "venue": "Dick's Sporting Goods Park",
+  "capacity": 19734,
+  "city": "Commerce City, Colorado"
+ },
+ {
+  "league": "usa",
+  "name": "Columbus Crew",
+  "api": 1613,
+  "apiName": "Columbus Crew",
+  "founded": 1996,
+  "venue": "Lower.com Field",
+  "capacity": 20931,
+  "city": "Columbus, Ohio"
+ },
+ {
+  "league": "usa",
+  "name": "DC United",
+  "api": 1615,
+  "apiName": "DC United",
+  "founded": 1996,
+  "venue": "Audi Field",
+  "capacity": 20621,
+  "city": "Washington, District of Columbia"
+ },
+ {
+  "league": "usa",
+  "name": "FC Cincinnati",
+  "api": 2242,
+  "apiName": "FC Cincinnati",
+  "founded": null,
+  "venue": "TQL Stadium",
+  "capacity": 26000,
+  "city": "Cincinnati, Ohio"
+ },
+ {
+  "league": "usa",
+  "name": "FC Dallas",
+  "api": 1597,
+  "apiName": "FC Dallas",
+  "founded": 1996,
+  "venue": "Toyota Stadium",
+  "capacity": 22565,
+  "city": "Frisco, Texas"
+ },
+ {
+  "league": "usa",
+  "name": "Houston Dynamo",
+  "api": 1600,
+  "apiName": "Houston Dynamo",
+  "founded": 2005,
+  "venue": "Shell Energy Stadium",
+  "capacity": 22661,
+  "city": "Houston, Texas"
+ },
+ {
+  "league": "usa",
+  "name": "Inter Miami",
+  "api": 9568,
+  "apiName": "Inter Miami",
+  "founded": 2018,
+  "venue": "Chase Stadium",
+  "capacity": 21550,
+  "city": "Fort Lauderdale, Florida"
+ },
+ {
+  "league": "usa",
+  "name": "Los Angeles Galaxy",
+  "api": 1605,
+  "apiName": "Los Angeles Galaxy",
+  "founded": 1995,
+  "venue": "Dignity Health Sports Park",
+  "capacity": 30510,
+  "city": "Carson, California"
+ },
+ {
+  "league": "usa",
+  "name": "Los Angeles FC",
+  "api": 1616,
+  "apiName": "Los Angeles FC",
+  "founded": 2014,
+  "venue": "BMO Stadium",
+  "capacity": 22921,
+  "city": "Los Angeles, California"
+ },
+ {
+  "league": "usa",
+  "name": "Minnesota United FC",
+  "api": 1612,
+  "apiName": "Minnesota United FC",
+  "founded": 2010,
+  "venue": "Allianz Field",
+  "capacity": 19954,
+  "city": "Saint Paul, Minnesota"
+ },
+ {
+  "league": "usa",
+  "name": "Nashville SC",
+  "api": 4002,
+  "apiName": "Nashville",
+  "founded": null,
+  "venue": null,
+  "capacity": null,
+  "city": null
+ },
+ {
+  "league": "usa",
+  "name": "New England Revolution",
+  "api": 1609,
+  "apiName": "New England Revolution",
+  "founded": 1995,
+  "venue": "Gillette Stadium",
+  "capacity": 68756,
+  "city": "Foxborough, Massachusetts"
+ },
+ {
+  "league": "usa",
+  "name": "New York City FC",
+  "api": 1604,
+  "apiName": "New York City FC",
+  "founded": 2013,
+  "venue": "Yankee Stadium",
+  "capacity": 54251,
+  "city": "New York City"
+ },
+ {
+  "league": "usa",
+  "name": "New York Red Bulls",
+  "api": 1602,
+  "apiName": "New York Red Bulls",
+  "founded": 1995,
+  "venue": "Sports Illustrated Stadium",
+  "capacity": 26765,
+  "city": "Harrison, New Jersey"
+ },
+ {
+  "league": "usa",
+  "name": "Orlando City SC",
+  "api": 1598,
+  "apiName": "Orlando City SC",
+  "founded": 2008,
+  "venue": "Inter&Co Stadium",
+  "capacity": 25527,
+  "city": "Orlando, Florida"
+ },
+ {
+  "league": "usa",
+  "name": "Philadelphia Union",
+  "api": 1599,
+  "apiName": "Philadelphia Union",
+  "founded": 2008,
+  "venue": "Subaru Park",
+  "capacity": 19778,
+  "city": "Chester, Pennsylvania"
+ },
+ {
+  "league": "usa",
+  "name": "Portland Timbers",
+  "api": 1617,
+  "apiName": "Portland Timbers",
+  "founded": 2009,
+  "venue": "Providence Park",
+  "capacity": 25518,
+  "city": "Portland, Oregon"
+ },
+ {
+  "league": "usa",
+  "name": "Real Salt Lake",
+  "api": 1606,
+  "apiName": "Real Salt Lake",
+  "founded": 2004,
+  "venue": "America First Field",
+  "capacity": 21810,
+  "city": "Sandy, Utah"
+ },
+ {
+  "league": "usa",
+  "name": "San Diego",
+  "api": 25484,
+  "apiName": "San Diego",
+  "founded": null,
+  "venue": null,
+  "capacity": null,
+  "city": null
+ },
+ {
+  "league": "usa",
+  "name": "San Jose Earthquakes",
+  "api": 1596,
+  "apiName": "San Jose Earthquakes",
+  "founded": 1995,
+  "venue": "PayPal Park",
+  "capacity": 18000,
+  "city": "San Jose, California"
+ },
+ {
+  "league": "usa",
+  "name": "Seattle Sounders",
+  "api": 1595,
+  "apiName": "Seattle Sounders",
+  "founded": 2007,
+  "venue": "Lumen Field",
+  "capacity": 72000,
+  "city": "Seattle, Washington"
+ },
+ {
+  "league": "usa",
+  "name": "Sporting Kansas City",
+  "api": 1611,
+  "apiName": "Sporting Kansas City",
+  "founded": 1995,
+  "venue": "Children's Mercy Park",
+  "capacity": 21650,
+  "city": "Kansas City, Kansas"
+ },
+ {
+  "league": "usa",
+  "name": "St. Louis City",
+  "api": 20787,
+  "apiName": "St. Louis City",
+  "founded": 2023,
+  "venue": "CITYPARK",
+  "capacity": 22500,
+  "city": "St. Louis, Missouri"
+ },
+ {
+  "league": "usa",
+  "name": "Toronto FC",
+  "api": 1601,
+  "apiName": "Toronto FC",
+  "founded": 2006,
+  "venue": "BMO Field",
+  "capacity": 36045,
+  "city": "Toronto, Ontario"
+ },
+ {
+  "league": "usa",
+  "name": "Vancouver Whitecaps",
+  "api": 1603,
+  "apiName": "Vancouver Whitecaps",
+  "founded": 1986,
+  "venue": "BC Place",
+  "capacity": 54405,
+  "city": "Vancouver, British Columbia"
+ },
+ {
+  "league": "bra",
+  "name": "Atletico Paranaense",
+  "api": 134,
+  "apiName": "Atletico Paranaense",
+  "founded": 1924,
+  "venue": "Arena da Baixada",
+  "capacity": 43981,
+  "city": "Curitiba, Paraná"
+ },
+ {
+  "league": "bra",
+  "name": "Atletico-MG",
+  "api": 1062,
+  "apiName": "Atletico-MG",
+  "founded": 1908,
+  "venue": "Arena MRV",
+  "capacity": 47465,
+  "city": "Belo Horizonte, Minas Gerais"
+ },
+ {
+  "league": "bra",
+  "name": "Bahia",
+  "api": 118,
+  "apiName": "Bahia",
+  "founded": 1931,
+  "venue": "Arena Fonte Nova",
+  "capacity": 56500,
+  "city": "Salvador, Bahia"
+ },
+ {
+  "league": "bra",
+  "name": "Chapecoense-sc",
+  "api": 132,
+  "apiName": "Chapecoense-sc",
+  "founded": 1973,
+  "venue": "Arena Condá",
+  "capacity": 22600,
+  "city": "Chapecó, Santa Catarina"
+ },
+ {
+  "league": "bra",
+  "name": "Coritiba",
+  "api": 147,
+  "apiName": "Coritiba",
+  "founded": 1909,
+  "venue": "Estádio Major Antônio Couto Pereira",
+  "capacity": 45563,
+  "city": "Curitiba, Paraná"
+ },
+ {
+  "league": "bra",
+  "name": "Cruzeiro",
+  "api": 135,
+  "apiName": "Cruzeiro",
+  "founded": 1921,
+  "venue": "Estádio Governador Magalhães Pinto",
+  "capacity": 62170,
+  "city": "Belo Horizonte, Minas Gerais"
+ },
+ {
+  "league": "bra",
+  "name": "Gremio",
+  "api": 130,
+  "apiName": "Gremio",
+  "founded": 1903,
+  "venue": "Arena do Grêmio",
+  "capacity": 60540,
+  "city": "Porto Alegre, Rio Grande do Sul"
+ },
+ {
+  "league": "bra",
+  "name": "Internacional",
+  "api": 119,
+  "apiName": "Internacional",
+  "founded": 1909,
+  "venue": "Estádio José Pinheiro Borda",
+  "capacity": 50128,
+  "city": "Porto Alegre, Rio Grande do Sul"
+ },
+ {
+  "league": "bra",
+  "name": "Mirassol",
+  "api": 7848,
+  "apiName": "Mirassol",
+  "founded": 1925,
+  "venue": "Estádio José Maria de Campos Maia",
+  "capacity": 14534,
+  "city": "Mirassol, São Paulo"
+ },
+ {
+  "league": "bra",
+  "name": "RB Bragantino",
+  "api": 794,
+  "apiName": "RB Bragantino",
+  "founded": 1928,
+  "venue": "Estádio Nabi Abi Chedid",
+  "capacity": 17128,
+  "city": "Bragança Paulista, São Paulo"
+ },
+ {
+  "league": "bra",
+  "name": "Remo",
+  "api": 1198,
+  "apiName": "Remo",
+  "founded": 1905,
+  "venue": "Estádio Estadual Jornalista Edgar Augusto Proença",
+  "capacity": 53635,
+  "city": "Belém, Pará"
+ },
+ {
+  "league": "bra",
+  "name": "Santos",
+  "api": 128,
+  "apiName": "Santos",
+  "founded": 1912,
+  "venue": "Estádio Urbano Caldeira",
+  "capacity": 21256,
+  "city": "Santos, São Paulo"
+ },
+ {
+  "league": "bra",
+  "name": "Sao Paulo",
+  "api": 126,
+  "apiName": "Sao Paulo",
+  "founded": 1930,
+  "venue": "Estádio Cícero Pompeu de Toledo (Morumbi)",
+  "capacity": 66795,
+  "city": "São Paulo, São Paulo"
+ },
+ {
+  "league": "bra",
+  "name": "Vitoria",
+  "api": 136,
+  "apiName": "Vitoria",
+  "founded": 1899,
+  "venue": "Estádio Manoel Barradas",
+  "capacity": 35980,
+  "city": "Salvador, Bahia"
+ },
+ {
+  "league": "bra",
+  "name": "Botafogo",
+  "api": 120,
+  "apiName": "Botafogo",
+  "founded": 1904,
+  "venue": "Estádio Nilton Santos",
+  "capacity": 46931,
+  "city": "Rio de Janeiro"
+ },
+ {
+  "league": "bra",
+  "name": "Flamengo",
+  "api": 127,
+  "apiName": "Flamengo",
+  "founded": 1895,
+  "venue": "Estadio Jornalista Mário Filho (Maracanã)",
+  "capacity": 78838,
+  "city": "Rio de Janeiro, Rio de Janeiro"
+ },
+ {
+  "league": "bra",
+  "name": "Fluminense",
+  "api": 124,
+  "apiName": "Fluminense",
+  "founded": 1902,
+  "venue": "Estadio Jornalista Mário Filho (Maracanã)",
+  "capacity": 78838,
+  "city": "Rio de Janeiro, Rio de Janeiro"
+ },
+ {
+  "league": "bra",
+  "name": "Vasco DA Gama",
+  "api": 133,
+  "apiName": "Vasco DA Gama",
+  "founded": 1898,
+  "venue": "Estádio São Januário",
+  "capacity": 24584,
+  "city": "Rio de Janeiro, Rio de Janeiro"
+ },
+ {
+  "league": "bra",
+  "name": "Palmeiras",
+  "api": 121,
+  "apiName": "Palmeiras",
+  "founded": 1914,
+  "venue": "Allianz Parque",
+  "capacity": 43713,
+  "city": "São Paulo, São Paulo"
+ },
+ {
+  "league": "bra",
+  "name": "Corinthians",
+  "api": 131,
+  "apiName": "Corinthians",
+  "founded": 1910,
+  "venue": "Neo Química Arena",
+  "capacity": 49205,
+  "city": "São Paulo, São Paulo"
+ },
+ {
+  "league": "arg",
+  "name": "Aldosivi",
+  "api": 463,
+  "apiName": "Aldosivi",
+  "founded": 1913,
+  "venue": "Estadio José María Minella",
+  "capacity": 35354,
+  "city": "Mar del Plata, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Argentinos JRS",
+  "api": 458,
+  "apiName": "Argentinos JRS",
+  "founded": 1904,
+  "venue": "Estadio Diego Armando Maradona",
+  "capacity": 24380,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Atletico Tucuman",
+  "api": 455,
+  "apiName": "Atletico Tucuman",
+  "founded": 1902,
+  "venue": "Estadio Monumental Presidente José Fierro",
+  "capacity": 35200,
+  "city": "San Miguel de Tucumán, Provincia de Tucumán"
+ },
+ {
+  "league": "arg",
+  "name": "Banfield",
+  "api": 449,
+  "apiName": "Banfield",
+  "founded": 1896,
+  "venue": "Estadio Florencio Solá",
+  "capacity": 34901,
+  "city": "Lomas de Zamora, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Barracas Central",
+  "api": 2432,
+  "apiName": "Barracas Central",
+  "founded": 1904,
+  "venue": "Estadio Claudio Fabián Tapia",
+  "capacity": 4400,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Belgrano Cordoba",
+  "api": 440,
+  "apiName": "Belgrano Cordoba",
+  "founded": 1905,
+  "venue": "Estadio Julio César Villagra",
+  "capacity": 28000,
+  "city": "Ciudad de Córdoba, Provincia de Córdoba"
+ },
+ {
+  "league": "arg",
+  "name": "Boca Juniors",
+  "api": 451,
+  "apiName": "Boca Juniors",
+  "founded": 1905,
+  "venue": "Estadio Alberto José Armando",
+  "capacity": 49000,
+  "city": "Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Central Cordoba de Santiago",
+  "api": 1065,
+  "apiName": "Central Cordoba de Santiago",
+  "founded": 1919,
+  "venue": "Estadio Alfredo Terrera",
+  "capacity": 16000,
+  "city": "Santiago del Estero, Provincia de Santiago del Est"
+ },
+ {
+  "league": "arg",
+  "name": "Defensa Y Justicia",
+  "api": 442,
+  "apiName": "Defensa Y Justicia",
+  "founded": 1935,
+  "venue": "Estadio Norberto Tito Tomaghello",
+  "capacity": 20000,
+  "city": "Florencio Varela, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Deportivo Riestra",
+  "api": 476,
+  "apiName": "Deportivo Riestra",
+  "founded": 1931,
+  "venue": "Estadio Guillermo Laza",
+  "capacity": 3000,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Estudiantes L.P.",
+  "api": 450,
+  "apiName": "Estudiantes L.P.",
+  "founded": 1905,
+  "venue": "Estadio Único Diego Armando Maradona",
+  "capacity": 53000,
+  "city": "La Plata, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Estudiantes Rio Cuarto",
+  "api": 2424,
+  "apiName": "Estudiantes de Rio Cuarto",
+  "founded": 1912,
+  "venue": "Estadio Ciudad de Río Cuarto",
+  "capacity": 9000,
+  "city": "Ciudad de Río Cuarto, Provincia de Córdoba"
+ },
+ {
+  "league": "arg",
+  "name": "Gimnasia L.P.",
+  "api": 434,
+  "apiName": "Gimnasia L.P.",
+  "founded": 1887,
+  "venue": "Estadio Juan Carmelo Zerillo",
+  "capacity": 24544,
+  "city": "La Plata, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Gimnasia Mendoza",
+  "api": 1066,
+  "apiName": "Gimnasia M.",
+  "founded": 1908,
+  "venue": "Estadio Víctor Antonio Legrotaglie",
+  "capacity": 11500,
+  "city": "Mendoza, Provincia de Mendoza"
+ },
+ {
+  "league": "arg",
+  "name": "Huracan",
+  "api": 445,
+  "apiName": "Huracan",
+  "founded": 1908,
+  "venue": "Estadio Tomás Adolfo Ducó",
+  "capacity": 48314,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Independiente",
+  "api": 453,
+  "apiName": "Independiente",
+  "founded": 1905,
+  "venue": "Estadio Libertadores de América",
+  "capacity": 52364,
+  "city": "Avellaneda, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Independ. Rivadavia",
+  "api": 473,
+  "apiName": "Independ. Rivadavia",
+  "founded": 1913,
+  "venue": "Estadio Juan Bautista Gargantini",
+  "capacity": 16000,
+  "city": "Mendoza, Provincia de Mendoza"
+ },
+ {
+  "league": "arg",
+  "name": "Instituto Cordoba",
+  "api": 478,
+  "apiName": "Instituto Cordoba",
+  "founded": 1918,
+  "venue": "Estadio Juan Domingo Perón",
+  "capacity": 26535,
+  "city": "Ciudad de Córdoba, Provincia de Córdoba"
+ },
+ {
+  "league": "arg",
+  "name": "Lanus",
+  "api": 446,
+  "apiName": "Lanus",
+  "founded": 1915,
+  "venue": "Estadio Ciudad de Lanús - Néstor Díaz Pérez",
+  "capacity": 46619,
+  "city": "Lanús, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Newells Old Boys",
+  "api": 457,
+  "apiName": "Newells Old Boys",
+  "founded": 1903,
+  "venue": "Estadio Marcelo Alberto Bielsa",
+  "capacity": 42000,
+  "city": "Rosario, Provincia de Santa Fe"
+ },
+ {
+  "league": "arg",
+  "name": "Platense",
+  "api": 1064,
+  "apiName": "Platense",
+  "founded": 1905,
+  "venue": "Estadio Ciudad de Vicente López",
+  "capacity": 31030,
+  "city": "Vicente López, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Racing Club",
+  "api": 436,
+  "apiName": "Racing Club",
+  "founded": 1903,
+  "venue": "Estadio Presidente Juan Domingo Perón",
+  "capacity": 51500,
+  "city": "Avellaneda, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "River Plate",
+  "api": 435,
+  "apiName": "River Plate",
+  "founded": 1901,
+  "venue": "Estadio Mâs Monumental",
+  "capacity": 83214,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Rosario Central",
+  "api": 437,
+  "apiName": "Rosario Central",
+  "founded": 1889,
+  "venue": "Estadio Gigante de Arroyito",
+  "capacity": 41654,
+  "city": "Rosario, Provincia de Santa Fe"
+ },
+ {
+  "league": "arg",
+  "name": "San Lorenzo",
+  "api": 460,
+  "apiName": "San Lorenzo",
+  "founded": 1908,
+  "venue": "Estadio Pedro Bidegaín",
+  "capacity": 43494,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Sarmiento Junin",
+  "api": 474,
+  "apiName": "Sarmiento Junin",
+  "founded": 1911,
+  "venue": "Estadio Eva Perón de Junín",
+  "capacity": 22000,
+  "city": "Junín, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Talleres Cordoba",
+  "api": 456,
+  "apiName": "Talleres Cordoba",
+  "founded": 1913,
+  "venue": "Estadio Mario Alberto Kempes",
+  "capacity": 57503,
+  "city": "Ciudad de Córdoba, Provincia de Córdoba"
+ },
+ {
+  "league": "arg",
+  "name": "Tigre",
+  "api": 452,
+  "apiName": "Tigre",
+  "founded": 1902,
+  "venue": "Estadio José Dellagiovanna",
+  "capacity": 26282,
+  "city": "San Fernando, Provincia de Buenos Aires"
+ },
+ {
+  "league": "arg",
+  "name": "Union Santa Fe",
+  "api": 441,
+  "apiName": "Union Santa Fe",
+  "founded": 1907,
+  "venue": "Estadio 15 de Abril",
+  "capacity": 27000,
+  "city": "Ciudad de Santa Fe, Provincia de Santa Fe"
+ },
+ {
+  "league": "arg",
+  "name": "Velez Sarsfield",
+  "api": 438,
+  "apiName": "Velez Sarsfield",
+  "founded": 1910,
+  "venue": "Estadio José Amalfitani",
+  "capacity": 49747,
+  "city": "Capital Federal, Ciudad de Buenos Aires"
+ }
+]

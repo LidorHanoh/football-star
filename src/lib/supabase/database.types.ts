@@ -39,6 +39,248 @@ export type Database = {
   }
   public: {
     Tables: {
+      clubs: {
+        Row: {
+          api_football_id: number | null
+          budget: number | null
+          city: string | null
+          external_id: number
+          founded: number | null
+          id: string
+          league_id: string
+          name: Json
+          primary_color: string | null
+          reputation: number
+          secondary_color: string | null
+          short_name: Json | null
+          stadium_capacity: number | null
+          stadium_name: Json | null
+          team_rating: number
+        }
+        Insert: {
+          api_football_id?: number | null
+          budget?: number | null
+          city?: string | null
+          external_id: number
+          founded?: number | null
+          id?: string
+          league_id: string
+          name: Json
+          primary_color?: string | null
+          reputation?: number
+          secondary_color?: string | null
+          short_name?: Json | null
+          stadium_capacity?: number | null
+          stadium_name?: Json | null
+          team_rating?: number
+        }
+        Update: {
+          api_football_id?: number | null
+          budget?: number | null
+          city?: string | null
+          external_id?: number
+          founded?: number | null
+          id?: string
+          league_id?: string
+          name?: Json
+          primary_color?: string | null
+          reputation?: number
+          secondary_color?: string | null
+          short_name?: Json | null
+          stadium_capacity?: number | null
+          stadium_name?: Json | null
+          team_rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clubs_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      countries: {
+        Row: {
+          code: string
+          flag_code: string | null
+          name: Json
+        }
+        Insert: {
+          code: string
+          flag_code?: string | null
+          name: Json
+        }
+        Update: {
+          code?: string
+          flag_code?: string | null
+          name?: Json
+        }
+        Relationships: []
+      }
+      data_snapshots: {
+        Row: {
+          id: string
+          imported_at: string
+          is_current: boolean
+          season: string
+          source: string
+        }
+        Insert: {
+          id?: string
+          imported_at?: string
+          is_current?: boolean
+          season: string
+          source: string
+        }
+        Update: {
+          id?: string
+          imported_at?: string
+          is_current?: boolean
+          season?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      leagues: {
+        Row: {
+          country_code: string
+          external_id: string | null
+          id: string
+          is_playable: boolean
+          key: string
+          name: Json
+          num_teams: number
+          strength: number
+          tier: number
+        }
+        Insert: {
+          country_code: string
+          external_id?: string | null
+          id?: string
+          is_playable?: boolean
+          key: string
+          name: Json
+          num_teams: number
+          strength: number
+          tier?: number
+        }
+        Update: {
+          country_code?: string
+          external_id?: string | null
+          id?: string
+          is_playable?: boolean
+          key?: string
+          name?: Json
+          num_teams?: number
+          strength?: number
+          tier?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leagues_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          age: number | null
+          attributes: Json | null
+          birth_date: string | null
+          club_id: string | null
+          contract_until: string | null
+          external_id: number
+          foot: string | null
+          height_cm: number | null
+          id: string
+          name: Json
+          nationality: string | null
+          position: string
+          potential: number | null
+          rating_source: string
+          rating_world: number
+          ratings_locked: boolean
+          second_nationality: string | null
+          shirt_number: number | null
+          updated_at: string
+          value: number | null
+          wage: number | null
+        }
+        Insert: {
+          age?: number | null
+          attributes?: Json | null
+          birth_date?: string | null
+          club_id?: string | null
+          contract_until?: string | null
+          external_id: number
+          foot?: string | null
+          height_cm?: number | null
+          id?: string
+          name: Json
+          nationality?: string | null
+          position: string
+          potential?: number | null
+          rating_source?: string
+          rating_world?: number
+          ratings_locked?: boolean
+          second_nationality?: string | null
+          shirt_number?: number | null
+          updated_at?: string
+          value?: number | null
+          wage?: number | null
+        }
+        Update: {
+          age?: number | null
+          attributes?: Json | null
+          birth_date?: string | null
+          club_id?: string | null
+          contract_until?: string | null
+          external_id?: number
+          foot?: string | null
+          height_cm?: number | null
+          id?: string
+          name?: Json
+          nationality?: string | null
+          position?: string
+          potential?: number | null
+          rating_source?: string
+          rating_world?: number
+          ratings_locked?: boolean
+          second_nationality?: string | null
+          shirt_number?: number | null
+          updated_at?: string
+          value?: number | null
+          wage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_nationality_fkey"
+            columns: ["nationality"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "players_second_nationality_fkey"
+            columns: ["second_nationality"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -85,11 +327,75 @@ export type Database = {
           username?: string
           xp?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_favourite_club_id_fkey"
+            columns: ["favourite_club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
-      [_ in never]: never
+      player_ratings: {
+        Row: {
+          age: number | null
+          attributes: Json | null
+          birth_date: string | null
+          club_id: string | null
+          contract_until: string | null
+          external_id: number | null
+          foot: string | null
+          height_cm: number | null
+          id: string | null
+          league_id: string | null
+          name: Json | null
+          nationality: string | null
+          position: string | null
+          potential: number | null
+          rating_league: number | null
+          rating_source: string | null
+          rating_world: number | null
+          ratings_locked: boolean | null
+          second_nationality: string | null
+          shirt_number: number | null
+          updated_at: string | null
+          value: number | null
+          wage: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clubs_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_nationality_fkey"
+            columns: ["nationality"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "players_second_nationality_fkey"
+            columns: ["second_nationality"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }

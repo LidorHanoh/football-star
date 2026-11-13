@@ -1,0 +1,286 @@
+{
+  "_comment": "The 20 playable leagues and their clubs for the CURRENT season (European 2026/27; MLS, Brazil and Argentina 2026). Researched from Wikipedia on 2026-11-13 because the API-Football free plan stops at 2024. Update every summer (and in January for the calendar-year leagues). 'api' = API-Football league id, 'country' = API-Football country name. 'tm' = Transfermarkt competition code, 'tmSeason' = Transfermarkt saison_id for the current season (calendar-year leagues use the previous year's id).",
+  "season": "2026/27",
+  "leagues": [
+    {
+      "key": "isr",
+      "api": 383,
+      "country": "Israel",
+      "code": "IL",
+      "tier": 1,
+      "name": {
+        "en": "Ligat Ha'Al",
+        "he": "ליגת העל"
+      },
+      "tm": "ISR1",
+      "tmSeason": 2026,
+      "clubs": ["Beitar Jerusalem", "Bnei Sakhnin", "Hapoel Be'er Sheva", "Hapoel Haifa", "Hapoel Jerusalem", "Hapoel Petah Tikva", "Hapoel Ramat Gan Givatayim", "Hapoel Tel Aviv", "Ironi Kiryat Shmona", "Ironi Tiberias", "Maccabi Haifa", "Maccabi Netanya", "Maccabi Petah Tikva", "Maccabi Tel Aviv"]
+    },
+    {
+      "key": "eng1",
+      "api": 39,
+      "country": "England",
+      "code": "GB-ENG",
+      "tier": 1,
+      "name": {
+        "en": "Premier League",
+        "he": "הפרמייר ליג"
+      },
+      "tm": "GB1",
+      "tmSeason": 2026,
+      "clubs": ["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Chelsea", "Coventry", "Crystal Palace", "Everton", "Fulham", "Hull City", "Ipswich", "Leeds", "Liverpool", "Manchester City", "Manchester United", "Newcastle", "Nottingham Forest", "Sunderland", "Tottenham"]
+    },
+    {
+      "key": "eng2",
+      "api": 40,
+      "country": "England",
+      "code": "GB-ENG",
+      "tier": 2,
+      "name": {
+        "en": "Championship",
+        "he": "הצ'מפיונשיפ"
+      },
+      "tm": "GB2",
+      "tmSeason": 2026,
+      "clubs": ["Birmingham", "Blackburn", "Bolton", "Bristol City", "Burnley", "Cardiff", "Charlton", "Derby", "Lincoln", "Middlesbrough", "Millwall", "Norwich", "Portsmouth", "Preston", "QPR", "Sheffield Utd", "Southampton", "Stoke City", "Swansea", "Watford", "West Brom", "West Ham", "Wolves", "Wrexham"]
+    },
+    {
+      "key": "esp",
+      "api": 140,
+      "country": "Spain",
+      "code": "ES",
+      "tier": 1,
+      "name": {
+        "en": "La Liga",
+        "he": "לה ליגה"
+      },
+      "tm": "ES1",
+      "tmSeason": 2026,
+      "clubs": ["Alaves", "Athletic Club", "Atletico Madrid", "Barcelona", "Celta Vigo", "Deportivo La Coruna", "Elche", "Espanyol", "Getafe", "Levante", "Malaga", "Osasuna", "Racing Santander", "Rayo Vallecano", "Real Betis", "Real Madrid", "Real Sociedad", "Sevilla", "Valencia", "Villarreal"]
+    },
+    {
+      "key": "ita",
+      "api": 135,
+      "country": "Italy",
+      "code": "IT",
+      "tier": 1,
+      "name": {
+        "en": "Serie A",
+        "he": "הסרייה א'"
+      },
+      "tm": "IT1",
+      "tmSeason": 2026,
+      "clubs": ["Atalanta", "Bologna", "Cagliari", "Como", "Fiorentina", "Frosinone", "Genoa", "Inter", "Juventus", "Lazio", "Lecce", "AC Milan", "Monza", "Napoli", "Parma", "AS Roma", "Sassuolo", "Torino", "Udinese", "Venezia"]
+    },
+    {
+      "key": "ger",
+      "api": 78,
+      "country": "Germany",
+      "code": "DE",
+      "tier": 1,
+      "name": {
+        "en": "Bundesliga",
+        "he": "הבונדסליגה"
+      },
+      "tm": "L1",
+      "tmSeason": 2026,
+      "clubs": ["FC Augsburg", "Union Berlin", "Werder Bremen", "Borussia Dortmund", "SV Elversberg", "Eintracht Frankfurt", "SC Freiburg", "Hamburger SV", "1899 Hoffenheim", "1. FC Köln", "RB Leipzig", "Bayer Leverkusen", "FSV Mainz 05", "Borussia Mönchengladbach", "Bayern München", "SC Paderborn 07", "FC Schalke 04", "VfB Stuttgart"]
+    },
+    {
+      "key": "fra",
+      "api": 61,
+      "country": "France",
+      "code": "FR",
+      "tier": 1,
+      "name": {
+        "en": "Ligue 1",
+        "he": "הליגה הצרפתית"
+      },
+      "tm": "FR1",
+      "tmSeason": 2026,
+      "clubs": ["Angers", "Auxerre", "Stade Brestois 29", "Le Havre", "Le Mans", "Lens", "Lille", "Lorient", "Lyon", "Marseille", "Monaco", "Nice", "Paris FC", "Paris Saint Germain", "Rennes", "Strasbourg", "Toulouse", "Troyes"]
+    },
+    {
+      "key": "por",
+      "api": 94,
+      "country": "Portugal",
+      "code": "PT",
+      "tier": 1,
+      "name": {
+        "en": "Primeira Liga",
+        "he": "הליגה הפורטוגלית"
+      },
+      "tm": "PO1",
+      "tmSeason": 2026,
+      "clubs": ["Academico Viseu", "Alverca", "Arouca", "Benfica", "SC Braga", "Casa Pia", "Estoril", "Estrela", "Famalicao", "GIL Vicente", "Maritimo", "Moreirense", "Nacional", "FC Porto", "Rio Ave", "Santa Clara", "Sporting CP", "Vitória SC"]
+    },
+    {
+      "key": "ned",
+      "api": 88,
+      "country": "Netherlands",
+      "code": "NL",
+      "tier": 1,
+      "name": {
+        "en": "Eredivisie",
+        "he": "הליגה ההולנדית"
+      },
+      "tm": "NL1",
+      "tmSeason": 2026,
+      "clubs": ["Ajax", "AZ Alkmaar", "Cambuur", "Excelsior", "Feyenoord", "Fortuna Sittard", "GO Ahead Eagles", "Groningen", "Heerenveen", "NEC Nijmegen", "PEC Zwolle", "PSV Eindhoven", "Sparta Rotterdam", "Telstar", "Twente", "Utrecht", "Willem II", "ADO Den Haag"]
+    },
+    {
+      "key": "bel",
+      "api": 144,
+      "country": "Belgium",
+      "code": "BE",
+      "tier": 1,
+      "name": {
+        "en": "Belgian Pro League",
+        "he": "הליגה הבלגית"
+      },
+      "tm": "BE1",
+      "tmSeason": 2026,
+      "clubs": ["Anderlecht", "Antwerp", "Beveren", "Cercle Brugge", "Charleroi", "Club Brugge KV", "Genk", "Gent", "Kortrijk", "RAAL La Louvière", "Lommel SK", "KV Mechelen", "OH Leuven", "St. Truiden", "Standard Liege", "Union St. Gilloise", "KVC Westerlo", "Zulte Waregem"]
+    },
+    {
+      "key": "tur",
+      "api": 203,
+      "country": "Turkey",
+      "code": "TR",
+      "tier": 1,
+      "name": {
+        "en": "Süper Lig",
+        "he": "הליגה הטורקית"
+      },
+      "tm": "TR1",
+      "tmSeason": 2026,
+      "clubs": ["Alanyaspor", "Amed", "Başakşehir", "Beşiktaş", "Çorum FK", "Erzurumspor", "Eyüpspor", "Fenerbahçe", "Galatasaray", "Gaziantep FK", "Gençlerbirliği", "Göztepe", "Kasımpaşa", "Kocaelispor", "Konyaspor", "Rizespor", "Samsunspor", "Trabzonspor"]
+    },
+    {
+      "key": "sco",
+      "api": 179,
+      "country": "Scotland",
+      "code": "GB-SCT",
+      "tier": 1,
+      "name": {
+        "en": "Scottish Premiership",
+        "he": "הליגה הסקוטית"
+      },
+      "tm": "SC1",
+      "tmSeason": 2026,
+      "clubs": ["Aberdeen", "Celtic", "Dundee", "Dundee Utd", "Falkirk", "Heart Of Midlothian", "Hibernian", "Kilmarnock", "Motherwell", "Rangers", "ST Johnstone", "ST Mirren"]
+    },
+    {
+      "key": "aut",
+      "api": 218,
+      "country": "Austria",
+      "code": "AT",
+      "tier": 1,
+      "name": {
+        "en": "Austrian Bundesliga",
+        "he": "הליגה האוסטרית"
+      },
+      "tm": "A1",
+      "tmSeason": 2026,
+      "clubs": ["Austria Lustenau", "Austria Vienna", "Grazer AK", "Lask Linz", "Red Bull Salzburg", "Rapid Vienna", "Sturm Graz", "SV Ried", "SCR Altach", "TSV Hartberg", "WSG Wattens", "Wolfsberger AC"]
+    },
+    {
+      "key": "sui",
+      "api": 207,
+      "country": "Switzerland",
+      "code": "CH",
+      "tier": 1,
+      "name": {
+        "en": "Swiss Super League",
+        "he": "הליגה השווייצרית"
+      },
+      "tm": "C1",
+      "tmSeason": 2026,
+      "clubs": ["FC Basel 1893", "Grasshoppers", "Lausanne", "FC Lugano", "FC Luzern", "Servette FC", "FC Sion", "FC ST. Gallen", "FC Thun", "FC Vaduz", "BSC Young Boys", "FC Zurich"]
+    },
+    {
+      "key": "gre",
+      "api": 197,
+      "country": "Greece",
+      "code": "GR",
+      "tier": 1,
+      "name": {
+        "en": "Greek Super League",
+        "he": "הליגה היוונית"
+      },
+      "tm": "GR1",
+      "tmSeason": 2026,
+      "clubs": ["AEK Athens FC", "Kifisia", "Aris Thessalonikis", "Asteras Tripolis", "Atromitos", "Iraklis", "Kalamata", "Levadiakos", "OFI", "Olympiakos Piraeus", "Panathinaikos", "Panetolikos", "PAOK", "Volos NFC"]
+    },
+    {
+      "key": "den",
+      "api": 119,
+      "country": "Denmark",
+      "code": "DK",
+      "tier": 1,
+      "name": {
+        "en": "Danish Superliga",
+        "he": "הליגה הדנית"
+      },
+      "tm": "DK1",
+      "tmSeason": 2026,
+      "clubs": ["Aarhus", "Brondby", "FC Copenhagen", "Horsens", "Lyngby", "FC Midtjylland", "FC Nordsjaelland", "Odense", "Randers FC", "Silkeborg", "Sonderjyske", "Viborg"]
+    },
+    {
+      "key": "ksa",
+      "api": 307,
+      "country": "Saudi-Arabia",
+      "code": "SA",
+      "tier": 1,
+      "name": {
+        "en": "Saudi Pro League",
+        "he": "הליגה הסעודית"
+      },
+      "tm": "SA1",
+      "tmSeason": 2026,
+      "clubs": ["Al-Ahli Jeddah", "Al Diriyah", "Al-Ettifaq", "Al Faisaly", "Al-Fateh", "Al-Fayha", "Al Hazem", "Al-Hilal Saudi FC", "Al-Ittihad FC", "Al Khaleej Saihat", "Al Kholood", "Al-Nassr", "Al-Qadisiyah FC", "Al Riyadh", "Al Shabab", "Abha", "Al Taawon", "NEOM"]
+    },
+    {
+      "key": "usa",
+      "api": 253,
+      "country": "USA",
+      "code": "US",
+      "tier": 1,
+      "name": {
+        "en": "MLS",
+        "he": "ה-MLS"
+      },
+      "tm": "MLS1",
+      "tmSeason": 2025,
+      "clubs": ["Atlanta United FC", "Austin", "CF Montreal", "Charlotte", "Chicago Fire", "Colorado Rapids", "Columbus Crew", "DC United", "FC Cincinnati", "FC Dallas", "Houston Dynamo", "Inter Miami", "Los Angeles Galaxy", "Los Angeles FC", "Minnesota United FC", "Nashville SC", "New England Revolution", "New York City FC", "New York Red Bulls", "Orlando City SC", "Philadelphia Union", "Portland Timbers", "Real Salt Lake", "San Diego", "San Jose Earthquakes", "Seattle Sounders", "Sporting Kansas City", "St. Louis City", "Toronto FC", "Vancouver Whitecaps"]
+    },
+    {
+      "key": "bra",
+      "api": 71,
+      "country": "Brazil",
+      "code": "BR",
+      "tier": 1,
+      "name": {
+        "en": "Brasileirão",
+        "he": "הליגה הברזילאית"
+      },
+      "tm": "BRA1",
+      "tmSeason": 2025,
+      "clubs": ["Atletico Paranaense", "Atletico-MG", "Bahia", "Chapecoense-sc", "Coritiba", "Cruzeiro", "Gremio", "Internacional", "Mirassol", "RB Bragantino", "Remo", "Santos", "Sao Paulo", "Vitoria", "Botafogo", "Flamengo", "Fluminense", "Vasco DA Gama", "Palmeiras", "Corinthians"]
+    },
+    {
+      "key": "arg",
+      "api": 128,
+      "country": "Argentina",
+      "code": "AR",
+      "tier": 1,
+      "name": {
+        "en": "Argentine Primera",
+        "he": "הליגה הארגנטינאית"
+      },
+      "tm": "AR1N",
+      "tmSeason": 2025,
+      "clubs": ["Aldosivi", "Argentinos JRS", "Atletico Tucuman", "Banfield", "Barracas Central", "Belgrano Cordoba", "Boca Juniors", "Central Cordoba de Santiago", "Defensa Y Justicia", "Deportivo Riestra", "Estudiantes L.P.", "Estudiantes Rio Cuarto", "Gimnasia L.P.", "Gimnasia Mendoza", "Huracan", "Independiente", "Independ. Rivadavia", "Instituto Cordoba", "Lanus", "Newells Old Boys", "Platense", "Racing Club", "River Plate", "Rosario Central", "San Lorenzo", "Sarmiento Junin", "Talleres Cordoba", "Tigre", "Union Santa Fe", "Velez Sarsfield"]
+    }
+  ]
+}

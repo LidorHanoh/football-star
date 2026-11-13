@@ -44,3 +44,7 @@ next-env.d.ts
 
 # supabase CLI local cache (machine-specific)
 supabase/.temp/
+
+# football data cache (raw API responses, re-used by the import scripts)
+/scripts/.cache/
+/scripts/data/world.json

@@ -5,7 +5,6 @@
   },
   "nav": {
     "home": "الرئيسية",
-    "trivia": "أسئلة",
     "playerCareer": "مسيرة لاعب",
     "managerCareer": "مسيرة مدرب",
     "leaderboard": "المتصدرون",
@@ -24,17 +23,15 @@
   },
   "home": {
     "heroTitle": "كن نجم كرة القدم القادم",
-    "heroSubtitle": "اختبر معلوماتك، ابنِ مسيرة من فريق الشباب حتى الاعتزال، أو درّب ناديًا من 20 دوريًا.",
+    "heroSubtitle": "ابنِ مسيرة من فريق الشباب حتى الاعتزال، أو درّب ناديًا من 20 دوريًا — مع أسئلة معلومات على الطريق تدفعك للأمام.",
     "playNow": "العب الآن",
     "modesTitle": "اختر طور اللعب",
-    "triviaTitle": "أسئلة",
-    "triviaDesc": "أسئلة متوسطة إلى صعبة عن الكرة الإسرائيلية ودوري الأبطال والمزيد. اختر المواضيع ونافس على الصدارة.",
     "playerTitle": "مسيرة لاعب",
-    "playerDesc": "ابدأ في فريق الشباب، تطوّر، احصل على عروض من أوروبا — ثم أكمل كمدرب.",
+    "playerDesc": "ثلاثة عروض لفريق الشباب، مفاوضات على الراتب، وكيل أعمالك الخاص ولقطات أهدافك — حتى تصبح نجمًا.",
     "managerTitle": "مسيرة مدرب",
     "managerDesc": "اختر ناديًا من 20 دوريًا، حدد التشكيلة والخطة، أبرم الصفقات وحقق أهداف الإدارة.",
     "dailyTitle": "التحدي اليومي",
-    "dailyDesc": "5 أسئلة نفسها للجميع، محاولة واحدة يوميًا. حافظ على سلسلتك!",
+    "dailyDesc": "نادٍ صغير واحد، نفسه للجميع، ومهمة واحدة: التأهل أو الفوز باللقب. سجّل الدخول للمنافسة في لوحة المتصدرين.",
     "comingSoon": "قريبًا"
   },
   "comingSoon": {
@@ -197,6 +194,228 @@
         ]
       }
     ]
+  },
+  "career": {
+    "title": "Player Career",
+    "newCareer": "New career",
+    "continue": "Continue",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this career? This can't be undone.",
+    "savedOnDevice": "Your careers are saved on this device.",
+    "noCareers": "No careers yet. Create your player and start at a youth team!",
+    "back": "Back",
+    "next": "Next",
+    "create": {
+      "title": "Create your player",
+      "name": "Player name",
+      "namePlaceholder": "e.g. Yossi Cohen",
+      "nationality": "Nationality",
+      "position": "Position",
+      "foot": "Preferred foot",
+      "right": "Right",
+      "left": "Left"
+    },
+    "positions": {
+      "GK": "Goalkeeper",
+      "CB": "Centre-back",
+      "LB": "Left-back",
+      "RB": "Right-back",
+      "DM": "Defensive mid",
+      "CM": "Central mid",
+      "AM": "Attacking mid",
+      "LW": "Left winger",
+      "RW": "Right winger",
+      "ST": "Striker"
+    },
+    "positionsShort": {
+      "GK": "GK",
+      "CB": "CB",
+      "LB": "LB",
+      "RB": "RB",
+      "DM": "DM",
+      "CM": "CM",
+      "AM": "AM",
+      "LW": "LW",
+      "RW": "RW",
+      "ST": "ST"
+    },
+    "league": {
+      "title": "Choose a league",
+      "subtitle": "You'll get 3 offers from youth teams in this league.",
+      "strength": "Level"
+    },
+    "offers": {
+      "title": "Your offers",
+      "subtitle": "Three clubs want you in their youth team. Pick one — or try to squeeze out a better wage.",
+      "tags": {
+        "big": "Big club",
+        "steady": "Steady path",
+        "fast": "Fast track",
+        "renew": "Renewal",
+        "transfer": "Transfer"
+      },
+      "tagHints": {
+        "big": "Fewer minutes, slower path to the first team",
+        "steady": "A balanced path",
+        "fast": "Quick route to first-team football",
+        "renew": "Your club wants to keep you",
+        "transfer": "A new club wants you"
+      },
+      "level": {
+        "youth": "Youth team (U19)",
+        "first": "First team"
+      },
+      "years": "{n}-year contract",
+      "wage": "Wage",
+      "perWeek": "/week",
+      "trust": "Coach trust",
+      "sign": "Sign",
+      "askMore": "Ask for more",
+      "askMoreHint": "50% chance of a raise — 50% chance the club trusts you less.",
+      "spinning": "Negotiating…",
+      "won": "They agreed! New wage: {wage}/week",
+      "lost": "They didn't like that. The coach trusts you less.",
+      "alreadyAsked": "Already negotiated",
+      "afterAgent": "After agent ({pct}%): {wage}/week"
+    },
+    "agent": {
+      "title": "Hire an agent",
+      "subtitle": "Better agents bring more and better offers — but take a bigger cut of your wage.",
+      "quality": "Quality",
+      "commission": "Commission",
+      "hire": "Hire",
+      "none": "No agent for now",
+      "noneHint": "Keep 100% of your wage, but expect few and weaker offers.",
+      "yours": "Your agent"
+    },
+    "dashboard": {
+      "season": "Season {year}",
+      "ageYears": "Age {age}",
+      "world": "World",
+      "leagueRating": "League",
+      "contractUntil": "Contract until {year}",
+      "wage": "{wage}/week",
+      "playFirst": "Play first half of the season",
+      "playSecond": "Play second half of the season",
+      "toSeasonEnd": "Go to end of season",
+      "simulating": "Playing matches…",
+      "table": "League table",
+      "fullTable": "Full table",
+      "stats": "This season",
+      "apps": "Apps",
+      "goals": "Goals",
+      "assists": "Assists",
+      "avg": "Avg rating",
+      "lastMatches": "Last matches",
+      "didNotPlay": "Didn't play",
+      "sub": "sub",
+      "youthNote": "You're in the youth team. Play well and earn your promotion to the first team!",
+      "history": "Career",
+      "retire": "Retire",
+      "contract": "Contract"
+    },
+    "bars": {
+      "trust": "Coach trust",
+      "form": "Form",
+      "training": "Training",
+      "fitness": "Fitness",
+      "morale": "Morale",
+      "fans": "Fans"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "skip": "Skip",
+      "skipAll": "Skip all",
+      "next": "Next",
+      "none": "No big moments this time — keep working!",
+      "vs": "vs",
+      "kinds": {
+        "goal": "GOAL!",
+        "assist": "ASSIST!",
+        "save": "BIG SAVE!",
+        "chance": "So close!"
+      },
+      "lines": {
+        "goal": [
+          "{name} finishes it off!",
+          "What a strike from {name}!",
+          "{name} buries it!",
+          "Cool as you like — {name} scores!"
+        ],
+        "assist": [
+          "{name} with the perfect pass!",
+          "Brilliant vision from {name}!",
+          "{name} sets it up on a plate!"
+        ],
+        "save": [
+          "{name} with a huge save!",
+          "Unbelievable reflexes from {name}!"
+        ],
+        "chance": [
+          "{name} hits the post!",
+          "{name} — inches wide!",
+          "Denied! {name} so close!"
+        ]
+      },
+      "summary": "Half-season summary"
+    },
+    "events": {
+      "ratingUp": "Your world rating went up: {from} → {to}",
+      "promoted": "Promoted! The coach is calling you up to the first team.",
+      "goals": "{goals} goals and {assists} assists in this half.",
+      "assists": "{assists} assists in this half.",
+      "benchWarmer": "You barely played. Work hard to earn the coach's trust.",
+      "halfwayTable": "Halfway: your club is {pos} in the table.",
+      "finalTable": "Final position: {pos} in the table."
+    },
+    "seasonEnd": {
+      "title": "End of season {year}",
+      "review": "Season review",
+      "position": "League position",
+      "toManager": "Talk with the manager",
+      "manager": "The manager",
+      "managerSays": {
+        "happy": "Great season, kid. You've earned your place — keep it up.",
+        "neutral": "A decent season. I need more from you if you want to play every week.",
+        "unhappy": "Honestly, I expected more. You'll have to fight for your place."
+      },
+      "managerChoices": {
+        "moreMinutes": "I want more minutes",
+        "workHarder": "I'll work even harder",
+        "wantToLeave": "I'm thinking about leaving"
+      },
+      "managerReplies": {
+        "moreMinutes": {
+          "happy": "You'll get them. Keep performing.",
+          "neutral": "Show me in training and we'll see.",
+          "unhappy": "Minutes are earned, not asked for."
+        },
+        "workHarder": {
+          "happy": "That's the attitude!",
+          "neutral": "Good. I'll be watching.",
+          "unhappy": "Prove it."
+        },
+        "wantToLeave": {
+          "happy": "I'd hate to lose you, but I understand.",
+          "neutral": "If that's what you want…",
+          "unhappy": "Maybe that's best for everyone."
+        }
+      },
+      "toAgent": "Talk with your agent",
+      "agentTitle": "Your agent",
+      "noAgent": "You don't have an agent — here's what came in on its own.",
+      "hireAgent": "Hire an agent",
+      "renewal": "The club wants to renew your contract.",
+      "noRenewal": "Your contract is over and the club won't renew it. You need a new club.",
+      "released": "The club has let you go. You need a new club.",
+      "underContract": "You're under contract until {year}.",
+      "stay": "Stay at {club}",
+      "offersTitle": "Offers",
+      "noOffers": "No other offers this time.",
+      "chooseClub": "Choose your club for next season",
+      "startNext": "Start season {year}",
+      "retireForced": "At {age} it's time to hang up the boots."
+    }
   },
   "notFound": {
     "title": "الصفحة غير موجودة",

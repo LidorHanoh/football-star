@@ -23,7 +23,7 @@ export function getDir(locale: Locale): "rtl" | "ltr" {
   return locale === "en" ? "ltr" : "rtl";
 }
 
-/** Replace the locale segment of a pathname, e.g. ("/he/trivia", "en") -> "/en/trivia". */
+/** Replace the locale segment of a pathname, e.g. ("/he/profile", "en") -> "/en/profile". */
 export function swapLocale(pathname: string, locale: Locale): string {
   const parts = pathname.split("/");
   if (isLocale(parts[1])) parts[1] = locale;

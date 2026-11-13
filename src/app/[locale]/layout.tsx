@@ -55,9 +55,9 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
             menuLabel={dict.nav.menu}
             labels={{
               home: dict.nav.home,
-              trivia: dict.nav.trivia,
               playerCareer: dict.nav.playerCareer,
               managerCareer: dict.nav.managerCareer,
+              leaderboard: dict.nav.leaderboard,
               profile: dict.nav.profile,
             }}
           />

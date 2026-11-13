@@ -9,7 +9,10 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "db:push": "npx supabase db push --remote",
-    "db:types": "npx supabase gen types typescript --remote > src/lib/supabase/database.types.ts"
+    "db:types": "npx supabase gen types typescript --remote > src/lib/supabase/database.types.ts",
+    "data:sync": "node scripts/daily-sync.mjs",
+    "data:tm": "node scripts/sync-transfermarkt.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -35,6 +38,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }

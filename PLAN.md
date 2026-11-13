@@ -49,25 +49,21 @@ All routes are prefixed with locale: `/he` (default), `/en`, `/ar`. `<html lang 
 
 ```
 /[locale]
-├── /                          Home — hero, 3 mode cards, daily challenge, streak
+├── /                          Home — hero, 2 mode cards (Player / Manager career), daily challenge
 ├── /auth/login, /auth/callback
 ├── /profile                   Avatar, name, language, stats, achievements, favourite club
 ├── /leaderboard               Global / weekly / daily tabs (per mode)
 │
-├── /trivia
-│   ├── /                      Trivia hub: pick game type
-│   ├── /setup                 Pick TOPICS (multi-select) + difficulty (Medium / Hard / Expert)
-│   ├── /play                  A round: 10 questions, timer
-│   ├── /daily                 Daily challenge (same questions for everyone)
-│   ├── /survival              (Phase 2) Play until first wrong answer
-│   └── /results/[sessionId]   Score, explanations, share card, "play again"
+├── /daily                     Daily Challenge: today's club + objective (sign-in to compete), leaderboard
 │
 ├── /player-career
 │   ├── /                      My saves / "New career"
 │   ├── /new                   1. Create player  2. Pick LEAGUE  3. Pick from 2–3 CLUB offers (youth team)
 │   │                          4. Pick TRIVIA TOPICS for career questions
 │   └── /[saveId]
-│       ├── /                  Dashboard: next match, squad status (youth/bench/starter), form, news
+│       ├── /                  Dashboard: status bars (trust, form, training, fitness, morale, fans), "Play half season"
+│       ├── /highlights        2D animated highlights of the half-season (Skip button)
+│       ├── /season-end        Season review → talk with manager → talk with agent (offers / renewal)
 │       ├── /match/[matchId]   Text match + key decision moments
 │       ├── /question          Career trivia question (pop-up between matches / seasons) → training points
 │       ├── /training          Weekly training focus (spend training points here)
@@ -319,6 +315,35 @@ Re-sync each transfer window (summer & winter), run manually. New careers use th
 3. Get **2–3 offers from clubs in that league** — all to their **youth team (U19)**. Offers are mixed: e.g. one big club (fewer minutes, slower path) and one or two smaller clubs (faster path to the first team).
 4. A **hidden potential** (randomly rolled, e.g. 60–95, weighted toward the middle) is assigned. **The player never sees it.**
 
+**Offers & wage negotiation (decided 2026-11-13)**
+- The **3 offers** each show club, team level (youth/first team), expected playing time, **contract length and weekly wage**.
+- On any offer you can **"Ask for more"** → a **roulette spin, 50% / 50%**: win = the wage goes up (~+15–30%); lose = the wage stays and that club's **trust** in you drops (you start lower in the coach's pecking order). You can still sign, or pick another offer.
+
+**Career status bars (always visible on the career screen)**
+| Bar | Meaning | Moves with |
+|---|---|---|
+| Trust (coach) | How much the coach believes in you → minutes, starts | Performances, choices, negotiation result |
+| Form | Your recent match ratings | Last ~5 matches |
+| Training | How well you've been training | Training choices, trivia points |
+| Fitness | Energy / injury risk | Minutes played, rest, injuries |
+| Morale | Happiness | Playing time, results, wage, story choices |
+| Fans | Supporters' love | Goals, big games, loyalty |
+
+**Season flow — quick**
+- A season runs in **two halves**: press **"Play first half of the season"** → matches are simulated → a **highlight reel** of your best moments → mid-season inbox/story events → **"Play second half"** → end of season.
+- **2D highlights:** your goals, assists and big moments are shown on an animated 2D pitch (dots/kits, ball movement, goal celebration, commentary line). Always a **Skip** button on the side. Must look good and run smoothly on phone and PC.
+
+**End of every season**
+1. **Season review** (stats, rating change, trophies, team position).
+2. **Talk with the manager** — about your form and role next season; 2–3 reply choices that affect trust/morale ("I want more minutes" / "I'll work harder" / "I'm thinking of leaving").
+3. **Talk with your agent** — offers received this season, or contract renewal:
+   - The club **offers a renewal** if you had a good season / they need you; **no renewal** if your contract has run out and they don't need you (you then must pick another offer).
+   - Offers depend on your season (rating, form, goals) and **the agent's quality**.
+
+**Agents**
+- You choose and **hire an agent** (can switch later). Each agent shows **commission % of your wage** (e.g. 3%–15%) and a quality level.
+- **Better agents → more and better offers** (bigger clubs, abroad sooner, higher wages) but take a bigger cut. No agent = few, weaker offers.
+
 **Hidden potential design (so players don't quit instantly)**
 - Starting attributes are similar for everyone, so a low-potential roll doesn't feel bad on day one.
 - Potential controls how *fast* you grow and your *ceiling*, revealed only indirectly:
@@ -378,18 +403,21 @@ Story events are written as templates with variables (club, rival, coach, teamma
 - **Match presentation:** text commentary only in MVP; simple 2D pitch with dots later (decided).
 - **Session target:** ~half a season per session.
 
-### 6.3 Trivia
-- **Difficulty:** only **Medium / Hard / Expert** (no easy questions).
-- **Topics selected at the start** (multi-select, remembered for next time). Default selection for new users: Israeli football + Champions League.
+### 6.3 Daily Challenge (decided 2026-11-13 — replaces the standalone Trivia mode)
+- **No standalone Trivia mode.** Trivia exists only inside the careers (§6.4).
+- Every day everyone gets the **same random low-tier club** with an **objective** shown at the start (e.g. "Qualify for Europe", "Avoid relegation", "Win the cup").
+- Played with the career engine (manager-style, quick), one attempt per day.
+- **Sign-in required to compete**; daily **leaderboard** (+ weekly / all-time).
+
+### 6.3b Trivia question bank (used only inside the careers)
+- **Difficulty:** Medium / Hard / Expert, growing with the career. Topics chosen at career start (default Israeli football + Champions League).
 
 | Group | Topics |
 |---|---|
 | 🇮🇱 Israeli football | Ligat Ha'Al · Israel national team · Israeli players abroad · State Cup & Toto Cup · Israeli clubs in Europe · Israeli football history & legends |
 | 🇪🇺 European club football | Champions League · Europa & Conference League · Premier League · La Liga · Serie A · Bundesliga · Ligue 1 |
-| 🌍 International | World Cup · Euros · Copa América · Ballon d'Or & awards |
+| 🌍 International | World Cup · Euros · Copa America · Ballon d'Or & awards |
 | ⚽ General | Legends · Transfers & records · Stadiums & clubs · Managers · Guess the player (career path) |
-
-- **Session target:** a round is 10 questions (~2–3 min); daily challenge + 3–4 rounds ≈ 10–15 min. Hooks: daily streak, XP/levels, weekly leaderboard.
 
 **Question bank — big, so it doesn't repeat**
 | Source | How | Expected size |
@@ -412,7 +440,7 @@ Arabic: same questions and same answers, translated (after launch). Anti-repetit
 The same question bank is used inside both career modes.
 
 **When questions appear**
-- At career start the user picks trivia topics (same topic list as §6.3, default Israeli football + Champions League). They can be changed later in settings.
+- At career start the user picks trivia topics (topic list in §6.3b, default Israeli football + Champions League). They can be changed later in settings.
 - A question pops up **occasionally**: roughly every 3–4 matches/quick-sims, plus 1–2 in the off-season between seasons. Never in the middle of a match. Optional "Skip" button (no reward, no penalty).
 - 20-second timer; difficulty grows with the career (Medium early, Hard/Expert later).
 
@@ -448,7 +476,8 @@ The same question bank is used inside both career modes.
 
 ### Phase 1 — MVP (Hebrew + English)
 **Data**
-- [ ] Verify data API, build resumable `sync-world` script, import 20 leagues
+- [x] Researched 2026/27 league line-ups; squads from Transfermarkt (API-Football free plan stops at 2024)
+- [ ] Import 20 leagues into Supabase
 - [ ] Rating formula + researched ratings for top ~1,000 players; league-rating view
 - [ ] Hebrew names: Ligat Ha'Al + Israelis abroad + ~300 stars; all club/league names
 - [ ] Generated crests/kits; disclaimer
@@ -463,7 +492,11 @@ The same question bank is used inside both career modes.
 - [ ] Admin: question CRUD, bulk import, reports
 
 **Player Career**
-- [ ] Create player → choose league → 2–3 youth-team offers → choose trivia topics
+- [ ] Create player → choose league → 3 offers with wages → "ask for more" 50/50 roulette (lose = trust drop) → choose trivia topics
+- [ ] Status bars: trust, form, training, fitness, morale, fans
+- [ ] Season in two halves; 2D animated highlights of your moments with a Skip button (phone + PC)
+- [ ] End-of-season talk with the manager (choices) + talk with the agent (offers / renewal / no renewal)
+- [ ] Agents: hire/switch, commission %, quality → offer quality
 - [ ] Hidden potential + vague hints
 - [ ] Youth team quick-sim → promotion to first team
 - [ ] First-team matches with decision moments; ratings, goals, assists
@@ -536,7 +569,7 @@ The same question bank is used inside both career modes.
 | Injuries | In MVP: minor / moderate / serious, plus rare career-ending |
 | Manager Career | Casual for MVP; sacked with no offers → **career ends** |
 | Match view | Text commentary for MVP, 2D pitch later |
-| Trivia | Medium–hard only; user picks topics at the start; Israeli focus |
+| Trivia | **Only inside the careers** (no standalone mode, decided 2026-11-13); medium–hard; Israeli focus |
 | Career trivia | Occasional questions inside both careers → small, capped, balanced boosts — helps but doesn't decide |
 | Questions | Big bank from online sources + generation; **fast automated fact-check**; Arabic = same Q&A translated |
 | Guests | Can play without an account (account for leaderboards & cloud saves) |
