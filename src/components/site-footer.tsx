@@ -9,9 +9,17 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
         <p>
           {dict.footer.disclaimer} {dict.footer.nonCommercial}
         </p>
-        <Link href={`/${locale}/about`} className="shrink-0 hover:text-foreground hover:underline">
-          {dict.nav.about}
-        </Link>
+        <nav className="flex shrink-0 gap-4">
+          <Link href={`/${locale}/about`} className="hover:text-foreground hover:underline">
+            {dict.nav.about}
+          </Link>
+          <Link href={`/${locale}/privacy`} className="hover:text-foreground hover:underline">
+            {dict.nav.privacy}
+          </Link>
+          <Link href={`/${locale}/terms`} className="hover:text-foreground hover:underline">
+            {dict.nav.terms}
+          </Link>
+        </nav>
       </div>
     </footer>
   );

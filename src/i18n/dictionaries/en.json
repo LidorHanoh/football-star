@@ -18,7 +18,9 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "System",
-    "menu": "Main menu"
+    "menu": "Main menu",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "home": {
     "heroTitle": "Become the next football star",
@@ -71,6 +73,130 @@
   "about": {
     "title": "About",
     "body": "Football Star is a free football game in Hebrew, English and soon Arabic. It uses real league, club and player names, but ratings are our own and all crests and kits are original designs. If you'd like content removed, contact us and we'll handle it quickly."
+  },
+  "legal": {
+    "lastUpdated": "Last updated",
+    "date": "November 13, 2026",
+    "contact": "Contact"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "Football Star (\"we\", \"us\") is a free, non-commercial football game website. This policy explains what information we collect, why, and how you can control it. We keep it short and collect as little as possible.",
+    "sections": [
+      {
+        "heading": "What we collect",
+        "body": [
+          "Guests: you can play without an account. Your progress is stored only in your own browser (local storage) and never sent to us.",
+          "Account holders: if you sign in, we store your email address, the username you choose, your preferred language and your game progress (XP, level, daily streak, scores and saved games).",
+          "Google sign-in: if you choose \"Continue with Google\", Google shares your name, email address and profile picture with us. We do not get access to your Gmail, contacts, Drive or any other Google data.",
+          "We do not collect your age, phone number, address or any payment information, and there is no chat between users."
+        ]
+      },
+      {
+        "heading": "How we use it",
+        "body": [
+          "To sign you in and keep your account secure.",
+          "To save your progress and show your username and scores on leaderboards (these are visible to other players).",
+          "We do not show ads, sell your data, share it for marketing or send marketing emails. The only emails we send are sign-in links you request."
+        ]
+      },
+      {
+        "heading": "Google user data",
+        "body": [
+          "Information received from Google is used only to create your account, sign you in and show your name and picture in your profile. It is not shared with anyone, not used for advertising and not used to train AI models. Our use complies with the Google API Services User Data Policy, including the Limited Use requirements."
+        ]
+      },
+      {
+        "heading": "Who processes your data",
+        "body": [
+          "Supabase stores our database and handles sign-in. Vercel hosts the website. Both process data only to run the service for us."
+        ]
+      },
+      {
+        "heading": "Cookies and local storage",
+        "body": [
+          "We use only essential cookies: a sign-in session cookie (when you are signed in) and a language preference cookie. Your theme choice and guest progress are kept in your browser's local storage. We use no tracking or advertising cookies."
+        ]
+      },
+      {
+        "heading": "Keeping and deleting your data",
+        "body": [
+          "We keep your account data while your account exists. To delete your account and all data linked to it, email us at {email} from the address you signed up with. We will delete it within 30 days."
+        ]
+      },
+      {
+        "heading": "Children",
+        "body": [
+          "Football Star is suitable for all ages and collects the minimum data needed. Children can play as guests without giving any personal information. If you are under 13 (or the minimum age in your country), please ask a parent before creating an account. Parents can contact us at any time to have their child's account deleted."
+        ]
+      },
+      {
+        "heading": "Security",
+        "body": [
+          "Data is sent over encrypted connections (HTTPS) and protected by database access rules so each user can change only their own data. No system is perfectly secure, but we take reasonable steps to protect your information."
+        ]
+      },
+      {
+        "heading": "Changes and contact",
+        "body": [
+          "If we change this policy, we will update the date at the top of this page. Questions or requests: {email}."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "intro": "These terms apply to your use of the Football Star website. By using the site you agree to them. If you don't agree, please don't use the site.",
+    "sections": [
+      {
+        "heading": "The service",
+        "body": [
+          "Football Star is a free, non-commercial football game. It is provided \"as is\". We may change, pause or stop any part of it at any time, and we don't guarantee it will always be available or error-free."
+        ]
+      },
+      {
+        "heading": "Your account",
+        "body": [
+          "An account is optional. If you create one, you are responsible for activity on it. Usernames must not be offensive, hateful or impersonate another person. We may rename, suspend or delete accounts that break these terms."
+        ]
+      },
+      {
+        "heading": "Fair play",
+        "body": [
+          "Please play fairly. Don't cheat, use bots or scripts, manipulate leaderboards, try to break or overload the site, or access other users' data. We may remove scores or accounts involved in such behaviour."
+        ]
+      },
+      {
+        "heading": "Football content",
+        "body": [
+          "The game uses real names of leagues, clubs and players for entertainment and informational purposes. Football Star is not affiliated with, endorsed by or sponsored by any club, league, federation or player. Player ratings are our own opinion. All crests and kits in the game are original designs. To request removal of content, contact us at {email}."
+        ]
+      },
+      {
+        "heading": "Our content",
+        "body": [
+          "The site's design, code, questions and original graphics belong to Football Star. You may not copy or redistribute them in bulk without permission."
+        ]
+      },
+      {
+        "heading": "Liability",
+        "body": [
+          "To the extent permitted by law, we are not liable for any loss or damage arising from using the site, including loss of game progress."
+        ]
+      },
+      {
+        "heading": "Governing law",
+        "body": [
+          "These terms are governed by the laws of the State of Israel."
+        ]
+      },
+      {
+        "heading": "Changes and contact",
+        "body": [
+          "We may update these terms; the date at the top shows the latest version. Continuing to use the site means you accept the updated terms. Questions: {email}."
+        ]
+      }
+    ]
   },
   "notFound": {
     "title": "Page not found",
