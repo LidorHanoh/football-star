@@ -1,7 +1,7 @@
 import { growAttrs, overall, roleFor } from "./attrs";
 import { afterLeaguePhase, CUP_STAGES, EURO_KO, europeDraw, europeThisSeason, euroPoints, knockoutOpponent, qualification, wonTie } from "./competitions";
 import { BALANCE } from "./balance";
-import { readPotential } from "./career";
+import { hidePotential, readPotential } from "./career";
 import { internationalBreaks, playTournament } from "./international";
 import { clamp, Rng } from "./rng";
 import type { Attrs, CareerSave, Comp, EuroComp, Highlight, InjuryKind, KnockoutStage, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
@@ -260,16 +260,29 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   const ratings = played.map((m) => m.rating!).filter(Boolean);
   const roleBefore = roleFor(save.player.rating, myStrength, save.bars.trust);
   const minutesShare = played.reduce((s, m) => s + (m.minutes ?? 0), 0) / Math.max(matches.length * 90, 1);
-  const pot = readPotential(player.p);
+  let pot = readPotential(player.p);
   const gap = pot - player.rating;
   let growth = BALANCE.growth.perHalfByAge(player.age);
   if (growth > 0) growth *= clamp(gap / 12, 0, 2.2) * (0.7 + (bars.training / 100) * 0.6) * (0.6 + minutesShare * 0.6);
   growth += rng.normal() * 0.6;
+  // Breakthrough: sometimes it all clicks at once. Most often young, but late
+  // bloomers exist too (for them the ceiling moves as well). Once a season at most.
+  const btChance = player.age <= 18 ? 0.08 : player.age <= 21 ? 0.06 : player.age <= 25 ? 0.03 : player.age <= 31 ? 0.015 : 0;
+  let breakthrough = false;
+  if (!season.breakthrough && rng.chance(btChance)) {
+    breakthrough = true;
+    if (gap < 5) {
+      pot = Math.min(96, pot + rng.int(4, 8));
+      player.p = hidePotential(pot);
+    }
+    growth += player.age <= 21 ? rng.int(5, 9) : rng.int(3, 6);
+  }
   const before = player.rating;
   const target = clamp(player.rating + growth, 30, Math.max(pot, player.rating));
   player.attrs = growAttrs(player.attrs, player.position, target - player.rating, rng);
   player.rating = overall(player.attrs, player.position);
-  if (player.rating > before) events.push({ key: "ratingUp", params: { from: before, to: player.rating } });
+  if (breakthrough) events.push({ key: "breakthrough", params: { from: before, to: player.rating } });
+  else if (player.rating > before) events.push({ key: "ratingUp", params: { from: before, to: player.rating } });
   else if (player.rating < before) events.push({ key: "ratingDown", params: { from: before, to: player.rating } });
 
   // Training points: earned by training well, playing — and playing WELL.
@@ -332,7 +345,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
       player,
       bars,
       contract,
-      season: { ...season, intl, ...(half === 2 ? { tournament } : {}), halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0, europe: europe ?? null, ...(half === 2 ? { qualified: qualified ?? null } : {}) },
+      season: { ...season, ...(breakthrough ? { breakthrough: true } : {}), intl, ...(half === 2 ? { tournament } : {}), halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0, europe: europe ?? null, ...(half === 2 ? { qualified: qualified ?? null } : {}) },
       phase: half === 2 ? "season-end" : "season",
       updatedAt: new Date().toISOString(),
     },

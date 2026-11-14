@@ -83,6 +83,7 @@ export function ContractScreen({ save, world, t, locale, onDone }: { save: Caree
               <p className="text-xs text-white/80">
                 {t.offers.level[s.level]} · {t.roles[s.role]}
               </p>
+              {s.loanClubId && <p className="mt-1 inline-block rounded-full bg-cyan-500/90 px-2 py-0.5 text-xs font-bold">🔁 {fill(t.offers.loanTo, { club: teamName(world, s.loanClubId, locale, "first", save.player.age) })}</p>}
             </div>
           </div>
           <dl className="mt-3 grid grid-cols-4 gap-1.5 text-center text-xs">

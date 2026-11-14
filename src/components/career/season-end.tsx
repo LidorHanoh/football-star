@@ -46,7 +46,12 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
 
   // The agent report is generated once per season-end (stored offers survive a reload).
   const offers = save.offers;
-  const contractOver = contract.until <= summary.year;
+  // On loan: when it ends you go back, and the contract that counts is the owning club's.
+  const parent = contract.parent;
+  const loanOver = !!parent && contract.until <= summary.year;
+  const contractOver = loanOver ? parent!.until <= summary.year : contract.until <= summary.year;
+  const stayClub = loanOver ? parent!.clubId : contract.clubId;
+  const stayUntil = loanOver ? parent!.until : contract.until;
   const canStay = !contractOver && !(report?.released ?? false) && !(contract.level === "youth" && save.player.age + 1 >= 19);
   const advice = agentSummary(save, world, canStay);
 
@@ -180,7 +185,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
             <>
               <Bubble who={save.agent ? `${s.agentTitle} · ${save.agent.name}` : s.agentTitle} icon={agentFace}>
                 {!save.agent && <>{s.noAgent} </>}
-                {report?.released ? s.released : contractOver ? (offers.some((o) => o.tag === "renew") ? s.renewal : s.noRenewal) : fill(s.underContract, { year: contract.until + 1 })}
+                {report?.released ? s.released : loanOver && !contractOver ? fill(s.loanOver, { club: teamName(world, parent!.clubId, locale, "first", save.player.age + 1) }) : contractOver ? (offers.some((o) => o.tag === "renew") ? s.renewal : s.noRenewal) : fill(s.underContract, { year: contract.until + 1 })}
               </Bubble>
               {advice && save.agent && (
                 <Bubble who={`${s.agentTitle} · ${save.agent.name}`} icon={agentFace}>
@@ -205,7 +210,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                 locale={locale}
                 age={save.player.age + 1}
                 best={advice?.pick?.id ?? null}
-                stay={canStay ? { title: fill(s.stay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) }), text: fill(s.underContract, { year: contract.until + 1 }), button: fill(s.startNext, { year: nextLabel }), onStay: () => onChange(startNextSeason(save, world, null)) } : undefined}
+                stay={canStay ? { title: fill(loanOver ? s.backFromLoan : s.stay, { club: teamName(world, stayClub, locale, loanOver ? parent!.level : contract.level, save.player.age + 1) }), text: fill(s.underContract, { year: stayUntil + 1 }), button: fill(s.startNext, { year: nextLabel }), onStay: () => onChange(startNextSeason(save, world, null)) } : undefined}
                 onSign={(id) => onChange(startNextSeason(save, world, id))}
                 onAskMore={(id) => {
                   const r = askForMore(save, id);

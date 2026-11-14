@@ -258,7 +258,8 @@
         "fast": "Fast track",
         "renew": "Renewal",
         "transfer": "Transfer",
-        "talent": "Elite talent"
+        "talent": "Elite talent",
+        "loan": "Loan"
       },
       "tagHints": {
         "big": "Fewer minutes, slower path to the first team",
@@ -266,7 +267,8 @@
         "fast": "Quick route to first-team football",
         "renew": "Your club wants to keep you",
         "transfer": "A new club wants you",
-        "talent": "A big club scouted you: big talent, high potential"
+        "talent": "A big club scouted you: big talent, high potential",
+        "loan": "Sign, then spend a season on loan where you'll play"
       },
       "level": {
         "youth": "Youth team (U19)",
@@ -291,7 +293,12 @@
       "tapHint": "Tap an offer for details and to sign",
       "confirmSign": "Tap again to sign ✍️",
       "confirmHint": "Sure? One more tap signs the contract.",
-      "signing": "Signing the contract…"
+      "signing": "Signing the contract…",
+      "loanTo": "On loan to {club}",
+      "loanText": "{n} season there, then back to {club}.",
+      "onLoanFrom": "on loan from {club}",
+      "lastSeason": "{pos} last season",
+      "lastSeasonLong": "Last season: {pos} of {of}"
     },
     "agent": {
       "title": "Hire an agent",
@@ -397,7 +404,8 @@
       "injured": "You got injured ({kind}) — out for {n} matches, and lost a little pace and strength.",
       "recovered": "Back from injury! 💪",
       "qualifiedCl": "We qualified for next season's Champions League! ⭐",
-      "qualifiedEl": "We qualified for next season's Europa League! 🟠"
+      "qualifiedEl": "We qualified for next season's Europa League! 🟠",
+      "breakthrough": "🚀 Breakthrough! Your rating jumped from {from} to {to}."
     },
     "seasonEnd": {
       "title": "End of season {year}",
@@ -422,7 +430,9 @@
       "newAgentSays": "People are talking about you! At {rating} rating, bigger agents want to represent you. Want to switch?",
       "switchAgent": "Sign with this agent",
       "keepAgent": "Stay with {name}",
-      "stayWithoutAgent": "Carry on without an agent"
+      "stayWithoutAgent": "Carry on without an agent",
+      "loanOver": "Your loan is over. You go back to {club} — unless you pick another offer.",
+      "backFromLoan": "Go back to {club}"
     },
     "exit": "Exit",
     "roles": {
@@ -1338,7 +1348,85 @@
       "outGroup": "Out in the group stage.",
       "outStage": "Out in the {stage}.",
       "outFinal": "Lost the final. So close...",
-      "capsChip": "National team: {caps} caps · {goals} goals"
+      "capsChip": "National team: {caps} caps · {goals} goals",
+      "vs": "vs",
+      "heroBadge": "National hero",
+      "headlines": "Headlines",
+      "headlineHero": "{name} puts {nation} into the history books!",
+      "headlineWon": "{name} brings the trophy home: a national hero!",
+      "heroTitle": "{name}, national hero!",
+      "heroText": "The stadium goes crazy, the whole country is singing your name.",
+      "rewards": {
+        "goal": "Goal",
+        "assist": "Assist",
+        "save": "Save"
+      },
+      "outcomes": {
+        "goal": "GOOOAL! ⚽",
+        "assist": "Perfect assist! 🅰",
+        "save": "SAVED! 🧤",
+        "fail": "It didn't come off 😩"
+      },
+      "moments": {
+        "oneOnOne": {
+          "title": "One-on-one with the keeper!",
+          "text": "You're through on goal on your own. What do you do?"
+        },
+        "edgeOfBox": {
+          "title": "Ball at the edge of the box",
+          "text": "You've got one second of space. How do you finish?"
+        },
+        "header": {
+          "title": "Cross into the box!",
+          "text": "The ball is coming your way in the box."
+        },
+        "freeKick": {
+          "title": "Dangerous free kick",
+          "text": "22 metres out, and the whole stadium is on its feet."
+        },
+        "throughBall": {
+          "title": "Counter-attack!",
+          "text": "You've got the ball in the middle, the striker is running in behind."
+        },
+        "lastDitch": {
+          "title": "Danger at our end!",
+          "text": "Their striker is through. You're the last defender."
+        },
+        "penaltySave": {
+          "title": "Penalty against us!",
+          "text": "Their taker steps up. Which way do you dive?"
+        },
+        "reflexSave": {
+          "title": "Close-range shot!",
+          "text": "Their striker is alone in front of you."
+        }
+      },
+      "moves": {
+        "place": "Place it in the corner",
+        "chip": "Chip the keeper",
+        "roundKeeper": "Round the keeper",
+        "curl": "Curl it into the top corner",
+        "power": "Hit it with power",
+        "layOff": "Lay it off to a free teammate",
+        "nearPost": "Near-post header",
+        "bullet": "Bullet header",
+        "knockDown": "Head it down for a teammate",
+        "overWall": "Over the wall",
+        "keeperSide": "Keeper's side",
+        "rolled": "Short, rolled free kick",
+        "killerPass": "Killer through ball",
+        "longShot": "Shoot from distance",
+        "dribble": "Take it on yourself",
+        "slide": "Sliding tackle",
+        "block": "Block the shot",
+        "offside": "Step up for offside",
+        "left": "Dive left",
+        "right": "Dive right",
+        "stay": "Stay in the middle",
+        "spread": "Make yourself big",
+        "rush": "Rush out at him",
+        "stand": "Stand tall and wait"
+      }
     },
     "office": {
       "trust": "manager's trust",
@@ -1506,7 +1594,11 @@
         }
       }
     },
-    "close": "Close"
+    "close": "Close",
+    "breakthrough": {
+      "title": "Breakthrough! 🚀",
+      "text": "Something just clicked. You're playing like a different player — your rating jumped from {from} to {to}."
+    }
   },
   "notFound": {
     "title": "Page not found",

@@ -2,7 +2,7 @@ import { attrWeight, DEFAULT_KIT, makeAttrs, overall, roleFor, upgradePlayerFiel
 import { BALANCE } from "./balance";
 import { hash, personName } from "./people";
 import { clamp, newSeed, Rng } from "./rng";
-import type { Agent, Attrs, CareerSave, Level, Offer, Position, TriviaTopic, World, WorldClub } from "./types";
+import type { Agent, Attrs, CareerSave, Contract, Level, Offer, Position, TriviaTopic, World, WorldClub } from "./types";
 
 // ---------------------------------------------------------------------------
 // Hidden potential: stored obfuscated, never shown.
@@ -111,7 +111,8 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string | 
   const low = byStrength.at(-1)!;
   const lowish = byStrength.at(-2) ?? low;
   const rating = save.player.rating;
-  const talented = readPotential(save.player.p) >= 80;
+  const pot = readPotential(save.player.p);
+  const talented = pot >= 80;
   // Amateur clubs (3rd tier and below) have no academy: you go straight into the first team.
   const amateur = (club: WorldClub) => (world.leagues.find((l) => l.key === club.leagueKey)?.tier ?? 1) >= 3;
   const make = (club: WorldClub | null, tag: Offer["tag"], trust: number): Offer | null => {
@@ -129,7 +130,10 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string | 
     };
   };
   const [topBig, topMid, topSmall] = thirds(top);
+  // Rarely, a top prospect hears from one of the biggest academies in the world.
+  const elite = pot >= 86 && rng.chance(0.35) ? pick([...world.clubs].sort((a, b) => b.reputation - a.reputation).slice(0, 12)) : null;
   const offers = [
+    ...(elite ? [make(elite, "talent", 34)] : []),
     make(pick(topBig), "big", 38),
     talented ? make(pick(topBig, topMid), "talent", 44) : make(pick(topMid, topBig), "steady", 48),
     make(pick(second === top ? topSmall : clubsOf(second), topMid), "steady", 54),
@@ -211,17 +215,55 @@ export function signOffer(save: CareerSave, offerId: string, world: World): Care
 function signOfferRaw(save: CareerSave, offerId: string, world: World): CareerSave {
   const offer = save.offers.find((o) => o.id === offerId);
   if (!offer) return save;
-  const club = world.clubs.find((c) => c.id === offer.clubId)!;
   const year = save.season ? save.season.year + (save.season.halvesPlayed === 2 ? 1 : 0) : SEASON_START_YEAR;
+  const contract = contractFor(offer, year);
+  const club = world.clubs.find((c) => c.id === contract.clubId)!;
   return {
     ...save,
-    contract: { clubId: offer.clubId, level: offer.level, wage: offer.wage, until: year + offer.years - 1 },
+    contract,
     bars: { ...save.bars, trust: offer.trust },
     offers: [],
     phase: save.agent || save.history.length ? "season" : "agent",
     season: newSeason(year, club.leagueKey),
-    signed: { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year },
+    signed: { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year, ...(offer.loan ? { loanClubId: offer.loan.clubId } : {}) },
   };
+}
+
+/** The contract an offer turns into. A loan deal: you play at the loan club, owned by the other. */
+export function contractFor(offer: Offer, year: number): Contract {
+  const own = { clubId: offer.clubId, level: offer.level, wage: offer.wage, until: year + offer.years - 1 };
+  if (!offer.loan) return own;
+  return { clubId: offer.loan.clubId, level: "first", wage: offer.wage, until: year + offer.loan.years - 1, parent: { clubId: offer.clubId, level: "first", until: own.until } };
+}
+
+/**
+ * A club that will play you every week on loan: same country, a division or
+ * two down, a team around your level.
+ */
+export function loanClubFor(world: World, ownerId: string, rating: number, rng: Rng): WorldClub | null {
+  const owner = world.clubs.find((c) => c.id === ownerId);
+  const league = world.leagues.find((l) => l.key === owner?.leagueKey);
+  if (!owner || !league) return null;
+  const tierOf = (key: string) => world.leagues.find((l) => l.key === key)?.tier ?? 1;
+  const pool = world.clubs
+    .filter((c) => c.id !== ownerId && world.leagues.find((l) => l.key === c.leagueKey)?.country === league.country && tierOf(c.leagueKey) >= league.tier && c.teamRating < owner.teamRating - 3)
+    .sort((a, b) => Math.abs(a.teamRating - (rating + 1)) - Math.abs(b.teamRating - (rating + 1)))
+    .slice(0, 5);
+  return pool.length ? rng.pick(pool) : null;
+}
+
+// ---------------------------------------------------------------------------
+// How good a club is (stars) and where it finished last season.
+// ---------------------------------------------------------------------------
+/** 0.5..5 stars from the team's level (Liga Bet ≈ ½, Ligat Ha'Al 2–3, the giants 5). */
+export const clubStars = (club: WorldClub) => Math.round(clamp((club.teamRating - 40) / 9, 0.5, 5) * 2) / 2;
+
+/** Last season's final position: the league's pecking order with a bit of luck (the same every time). */
+export function lastSeasonPlace(world: World, club: WorldClub, seasonYear: number) {
+  const league = world.clubs.filter((c) => c.leagueKey === club.leagueKey);
+  const score = (c: WorldClub) => c.teamRating + new Rng(hash(`${c.id}:${seasonYear - 1}:finish`)).normal() * 2.2;
+  const order = [...league].sort((a, b) => score(b) - score(a));
+  return { pos: order.findIndex((c) => c.id === club.id) + 1, of: league.length };
 }
 
 export function newSeason(year: number, leagueKey: string) {

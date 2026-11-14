@@ -1,14 +1,14 @@
 "use client";
 
-import { DicesIcon, PenLineIcon, StarIcon, XIcon } from "lucide-react";
+import { ArrowRightLeftIcon, DicesIcon, PenLineIcon, StarHalfIcon, StarIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
 import { type Advice, agentAdvice } from "@/lib/engine/advice";
 import { ROLE_START } from "@/lib/engine/attrs";
-import { askForMore, netWage, signOffer } from "@/lib/engine/career";
+import { askForMore, clubStars, lastSeasonPlace, netWage, SEASON_START_YEAR, signOffer } from "@/lib/engine/career";
 import { clubKit } from "@/lib/engine/people";
-import type { Agent, CareerSave, Offer, World } from "@/lib/engine/types";
+import type { Agent, CareerSave, Offer, World, WorldClub } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
@@ -26,7 +26,23 @@ const TAG_COLOR: Record<Offer["tag"], string> = {
   renew: "bg-violet-600 text-white",
   transfer: "bg-rose-600 text-white",
   talent: "bg-fuchsia-600 text-white",
+  loan: "bg-cyan-600 text-white",
 };
+
+/** How good a club is, in half stars. */
+export function ClubStars({ club, className }: { club: WorldClub; className?: string }) {
+  const n = clubStars(club);
+  return (
+    <span className={cn("inline-flex shrink-0 items-center text-amber-400", className)} title={`${n}/5`} aria-label={`${n}/5`}>
+      {[1, 2, 3, 4, 5].map((i) =>
+        n >= i ? <StarIcon key={i} className="size-3 fill-current" aria-hidden /> : n >= i - 0.5 ? <StarHalfIcon key={i} className="size-3 fill-current rtl:-scale-x-100" aria-hidden /> : <StarIcon key={i} className="size-3 text-muted-foreground/40" aria-hidden />,
+      )}
+    </span>
+  );
+}
+
+/** The season a new contract starts in. */
+const startYear = (save: CareerSave) => (save.season ? save.season.year + (save.season.halvesPlayed === 2 ? 1 : 0) : SEASON_START_YEAR);
 const ROLE_COLOR = { star: "bg-amber-500", starter: "bg-emerald-600", rotation: "bg-sky-600", bench: "bg-slate-500" } as const;
 
 export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) {
@@ -108,6 +124,8 @@ export function OfferBoard({
           const league = world.leagues.find((l) => l.key === club.leagueKey);
           const kit = clubKit(club);
           const starred = best === o.id || o.tag === "renew";
+          const loanClub = o.loan ? world.clubs.find((c) => c.id === o.loan!.clubId) : undefined;
+          const place = lastSeasonPlace(world, club, startYear(save));
           return (
             <li key={o.id} className="animate-rise" style={{ animationDelay: `${i * 70}ms` }}>
               <button
@@ -128,11 +146,20 @@ export function OfferBoard({
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     {league && <CountryFlag country={league.country} className="size-3.5 shrink-0 rounded-full" />}
                     <span className="truncate">{league ? (league.name[locale] ?? league.name.en) : ""}</span>
+                    <ClubStars club={club} />
                   </span>
+                  {loanClub ? (
+                    <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-cyan-700 dark:text-cyan-300">
+                      <ArrowRightLeftIcon className="size-3 shrink-0" aria-hidden />
+                      <Crest club={loanClub} className="size-3.5" />
+                      <span className="truncate">{fill(t.offers.loanTo, { club: teamName(world, loanClub.id, locale, "first", age) })}</span>
+                    </span>
+                  ) : null}
                   <span className="mt-1 flex flex-wrap items-center gap-1 text-[11px] font-bold">
                     <span className={cn("rounded-full px-2 py-px", TAG_COLOR[o.tag])}>{t.offers.tags[o.tag]}</span>
                     <span className={cn("rounded-full px-2 py-px text-white", ROLE_COLOR[o.role])}>{t.roles[o.role]}</span>
-                    <span className="rounded-full bg-muted px-2 py-px text-muted-foreground">{t.offers.level[o.level]}</span>
+                    {!loanClub && <span className="rounded-full bg-muted px-2 py-px text-muted-foreground">{t.offers.level[o.level]}</span>}
+                    <span className="rounded-full bg-muted px-2 py-px text-muted-foreground tabular-nums">{fill(t.offers.lastSeason, { pos: place.pos })}</span>
                   </span>
                 </span>
                 <span className="shrink-0 text-end">
@@ -195,10 +222,13 @@ function OfferSheet({ offer, save, world, t, locale, age, agent, onClose, onAskM
   const league = world.leagues.find((l) => l.key === club.leagueKey);
   const kit = clubKit(club);
   const advice = agentAdvice(save, world, offer);
+  const place = lastSeasonPlace(world, club, startYear(save));
+  const loanClub = offer.loan ? world.clubs.find((c) => c.id === offer.loan!.clubId) : undefined;
+  const loanLeague = loanClub ? world.leagues.find((l) => l.key === loanClub.leagueKey) : undefined;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={teamName(world, offer.clubId, locale, offer.level, age)}>
-      <button type="button" aria-label={t.close} className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
+      <button type="button" aria-label={t.close} className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="animate-sheet-up relative max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-card pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl sm:rounded-3xl">
         {/* Header in club colours */}
         <div className="relative overflow-hidden px-4 pt-4 pb-5 text-white" style={{ background: `linear-gradient(135deg, ${kit.primary} 0%, #0b1220 90%)` }}>
@@ -216,7 +246,9 @@ function OfferSheet({ offer, save, world, t, locale, age, agent, onClose, onAskM
               <p className="flex items-center gap-1.5 text-sm text-white/80">
                 {league && <CountryFlag country={league.country} className="size-4 rounded-full" />}
                 <span className="truncate">{league ? (league.name[locale] ?? league.name.en) : ""}</span>
+                <ClubStars club={club} />
               </p>
+              <p className="text-xs text-white/75 tabular-nums">{fill(t.offers.lastSeasonLong, { pos: place.pos, of: place.of })}</p>
               <p className="mt-1 text-xs text-white/75">
                 <span className={cn("me-1.5 rounded-full px-2 py-px font-bold", TAG_COLOR[offer.tag])}>{t.offers.tags[offer.tag]}</span>
                 {t.offers.tagHints[offer.tag]}
@@ -226,6 +258,24 @@ function OfferSheet({ offer, save, world, t, locale, age, agent, onClose, onAskM
         </div>
 
         <div className="grid gap-3 p-4">
+          {loanClub && (
+            <div className="flex items-center gap-3 rounded-xl border border-cyan-500/40 bg-cyan-500/10 p-2.5 text-sm">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-white">
+                <Crest club={loanClub} className="size-9" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-1.5 font-bold">
+                  <ArrowRightLeftIcon className="size-4 shrink-0 text-cyan-600" aria-hidden />
+                  <span className="truncate">{fill(t.offers.loanTo, { club: teamName(world, loanClub.id, locale, "first", age) })}</span>
+                </p>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="truncate">{loanLeague ? (loanLeague.name[locale] ?? loanLeague.name.en) : ""}</span>
+                  <ClubStars club={loanClub} />
+                </p>
+                <p className="mt-0.5 text-xs">{fill(t.offers.loanText, { n: offer.loan!.years, club: teamName(world, offer.clubId, locale, "first", age) })}</p>
+              </div>
+            </div>
+          )}
           <dl className="grid grid-cols-2 gap-2 text-sm">
             <div className="rounded-xl bg-muted/60 p-2.5">
               <dt className="text-xs text-muted-foreground">{t.offers.wage}</dt>
@@ -319,6 +369,7 @@ function SigningScene({ offer, save, world, t, locale, age, onDone }: { offer: O
             </div>
           ))}
         </dl>
+        {offer.loan && <p className="mt-2 rounded bg-cyan-100 px-2 py-1 text-center text-xs font-bold text-cyan-800">{fill(t.offers.loanTo, { club: teamName(world, offer.loan.clubId, locale, "first", age) })}</p>}
         <div aria-hidden className="mt-3 grid gap-1.5">
           {[92, 100, 84, 96, 60].map((w, i) => (
             <span key={i} className="h-1.5 rounded bg-slate-300/80" style={{ width: `${w}%` }} />

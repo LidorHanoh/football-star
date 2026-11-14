@@ -56,9 +56,11 @@ export interface Offer {
   /** "Ask for more" already used on this offer. */
   negotiated?: "won" | "lost";
   /** Short label key for the UI: big club / steady path / fast track. */
-  tag: "big" | "steady" | "fast" | "renew" | "transfer" | "talent";
-  /** Your expected place in that squad when you arrive. */
+  tag: "big" | "steady" | "fast" | "renew" | "transfer" | "talent" | "loan";
+  /** Your expected place in that squad when you arrive (at the loan club, for a loan). */
   role: Role;
+  /** Sign (or stay), then go on loan to this club first, and come back after. */
+  loan?: { clubId: string; years: number };
 }
 
 export interface Agent {
@@ -107,6 +109,8 @@ export interface Contract {
   wage: number;
   /** Last season year covered (a contract signed in 2026 for 3 years ends after season 2028). */
   until: number;
+  /** On loan: the club that owns you (you go back there after `until`). */
+  parent?: { clubId: string; level: Level; until: number };
 }
 
 export interface MatchResult {
@@ -218,6 +222,8 @@ export interface SeasonState {
   intl?: IntlBreak[];
   /** The summer tournament after the season (set with the last half; null = none this summer). */
   tournament?: Tournament | null;
+  /** A breakthrough already happened this season. */
+  breakthrough?: boolean;
   /** Trivia answered this season: "half:index" -> right? */
   trivia?: Record<string, boolean>;
 }
@@ -244,6 +250,8 @@ export interface SeasonSummary {
   europe?: { comp: EuroComp; last: KnockoutStage | "league" } | null;
   /** National team this season (including the summer tournament). */
   intl?: { caps: number; goals: number };
+  /** Played the season on loan from this club. */
+  loanFrom?: string;
   tournament?: { comp: IntlComp; last: IntlStage; won: boolean; picked: boolean } | null;
 }
 
@@ -259,6 +267,8 @@ export interface Signing {
   tag: Offer["tag"];
   fromClubId?: string;
   year: number;
+  /** Signed and sent straight out on loan to this club. */
+  loanClubId?: string;
 }
 
 export type Phase = "offers" | "agent" | "season" | "season-end" | "retired";

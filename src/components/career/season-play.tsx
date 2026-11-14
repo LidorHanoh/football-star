@@ -9,7 +9,7 @@ import { clubKit, clubManager, hash } from "@/lib/engine/people";
 import { Rng } from "@/lib/engine/rng";
 import type { HalfEvent } from "@/lib/engine/season";
 import { resolveSetPiece } from "@/lib/engine/set-piece";
-import type { IntlBreak, Tournament } from "@/lib/engine/international";
+import { chooseTourMoment, type IntlBreak, type Tournament } from "@/lib/engine/international";
 import { chooseSituation, gambleWon, halfSituations, type Situation } from "@/lib/engine/situations";
 import { makeQuestion, triviaSlots, type TriviaQuestion } from "@/lib/engine/trivia";
 import type { CareerSave, EuroComp, InjuryKind, KnockoutStage, MatchResult, Role, Trophy, World, WorldClub, Zone } from "@/lib/engine/types";
@@ -52,6 +52,7 @@ const STAGE_ICON: Record<KnockoutStage, string> = { po: "🎟️", r16: "🎯", 
 export function SeasonPlay({ before, after, events, world, t, locale, onFinish }: { before: CareerSave; after: CareerSave; events: HalfEvent[]; world: World; t: CareerDict; locale: Locale; onFinish: (save: CareerSave) => void }) {
   const [save, setSaveState] = useState(after);
   const saveRef = useRef(after);
+  const toastSeq = useRef(0);
   const setSave = (s: CareerSave) => {
     saveRef.current = s;
     setSaveState(s);
@@ -178,10 +179,11 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
     return q;
   };
   // The summer tournament: shown if your country qualified, or if you've been playing for them.
-  const tour = half === 2 ? after.season!.tournament : null;
+  const tour = half === 2 ? save.season!.tournament : null;
   const intlThisSeason = (after.season!.intl ?? []).some((b) => b.picked);
   const tourMoments: Moment[] = tour && (tour.qualified || intlThisSeason) ? [{ kind: "tournament", tour }, ...(tour.won && tour.picked ? [{ kind: "trophy", trophy: tour.comp, subtitle: `${t.intl.comps[tour.comp]} ${tour.year}` } as Moment] : [])] : [];
   const endQueue: Moment[] = [
+    ...events.filter((e) => e.key === "breakthrough").map((e): Moment => ({ kind: "news", icon: "🚀", good: true, title: t.breakthrough.title, text: fill(t.breakthrough.text, { from: e.params!.from, to: e.params!.to }) })),
     ...events.filter((e) => e.key === "roleDown" || e.key === "roleUp").map((e): Moment => ({ kind: "role", up: e.key === "roleUp", to: e.params!.to as Role })),
     ...events.filter((e) => e.key === "qualifiedCl" || e.key === "qualifiedEl").map((e): Moment => ({ kind: "news", icon: e.key === "qualifiedCl" ? "⭐" : "🟠", good: true, title: t.compNews.qualifiedTitle, text: fill(t.compNews.qualifiedText, { comp: t.comps[e.key === "qualifiedCl" ? "cl" : "el"] }) })),
     ...tourMoments,
@@ -193,7 +195,7 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
 
   function toast(items: Omit<Toast, "id">[]) {
     if (!items.length) return;
-    const withIds = items.map((x, j) => ({ ...x, id: `${Date.now()}-${j}` }));
+    const withIds = items.map((x) => ({ ...x, id: `t${++toastSeq.current}` }));
     setToasts((all) => [...all, ...withIds].slice(-3));
     setTimeout(() => setToasts((all) => all.filter((x) => !withIds.includes(x))), 3600);
   }
@@ -320,7 +322,7 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
       )}
       {current?.kind === "draw" && <DrawTakeover comp={current.comp} clubs={current.clubs.map((id) => world.clubs.find((c) => c.id === id)!).filter(Boolean)} names={current.clubs.map((id) => clubName(world, id, locale))} t={t} onClose={closeMoment} />}
       {current?.kind === "intl" && <IntlTakeover key={`intl${current.brk.at}`} brk={current.brk} country={nation} locale={locale} t={t} onClose={closeMoment} />}
-      {current?.kind === "tournament" && <TournamentTakeover tour={current.tour} country={nation} locale={locale} t={t} onClose={closeMoment} />}
+      {current?.kind === "tournament" && tour && <TournamentTakeover tour={tour} save={save} country={nation} locale={locale} t={t} onMove={(idx, move) => setSave(chooseTourMoment(saveRef.current, idx, move))} onClose={closeMoment} />}
       {current?.kind === "injury" && <NewsTakeover icon="🩹" tone="bad" title={fill(t.injury.title, { kind: t.injury.kinds[current.injury] })} text={fill(t.injury.text, { n: current.n })} t={t} onClose={closeMoment} />}
       {current?.kind === "recovered" && <NewsTakeover icon="💪" tone="good" title={t.injury.backTitle} text={t.injury.backText} t={t} onClose={closeMoment} />}
       {current?.kind === "news" && <NewsTakeover icon={current.icon} tone={current.good ? "good" : "bad"} title={current.title} text={current.text} t={t} onClose={closeMoment} />}

@@ -47,7 +47,81 @@ export interface IntlMatch {
   kind?: IntlKind;
   stage?: IntlStage;
   pens?: "won" | "lost";
+  /** Tournament games: a moment where you can decide the game. */
+  moment?: TourMoment;
+  /** Your moment changed the result (a win, a draw, through to the next round). */
+  hero?: boolean;
 }
+
+export type MomentKind = "oneOnOne" | "edgeOfBox" | "header" | "freeKick" | "throughBall" | "lastDitch" | "penaltySave" | "reflexSave";
+export type MomentReward = "goal" | "assist" | "save";
+export interface TourMoment {
+  kind: MomentKind;
+  minute: number;
+}
+export interface MomentMove {
+  id: string;
+  /** Chance before your rating is counted. */
+  base: number;
+  reward: MomentReward;
+}
+
+/** What you can try in each kind of moment. */
+export const MOMENT_MOVES: Record<MomentKind, MomentMove[]> = {
+  oneOnOne: [
+    { id: "place", base: 0.55, reward: "goal" },
+    { id: "chip", base: 0.4, reward: "goal" },
+    { id: "roundKeeper", base: 0.45, reward: "goal" },
+  ],
+  edgeOfBox: [
+    { id: "curl", base: 0.42, reward: "goal" },
+    { id: "power", base: 0.36, reward: "goal" },
+    { id: "layOff", base: 0.58, reward: "assist" },
+  ],
+  header: [
+    { id: "nearPost", base: 0.48, reward: "goal" },
+    { id: "bullet", base: 0.4, reward: "goal" },
+    { id: "knockDown", base: 0.58, reward: "assist" },
+  ],
+  freeKick: [
+    { id: "overWall", base: 0.36, reward: "goal" },
+    { id: "keeperSide", base: 0.3, reward: "goal" },
+    { id: "rolled", base: 0.55, reward: "assist" },
+  ],
+  throughBall: [
+    { id: "killerPass", base: 0.55, reward: "assist" },
+    { id: "longShot", base: 0.3, reward: "goal" },
+    { id: "dribble", base: 0.4, reward: "goal" },
+  ],
+  lastDitch: [
+    { id: "slide", base: 0.52, reward: "save" },
+    { id: "block", base: 0.58, reward: "save" },
+    { id: "offside", base: 0.45, reward: "save" },
+  ],
+  penaltySave: [
+    { id: "left", base: 0.36, reward: "save" },
+    { id: "right", base: 0.36, reward: "save" },
+    { id: "stay", base: 0.26, reward: "save" },
+  ],
+  reflexSave: [
+    { id: "spread", base: 0.52, reward: "save" },
+    { id: "rush", base: 0.46, reward: "save" },
+    { id: "stand", base: 0.42, reward: "save" },
+  ],
+};
+
+const MOMENTS_BY_POS: Record<Position, MomentKind[]> = {
+  GK: ["penaltySave", "reflexSave"],
+  CB: ["lastDitch", "header"],
+  LB: ["lastDitch", "throughBall"],
+  RB: ["lastDitch", "throughBall"],
+  DM: ["lastDitch", "edgeOfBox"],
+  CM: ["throughBall", "edgeOfBox", "freeKick"],
+  AM: ["throughBall", "edgeOfBox", "freeKick"],
+  LW: ["oneOnOne", "edgeOfBox", "throughBall"],
+  RW: ["oneOnOne", "edgeOfBox", "throughBall"],
+  ST: ["oneOnOne", "header", "edgeOfBox"],
+};
 
 /** One international break: picked or not, and the two games. */
 export interface IntlBreak {
@@ -66,10 +140,15 @@ export interface Tournament {
   year: number;
   qualified: boolean;
   picked: boolean;
+  /** The games actually played (follows from the plan and your moments). */
   matches: IntlMatch[];
   /** Furthest stage reached. */
   last: IntlStage;
   won: boolean;
+  /** Every game the campaign could have (3 group games + 4 knockout rounds), before your moments. */
+  plan?: IntlMatch[];
+  /** Your decisions: plan index -> move tried and whether it came off. */
+  picks?: Record<number, { move: string; success: boolean }>;
 }
 
 /** Which tournament (if any) is played in the summer after this season. */
@@ -174,35 +253,90 @@ export function playTournament(save: CareerSave, topFlight = true): Tournament |
   const qualified = rng.chance(chance);
   const picked = qualified && topFlight && callUpScore(save) + rng.normal() * 1.2 >= 0;
   const starter = callUpScore(save) >= 4;
+  const tour: Tournament = { comp, year: year + 1, qualified, picked, matches: [], last: "group", won: false };
+  if (!qualified) return tour;
+  const p = save.player;
+  // The better you are, the more often a game comes down to you.
+  const momentChance = clamp(0.5 + (p.rating - me) * 0.05, 0.35, 0.95) * (starter ? 1 : 0.6);
+  const play = (opp: string, stage: IntlStage) => {
+    const m = playIntl(rng, picked ? save : { ...save, player: { ...p, rating: 0 } }, opp, false, picked && starter, { stage });
+    if (!picked) Object.assign(m, { minutes: null, goals: 0, assists: 0, rating: null });
+    if (m.minutes && rng.chance(momentChance)) {
+      const kind = rng.pick(MOMENTS_BY_POS[p.position]);
+      // A defensive moment is a goal for them unless you stop it.
+      if (MOMENT_MOVES[kind][0].reward === "save") m.ga += 1;
+      m.moment = { kind, minute: rng.int(Math.min(m.minutes, 60) > 30 ? 55 : 20, 89) };
+    }
+    return m;
+  };
+  const group = opponents(country, rng, 3, 14, comp === "wc");
+  const ko = opponents(country, rng, 8, 30, true).sort((a, b) => nationStrength(a) - nationStrength(b));
+  const plan = [...group.map((o) => play(o, "group")), ...(["r16", "qf", "sf", "final"] as IntlStage[]).map((stage, i) => play(ko[Math.min(ko.length - 1, 3 + i)] ?? ko[0], stage))];
+  return resolveTournament({ ...tour, plan, picks: {} }, save);
+}
+
+/** Your chance of pulling a move off: the move, your rating, and how good the opponent is. */
+export function moveChance(save: CareerSave, move: MomentMove, opp: string) {
+  return clamp(move.base + (save.player.rating - nationStrength(opp)) * 0.012 + (save.player.rating - 70) * 0.006, 0.08, 0.92);
+}
+
+/** The game with your moment applied (or not). */
+function applyMoment(m: IntlMatch, success: boolean, reward: MomentReward): IntlMatch {
+  if (!success) return { ...m };
+  if (reward === "save") return { ...m, ga: Math.max(0, m.ga - 1) };
+  return { ...m, gf: m.gf + 1, goals: m.goals + (reward === "goal" ? 1 : 0), assists: m.assists + (reward === "assist" ? 1 : 0), rating: m.rating === null ? null : Math.min(10, Math.round((m.rating + (reward === "goal" ? 0.8 : 0.5)) * 10) / 10) };
+}
+
+/**
+ * Plays the plan out: your moments (decided, or simulated when you didn't
+ * choose), group points, knockouts with penalties, and who was the hero.
+ */
+export function resolveTournament(tour: Tournament, save: CareerSave): Tournament {
+  if (!tour.plan) return tour;
+  const me = nationStrength(save.player.nationality);
   const matches: IntlMatch[] = [];
   let last: IntlStage = "group";
   let won = false;
-  if (qualified) {
-    const play = (opp: string, stage: IntlStage) => {
-      const m = playIntl(rng, picked ? save : { ...save, player: { ...save.player, rating: 0 } }, opp, false, picked && starter, { stage });
-      if (!picked) Object.assign(m, { minutes: null, goals: 0, assists: 0, rating: null });
-      return m;
-    };
-    const group = opponents(country, rng, 3, 14, comp === "wc");
-    let pts = 0;
-    for (const o of group) {
-      const m = play(o, "group");
-      matches.push(m);
-      pts += m.gf > m.ga ? 3 : m.gf === m.ga ? 1 : 0;
-    }
-    if (pts >= 4 || (pts === 3 && rng.chance(0.5))) {
-      const ko = opponents(country, rng, 8, 30, true).sort((a, b) => nationStrength(a) - nationStrength(b));
-      for (const [i, stage] of (["r16", "qf", "sf", "final"] as IntlStage[]).entries()) {
-        last = stage;
-        const m = play(ko[Math.min(ko.length - 1, 3 + i)] ?? ko[0], stage);
-        if (m.gf === m.ga) m.pens = rng.chance(clamp(0.5 + (me - nationStrength(m.opp)) / 60, 0.25, 0.75)) ? "won" : "lost";
-        matches.push(m);
-        if (m.gf < m.ga || m.pens === "lost") break;
-        if (stage === "final") won = true;
+  let pts = 0;
+  const outcome = (m: IntlMatch) => (m.gf > m.ga ? 3 : m.gf === m.ga ? 1 : 0);
+  for (const [i, base] of tour.plan.entries()) {
+    if (i === 3 && !(pts >= 4 || (pts === 3 && new Rng(hash(`${save.id}:${tour.year}:3pts`)).chance(0.5)))) break;
+    let m = { ...base };
+    if (base.moment) {
+      const moves = MOMENT_MOVES[base.moment.kind];
+      const pick = tour.picks?.[i] ?? { move: moves[0].id, success: new Rng(hash(`${save.id}:${tour.year}:${i}:auto`)).chance(moveChance(save, moves[0], base.opp)) };
+      const move = moves.find((x) => x.id === pick.move) ?? moves[0];
+      const without = applyMoment(base, false, move.reward);
+      m = applyMoment(base, pick.success, move.reward);
+      if (pick.success) {
+        // Only a hero if it changed what the game meant.
+        m.hero = base.stage === "group" ? outcome(m) > outcome(without) : m.gf > m.ga && without.gf <= without.ga;
       }
     }
+    if (m.stage !== "group" && m.gf === m.ga) m.pens = new Rng(hash(`${save.id}:${tour.year}:${i}:pens`)).chance(clamp(0.5 + (me - nationStrength(m.opp)) / 60, 0.25, 0.75)) ? "won" : "lost";
+    matches.push(m);
+    if (m.stage === "group") {
+      pts += outcome(m);
+      continue;
+    }
+    last = m.stage!;
+    if (m.gf < m.ga || m.pens === "lost") break;
+    if (m.stage === "final") won = true;
   }
-  return { comp, year: year + 1, qualified, picked, matches, last, won };
+  return { ...tour, matches, last, won };
+}
+
+/** You chose how to play a tournament moment: the dice decide, the campaign is replayed from it. */
+export function chooseTourMoment(save: CareerSave, index: number, moveId: string): CareerSave {
+  const tour = save.season?.tournament;
+  const base = tour?.plan?.[index];
+  if (!tour || !base?.moment || tour.picks?.[index]) return save;
+  const move = MOMENT_MOVES[base.moment.kind].find((x) => x.id === moveId)!;
+  const success = new Rng(hash(`${save.id}:${tour.year}:${index}:${moveId}`)).chance(moveChance(save, move, base.opp));
+  const next = resolveTournament({ ...tour, picks: { ...tour.picks, [index]: { move: moveId, success } } }, save);
+  const hero = !!next.matches[index]?.hero;
+  const fans = Math.min(100, save.bars.fans + (hero ? 10 : success ? 3 : 0));
+  return { ...save, bars: { ...save.bars, fans }, season: { ...save.season!, tournament: next } };
 }
 
 /** Caps and goals over a list of breaks/tournament. */

@@ -70,7 +70,10 @@ export function CareerHistory({ save, world, t, locale }: { save: CareerSave; wo
                   <div className={cn("flex flex-wrap items-center gap-3 rounded-xl border p-3", won.length ? "border-amber-400/50 bg-amber-400/5" : "bg-muted/30")}>
                     {club && <Crest club={club} className="size-10" />}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-bold">{teamName(world, s.clubId, locale, s.level, ageAt(s.year))}</p>
+                      <p className="truncate font-bold">
+                        {teamName(world, s.clubId, locale, s.level, ageAt(s.year))}
+                        {s.loanFrom && <span className="ms-1.5 rounded-full bg-cyan-600 px-1.5 py-px text-[10px] font-bold text-white">{t.offers.tags.loan}</span>}
+                      </p>
                       <p className="text-xs text-muted-foreground tabular-nums">
                         {seasonLabel(s.year)} · {fill(t.dashboard.ageYears, { age: ageAt(s.year) })}
                         {s.leaguePosition && s.level === "first" ? ` · #${s.leaguePosition}` : ""}

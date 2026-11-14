@@ -69,7 +69,7 @@ export function TrainingList({ save, t, onChange }: { save: CareerSave; t: Caree
 /** Points badge: big and glowing while there are points to spend. */
 export function PointsBadge({ n, t, className }: { n: number; t: CareerDict; className?: string }) {
   return (
-    <span key={n} className={cn("animate-pop inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-black tabular-nums", n ? "animate-glow bg-primary text-primary-foreground" : "bg-muted text-muted-foreground", className)}>
+    <span key={n} className={cn("animate-pop inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-black tabular-nums", n ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground", className)}>
       <DumbbellIcon className="size-4" aria-hidden /> {fill(t.training.points, { n })}
     </span>
   );
@@ -79,7 +79,7 @@ export function PointsBadge({ n, t, className }: { n: number; t: CareerDict; cla
 export function TrainingSheet({ save, t, onChange, onClose }: { save: CareerSave; t: CareerDict; onChange: (s: CareerSave) => void; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={t.training.title}>
-      <button type="button" aria-label={t.close} className="absolute inset-0 bg-black/55 backdrop-blur-[2px]" onClick={onClose} />
+      <button type="button" aria-label={t.close} className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="animate-sheet-up relative max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl sm:rounded-3xl">
         <span aria-hidden className="mx-auto mb-3 block h-1 w-10 rounded-full bg-muted-foreground/30 sm:hidden" />
         <div className="mb-3 flex items-center justify-between gap-2">

@@ -16,15 +16,15 @@ const quote = (s: string) => (s.startsWith("(") ? s : `"${s}"`);
 
 type TopicText = { says: string; reactions: Record<string, string>; replies: Record<string, string> };
 
-/** The manager's office: window onto the stadium, a trophy shelf, the club crest, him behind the desk. */
-function OfficeScene({ coach, kit, club, talking }: { coach: { name: string; face: number }; kit: Kit; club: WorldClub; talking: boolean }) {
+/** The manager's office, empty chair behind the desk: window onto the stadium, a trophy shelf, the club crest. */
+function OfficeScene({ kit, club }: { kit: Kit; club: WorldClub }) {
   return (
-    <div className="relative -mx-3 aspect-[16/11] overflow-hidden border-y bg-[#2b2118] shadow-xl sm:mx-0 sm:aspect-[16/9] sm:rounded-2xl sm:border">
+    <div aria-hidden className="relative -mx-3 aspect-[16/8] overflow-hidden border-y bg-[#2b2118] shadow-xl sm:mx-0 sm:aspect-[16/7] sm:rounded-2xl sm:border">
       {/* wall + floor */}
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#3b2f25_0%,#4a3a2c_62%,#2a1f17_62%,#1c140f_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#3b2f25_0%,#4a3a2c_64%,#2a1f17_64%,#1c140f_100%)]" />
       {/* window onto the stadium at night */}
-      <div className="absolute start-[6%] top-[9%] h-[42%] w-[38%] overflow-hidden rounded-md border-4 border-[#1b140e] bg-[linear-gradient(180deg,#0b1d3a_0%,#1e3a5f_70%,#14532d_70%,#166534_100%)] shadow-inner">
-        <div className="absolute inset-x-[8%] top-[18%] flex justify-between" aria-hidden>
+      <div className="absolute start-[6%] top-[10%] h-[46%] w-[36%] overflow-hidden rounded-md border-4 border-[#1b140e] bg-[linear-gradient(180deg,#0b1d3a_0%,#1e3a5f_70%,#14532d_70%,#166534_100%)] shadow-inner">
+        <div className="absolute inset-x-[8%] top-[18%] flex justify-between">
           {[0, 1, 2].map((i) => (
             <span key={i} className="size-2 rounded-full bg-amber-100 shadow-[0_0_14px_6px_rgba(254,243,199,0.6)] motion-safe:animate-pulse" style={{ animationDelay: `${i * 0.4}s` }} />
           ))}
@@ -33,30 +33,24 @@ function OfficeScene({ coach, kit, club, talking }: { coach: { name: string; fac
         <div className="absolute inset-y-0 start-1/2 w-1 -translate-x-1/2 bg-[#1b140e]" />
       </div>
       {/* club crest on the wall */}
-      <div className="absolute end-[8%] top-[10%] grid size-[22%] place-items-center rounded-full bg-black/25 p-2 ring-4" style={{ ["--tw-ring-color" as string]: kit.primary }}>
+      <div className="absolute start-1/2 top-[12%] grid size-[20%] -translate-x-1/2 place-items-center rounded-full bg-black/25 p-2 ring-4 rtl:translate-x-1/2" style={{ ["--tw-ring-color" as string]: kit.primary }}>
         <Crest club={club} className="size-full" />
       </div>
       {/* trophy shelf */}
-      <div className="absolute end-[6%] top-[42%] w-[30%]">
-        <div className="flex items-end justify-around text-xl sm:text-2xl" aria-hidden>
+      <div className="absolute end-[6%] top-[30%] w-[28%]">
+        <div className="flex items-end justify-around text-xl sm:text-2xl">
           <span>🏆</span>
           <span className="text-base">🥇</span>
           <span>🏆</span>
         </div>
         <div className="h-1.5 rounded bg-[#1b140e]" />
       </div>
-      {/* the manager */}
-      <div className={cn("absolute bottom-[14%] start-1/2 h-[62%] -translate-x-1/2 transition-transform duration-300 rtl:translate-x-1/2", talking && "motion-safe:animate-[float_1.6s_ease-in-out_infinite]")}>
-        <Face seed={coach.face} kind="manager" kit={kit} plain className="aspect-[3/4] h-full" title={coach.name} />
+      {/* his empty chair and the desk */}
+      <div className="absolute start-1/2 bottom-[22%] h-[26%] w-[16%] -translate-x-1/2 rounded-t-xl bg-[#1c1917] shadow-inner rtl:translate-x-1/2" />
+      <div className="absolute inset-x-[12%] bottom-[6%] h-[22%] rounded-t-lg bg-[linear-gradient(180deg,#6b4a2f_0%,#4e3420_100%)] shadow-[0_-6px_20px_rgba(0,0,0,0.4)]">
+        <div className="absolute start-[12%] -top-3 h-3 w-10 rounded-sm bg-slate-200/80" />
+        <div className="absolute end-[14%] -top-5 text-lg">☕</div>
       </div>
-      {/* desk */}
-      <div className="absolute inset-x-[10%] bottom-[8%] h-[22%] rounded-t-lg bg-[linear-gradient(180deg,#6b4a2f_0%,#4e3420_100%)] shadow-[0_-6px_20px_rgba(0,0,0,0.4)]">
-        <div className="absolute start-[12%] -top-3 h-3 w-10 rounded-sm bg-slate-200/80" aria-hidden />
-        <div className="absolute end-[14%] -top-5 text-lg" aria-hidden>
-          ☕
-        </div>
-      </div>
-      <span className="absolute start-3 bottom-2 rounded bg-black/50 px-2 py-0.5 text-xs font-semibold text-white">{coach.name}</span>
     </div>
   );
 }
@@ -105,15 +99,19 @@ export function OfficeTalk({ save, coach, kit, club, t, onReact, onNext }: { sav
     : [];
 
   return (
-    <div className="grid gap-4">
-      <OfficeScene coach={coach} kit={kit} club={club} talking={intro || (!!picked && replyTyping)} />
-
-      {/* What he says */}
-      <div className="animate-rise rounded-2xl rounded-ss-sm border bg-card p-4 shadow-sm">
-        <p className="text-xs font-semibold text-muted-foreground">
-          {t.seasonEnd.manager} · {coach.name}
-        </p>
-        {intro ? <Typing /> : <p className="animate-rise mt-1 text-lg leading-relaxed font-semibold">{text.says}</p>}
+    <div className="grid grid-cols-1 gap-4">
+      <div className="relative">
+        <OfficeScene kit={kit} club={club} />
+        {/* What he says: a message popping up over the office */}
+        <div className="animate-pop relative z-10 mx-1 -mt-10 flex gap-3 rounded-2xl border bg-card p-3.5 shadow-2xl sm:mx-6">
+          <Face seed={coach.face} kind="manager" kit={kit} className="size-12 shrink-0 rounded-full ring-2" title={coach.name} />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-muted-foreground">
+              {t.seasonEnd.manager} · {coach.name}
+            </p>
+            {intro ? <Typing /> : <p className="animate-rise mt-0.5 text-lg leading-snug font-semibold">{text.says}</p>}
+          </div>
+        </div>
       </div>
 
       {/* How you react */}
@@ -142,11 +140,14 @@ export function OfficeTalk({ save, coach, kit, club, t, onReact, onNext }: { sav
           <div className="animate-rise flex justify-end">
             <p className="max-w-md rounded-2xl rounded-se-sm bg-primary px-4 py-3 font-semibold text-primary-foreground">{quote(text.reactions[picked.id])}</p>
           </div>
-          <div className={cn("animate-rise rounded-2xl rounded-ss-sm border-2 p-4", replyTyping ? "bg-card" : picked.good ? "border-emerald-500/60 bg-emerald-500/10" : "border-rose-500/60 bg-rose-500/10")}>
-            <p className="text-xs font-semibold text-muted-foreground">
-              {t.seasonEnd.manager} · {coach.name}
-            </p>
-            {replyTyping ? <Typing /> : <p className="animate-rise mt-1 text-lg leading-relaxed font-semibold">{text.replies[picked.id]}</p>}
+          <div className={cn("animate-rise flex gap-3 rounded-2xl rounded-ss-sm border-2 p-3.5", replyTyping ? "bg-card" : picked.good ? "border-emerald-500/60 bg-emerald-500/10" : "border-rose-500/60 bg-rose-500/10")}>
+            <Face seed={coach.face} kind="manager" kit={kit} className="size-10 shrink-0 rounded-full" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-muted-foreground">
+                {t.seasonEnd.manager} · {coach.name}
+              </p>
+              {replyTyping ? <Typing /> : <p className="animate-rise mt-0.5 text-lg leading-snug font-semibold">{text.replies[picked.id]}</p>}
+            </div>
           </div>
           {!replyTyping && (
             <>

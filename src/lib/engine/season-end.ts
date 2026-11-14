@@ -2,7 +2,7 @@ import { BALANCE } from "./balance";
 import { isLeague, runOf } from "./competitions";
 import { intlTotals } from "./international";
 import { askedToLeave } from "./office";
-import { newSeason, offerRole, readPotential, seniorWage, youthWage } from "./career";
+import { contractFor, loanClubFor, newSeason, offerRole, readPotential, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
 import { seasonTrophies, sumMatchStats } from "./stats";
@@ -44,6 +44,7 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
     cup: cup.last && cup.last !== "league" ? cup.last : null,
     europe: s.europe && euro?.last ? { comp: s.europe.comp, last: euro.last } : null,
     intl: intlTotals(s.intl, tour),
+    ...(save.contract!.parent ? { loanFrom: save.contract!.parent.clubId } : {}),
     tournament: tour?.qualified ? { comp: tour.comp, last: tour.last, won: tour.won, picked: tour.picked } : null,
   };
 }
@@ -57,6 +58,8 @@ export interface AgentReport {
   /** Club let you go (contract ended and they don't need you, or too old for the youth team). */
   released: boolean;
   offers: Offer[];
+  /** Your loan is over: you go back to the club that owns you (unless you sign elsewhere). */
+  loanOver?: boolean;
 }
 
 function clubOf(world: World, id: string) {
@@ -71,14 +74,16 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
   const rating = save.player.rating;
   const nextAge = save.player.age + 1;
   const goodSeason = (summary.avgRating ?? 0) >= 6.8 || summary.goals >= 10;
-  const contractExpired = contract.until <= summary.year;
+  const loanOver = !!contract.parent && contract.until <= summary.year;
+  // Back from loan: the contract that counts is the one with the owning club.
+  const contractExpired = loanOver ? contract.parent!.until <= summary.year : contract.until <= summary.year;
   const tooOldForYouth = contract.level === "youth" && nextAge >= 19;
 
   // Does the club want you?
   const valued = rating >= myClub.teamRating - (contract.level === "youth" ? 10 : 5) && save.bars.trust >= 35;
   let renewal: Offer | null = null;
   let released = false;
-  if (contractExpired || tooOldForYouth) {
+  if ((contractExpired || tooOldForYouth) && !contract.parent) {
     if (valued || (contract.level === "youth" && !tooOldForYouth && save.bars.trust >= 45)) {
       const level = tooOldForYouth || rating >= myClub.teamRating - 8 ? "first" : contract.level;
       renewal = {
@@ -168,12 +173,42 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
     };
   });
 
+  // A big club that would bench you: sign, then a season on loan somewhere you'll play.
+  for (const o of offers) {
+    const club = clubOf(world, o.clubId);
+    if (o.level !== "first" || nextAge > 23 || club.teamRating - rating < 6 || !rng.chance(0.55)) continue;
+    const loanClub = loanClubFor(world, club.id, rating, rng);
+    if (!loanClub) continue;
+    o.tag = "loan";
+    o.loan = { clubId: loanClub.id, years: 1 };
+    o.role = offerRole(rating, loanClub, "first", 60);
+  }
+  // Your own club sends you out on loan when you're young and not playing (or you asked for it).
+  const minutes = save.season!.matches.reduce((t, m) => t + (m.minutes ?? 0), 0) / Math.max(1, save.season!.matches.length * 90);
+  const askedLoan = save.talks.manager?.endsWith(":loanMe");
+  if (!contract.parent && contract.level === "first" && !contractExpired && nextAge <= 24 && (askedLoan || ((minutes < 0.4 || rating < myClub.teamRating - 5) && rng.chance(0.65)))) {
+    const loanClub = loanClubFor(world, myClub.id, rating, rng);
+    if (loanClub) {
+      offers.unshift({
+        id: `l${loanClub.id.slice(0, 6)}${rng.int(100, 999)}`,
+        clubId: myClub.id,
+        level: "first",
+        years: contract.until - summary.year,
+        wage: contract.wage,
+        trust: 60,
+        tag: "loan",
+        role: offerRole(rating, loanClub, "first", 60),
+        loan: { clubId: loanClub.id, years: 1 },
+      });
+    }
+  }
+
   if (talent) {
     const level = nextAge < 19 ? "youth" : "first";
     const trust = 40;
     offers.unshift({ id: `g${talent.id.slice(0, 6)}${rng.int(100, 999)}`, clubId: talent.id, level, years: 4, wage: level === "first" ? seniorWage(talent, rating, rng) : youthWage(talent, rng), trust, tag: "talent", role: offerRole(rating, talent, level, trust) });
   }
-  return { save: { ...save, rng: rng.state, offers: [...(renewal ? [renewal] : []), ...offers] }, report: { contractExpired, renewal, released, offers } };
+  return { save: { ...save, rng: rng.state, offers: [...(renewal ? [renewal] : []), ...offers] }, report: { contractExpired, renewal, released, offers, loanOver } };
 }
 
 // ---------------------------------------------------------------------------
@@ -187,9 +222,14 @@ export function startNextSeason(save: CareerSave, world: World, offerId: string 
   let signed: CareerSave["signed"];
   if (offerId) {
     const offer = save.offers.find((o) => o.id === offerId)!;
-    contract = { clubId: offer.clubId, level: offer.level, wage: offer.wage, until: year + offer.years - 1 };
+    contract = contractFor(offer, year);
     trust = offer.trust;
-    signed = { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year, ...(offer.clubId !== save.contract!.clubId ? { fromClubId: save.contract!.clubId } : {}) };
+    signed = { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year, ...(offer.clubId !== save.contract!.clubId ? { fromClubId: save.contract!.clubId } : {}), ...(offer.loan ? { loanClubId: offer.loan.clubId } : {}) };
+  } else if (contract.parent && contract.until < year) {
+    // Back from loan.
+    if (contract.parent.until < year) return save;
+    contract = { clubId: contract.parent.clubId, level: contract.parent.level, wage: contract.wage, until: contract.parent.until };
+    trust = 50;
   } else if (contract.until < year) {
     return save; // must choose an offer: contract over
   }

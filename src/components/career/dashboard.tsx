@@ -41,6 +41,8 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
   const [tab, setTab] = useState<Tab>("overview");
   const [fullTable, setFullTable] = useState(false);
   const [training, setTraining] = useState(false);
+  // Training during the end-of-season summary changes the finished season (not the one before it).
+  const train = (s: CareerSave) => (stage.kind === "summary" && stage.pending ? setStage({ ...stage, pending: s }) : onChange(s));
   // While the end-of-season summary is open, show the finished season's numbers.
   const view = stage.kind === "summary" && stage.pending ? stage.pending : save;
   const season = view.season!;
@@ -135,14 +137,15 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
               <span className="shrink-0 rounded-full bg-primary/15 px-2 py-px text-[11px] font-bold text-primary">{t.roles[role]}</span>
             </p>
             <p className="mt-0.5 truncate text-[11px] text-muted-foreground tabular-nums sm:text-xs">
-              {fill(d.wage, { wage: money(netWage(contract.wage, view.agent), locale) })} · {fill(d.contractUntil, { year: contract.until + 1 })}
+              {fill(d.wage, { wage: money(netWage(contract.wage, view.agent), locale) })} · {contract.parent ? fill(t.offers.onLoanFrom, { club: clubName(world, contract.parent.clubId, locale) }) : fill(d.contractUntil, { year: contract.until + 1 })}
               {view.agent ? ` · ${t.agent.yours} ${view.agent.name.split(" ")[0]}` : ""}
             </p>
           </div>
         </div>
         {/* Training points: impossible to miss while there are some to spend */}
         {view.player.trainingPoints > 0 ? (
-          <button type="button" onClick={() => setTraining(true)} className="animate-glow mt-3 flex w-full items-center gap-3 rounded-2xl bg-primary px-3 py-2 text-start text-primary-foreground shadow-lg active:scale-[0.98]">
+          <button type="button" onClick={() => setTraining(true)} className="relative mt-3 flex w-full items-center gap-3 rounded-2xl bg-primary px-3 py-2 text-start text-primary-foreground shadow-lg active:scale-[0.98]">
+            <span aria-hidden className="animate-halo pointer-events-none absolute inset-0 rounded-2xl ring-4 ring-primary" />
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/20 text-xl" aria-hidden>
               💪
             </span>
@@ -180,7 +183,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
       )}
       {tab === "stats" && (
         <div className="animate-rise lg:col-span-2">
-          <PlayerStats save={save} t={t} onChange={onChange} />
+          <PlayerStats save={view} t={t} onChange={train} />
         </div>
       )}
       {tab === "career" && (
@@ -350,7 +353,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
         </>
       )}
 
-      {training && <TrainingSheet save={save} t={t} onChange={onChange} onClose={() => setTraining(false)} />}
+      {training && <TrainingSheet save={view} t={t} onChange={train} onClose={() => setTraining(false)} />}
 
       {/* Phone: the action + bottom tabs, pinned */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur md:hidden">
