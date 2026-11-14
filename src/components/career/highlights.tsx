@@ -9,15 +9,17 @@ import { cn } from "@/lib/utils";
 // ---------------------------------------------------------------------------
 // A 2.5D "TV camera" highlight. The play is scripted in pitch metres
 // (105 × 68, the attacking side always goes to the right), then projected:
-// the camera sits on the near touchline, so depth (y) is squashed, heights
-// rise up the screen, and the view follows the ball.
+// the camera sits high on the near touchline like the main TV camera, so
+// depth (y) is squashed, heights rise up the screen, and the wide view
+// follows the ball. The ball is the star; players are small plain figures.
 // ---------------------------------------------------------------------------
 export const W = 105;
 export const H = 68;
 const DURATION = 6400; // ms per highlight at normal speed
-const TILT = 0.56; // depth squash of the pitch
-const S = 1.9; // players / goals / heights are drawn this many times life size so they read on a phone
-const VIEW_W = 40; // metres of pitch the camera shows across
+const TILT = 0.44; // depth squash of the pitch
+const S = 1.5; // people are drawn a little over life size so they still read on a phone
+const VIEW_W = 50; // metres of pitch the camera shows across (wide "main camera" shot)
+const BALL_R = 0.4; // ball radius on screen (exaggerated so the ball is always easy to follow)
 
 type P = { x: number; y: number };
 type Way = { at: number; p: P };
@@ -36,12 +38,11 @@ interface Actor {
   marks?: string;
   skin: string;
   hair: string;
-  hairStyle: number;
 }
 
 type BallSeg =
   | { kind: "carry"; t0: number; t1: number; by: string }
-  | { kind: "kick"; t0: number; t1: number; by: string; to: P; z: number; endZ?: number }
+  | { kind: "kick"; t0: number; t1: number; by: string; to: P; z: number; endZ?: number; bend?: number }
   | { kind: "free"; t0: number; t1: number; from: P; to: P; z: number; fromZ?: number; endZ?: number };
 
 interface Script {
@@ -90,7 +91,7 @@ function buildScript(h: Highlight, isKeeper: boolean): Script {
   const r = new Rng(h.seed);
   const side = r.chance(0.5) ? 1 : -1; // build-up down the far or near side
   const y = (v: number) => H / 2 + side * v;
-  const look = () => ({ skin: r.pick(SKINS), hair: r.pick(HAIRS), hairStyle: r.int(0, 4) });
+  const look = () => ({ skin: r.pick(SKINS), hair: r.pick(HAIRS) });
   const keeperMode = h.kind === "save" || isKeeper;
   const youAttack = !keeperMode;
   const assist = h.kind === "assist";
@@ -158,13 +159,13 @@ function buildScript(h: Highlight, isKeeper: boolean): Script {
   const lofted = assist || r.chance(0.45);
   const ball: BallSeg[] = [
     { kind: "carry", t0: 0, t1: T.pass, by: providerKey },
-    { kind: "kick", t0: T.pass, t1: T.recv, by: providerKey, to: receive, z: lofted ? 4.5 : 0.25, endZ: lofted && assist ? 1.2 : 0 },
+    { kind: "kick", t0: T.pass, t1: T.recv, by: providerKey, to: receive, z: lofted ? 4.5 : 0.25, endZ: lofted && assist ? 1.2 : 0, bend: lofted ? side * -2.5 : 0 },
     ...(assist
       ? // First-time finish from the cross.
-        ([{ kind: "kick", t0: T.recv, t1: T.impact, by: finisherKey, to: shotTarget, z: 0.5, endZ: goalZ }] as BallSeg[])
+        ([{ kind: "kick", t0: T.recv, t1: T.impact, by: finisherKey, to: shotTarget, z: 0.5, endZ: goalZ, bend: r.range(-0.8, 0.8) }] as BallSeg[])
       : ([
           { kind: "carry", t0: T.recv, t1: T.shot, by: finisherKey },
-          { kind: "kick", t0: T.shot, t1: T.impact, by: finisherKey, to: shotTarget, z: 0.6, endZ: outcome === "post" ? 1.2 : goalZ },
+          { kind: "kick", t0: T.shot, t1: T.impact, by: finisherKey, to: shotTarget, z: 0.6, endZ: outcome === "post" ? 1.2 : goalZ, bend: r.range(-2.2, 2.2) },
         ] as BallSeg[])),
   ];
   if (assist) {
@@ -214,7 +215,12 @@ function makeSim(s: Script) {
     const fromZ = seg.kind === "free" ? (seg.fromZ ?? 0) : 0;
     const e = seg.kind === "free" ? easeOut(k) : k;
     const z = lerp(fromZ, seg.endZ ?? 0, k) + seg.z * Math.sin(Math.PI * k) * (seg.kind === "free" ? 1 - k * 0.3 : 1);
-    return { x: lerp(from.x, seg.to.x, e), y: lerp(from.y, seg.to.y, e), z: Math.max(0, z) };
+    // Curl: sideways offset that peaks mid-flight and lands on target.
+    const bend = seg.kind === "kick" ? (seg.bend ?? 0) * Math.sin(Math.PI * k) : 0;
+    const dx = seg.to.x - from.x;
+    const dy = seg.to.y - from.y;
+    const len = Math.hypot(dx, dy) || 1;
+    return { x: lerp(from.x, seg.to.x, e) - (dy / len) * bend, y: lerp(from.y, seg.to.y, e) + (dx / len) * bend, z: Math.max(0, z) };
   }
 
   /** Where the ball is when this player strikes it. */
@@ -303,117 +309,65 @@ function timeWarp(s: Script) {
 // ---------------------------------------------------------------------------
 type Pose = "run" | "kick" | "celebrate" | "dive" | "ready";
 
-const INK = "#16110e";
-
-/** A goofy cartoon footballer: big head, thick outlines, bouncy run. Units: metres × scale, origin at the feet. */
-function Footballer({ x, y, scale, facing, phase, amp, pose, diveK, shirt, shorts, socks, skin, hair, hairStyle, you, keeper }: { x: number; y: number; scale: number; facing: number; phase: number; amp: number; pose: Pose; diveK: number; shirt: string; shorts: string; socks: string; skin: string; hair: string; hairStyle: number; you?: boolean; keeper?: boolean }) {
-  const swing = Math.sin(phase) * 0.7 * amp;
-  const bounce = pose === "run" || pose === "celebrate" ? Math.abs(Math.sin(phase)) * 0.09 * Math.max(amp, pose === "celebrate" ? 0.8 : 0) : 0;
-  const lean = 0.16 * amp;
-  const legs: [number, number][] =
-    pose === "kick"
-      ? [[1.25, 0.1], [-0.3, 0.3]]
-      : pose === "ready"
-        ? [[0.3, 0.55], [-0.3, 0.55]]
-        : [[swing, Math.max(0, -Math.cos(phase)) * 1.2 * amp + 0.1], [-swing, Math.max(0, Math.cos(phase)) * 1.2 * amp + 0.1]];
-  const hip = { x: 0, y: -0.8 };
-  const neck = { x: lean * 0.7 + (pose === "kick" ? -0.12 : 0), y: -1.3 };
-  const head = { x: neck.x + 0.04, y: neck.y - 0.3 };
-  const leg = ([th, bend]: [number, number]) => {
-    const knee = { x: hip.x + Math.sin(th) * 0.4, y: hip.y + Math.cos(th) * 0.4 };
+/**
+ * A footballer as seen from the main TV camera: a small, plain figure (no face,
+ * no outlines). Units: metres × scale, origin at the feet.
+ */
+function Figure({ x, y, scale, facing, phase, amp, pose, diveK, shirt, shorts, socks, skin, hair, you, keeper }: { x: number; y: number; scale: number; facing: number; phase: number; amp: number; pose: Pose; diveK: number; shirt: string; shorts: string; socks: string; skin: string; hair: string; you?: boolean; keeper?: boolean }) {
+  const swing = Math.sin(phase) * 0.55 * amp;
+  const bob = pose === "run" ? Math.abs(Math.sin(phase)) * 0.04 * amp : pose === "celebrate" ? Math.abs(Math.sin(phase * 1.4)) * 0.12 : 0;
+  const lean = 0.12 * amp;
+  const hip = { x: 0, y: -0.92 };
+  const neck = { x: lean, y: -1.5 };
+  const legOf = (th: number, bend: number) => {
+    const knee = { x: hip.x + Math.sin(th) * 0.46, y: hip.y + Math.cos(th) * 0.46 };
     const a2 = th - bend;
-    return { knee, foot: { x: knee.x + Math.sin(a2) * 0.4, y: knee.y + Math.cos(a2) * 0.4 } };
+    return { knee, foot: { x: knee.x + Math.sin(a2) * 0.46, y: knee.y + Math.cos(a2) * 0.46 } };
   };
-  const armSwing = pose === "run" ? -swing : 0;
+  const legs =
+    pose === "kick"
+      ? [legOf(-0.35, 0.25), legOf(1.15, 0.05)]
+      : pose === "ready"
+        ? [legOf(-0.22, 0.4), legOf(0.22, 0.4)]
+        : [legOf(-swing, Math.max(0, Math.cos(phase)) * 0.9 * amp), legOf(swing, Math.max(0, -Math.cos(phase)) * 0.9 * amp)];
   const arm = (dir: number) => {
-    const sh = { x: neck.x, y: neck.y + 0.08 };
-    if (pose === "celebrate") {
-      const wave = Math.sin(phase * 2 + dir) * 0.15;
-      return { sh, el: { x: sh.x + 0.18 * dir, y: sh.y - 0.28 }, hand: { x: sh.x + (0.32 + wave) * dir, y: sh.y - 0.56 } };
-    }
-    if (pose === "dive") return { sh, el: { x: sh.x + 0.3, y: sh.y - 0.06 * dir }, hand: { x: sh.x + 0.62, y: sh.y - 0.12 * dir } };
-    if (pose === "ready") return { sh, el: { x: sh.x + 0.2 * dir + 0.06, y: sh.y + 0.22 }, hand: { x: sh.x + 0.36 * dir + 0.1, y: sh.y + 0.14 } };
-    if (pose === "kick") return { sh, el: { x: sh.x + 0.26 * dir, y: sh.y + 0.08 }, hand: { x: sh.x + 0.5 * dir, y: sh.y } };
-    const el = { x: sh.x + Math.sin(armSwing * dir) * 0.26, y: sh.y + Math.cos(armSwing * dir) * 0.26 };
-    return { sh, el, hand: { x: el.x + Math.sin(armSwing * dir + 1.4) * 0.22, y: el.y + Math.cos(armSwing * dir + 1.4) * 0.22 } };
+    const sh = { x: neck.x, y: neck.y + 0.1 };
+    if (pose === "celebrate") return { sh, hand: { x: sh.x + 0.3 * dir, y: sh.y - 0.55 } };
+    if (pose === "dive") return { sh, hand: { x: sh.x + 0.6, y: sh.y - 0.1 * dir } };
+    if (pose === "ready") return { sh, hand: { x: sh.x + 0.3 * dir, y: sh.y + 0.3 } };
+    const a = (pose === "kick" ? 0.9 : -swing * 1.1) * dir;
+    return { sh, hand: { x: sh.x + Math.sin(a) * 0.55, y: sh.y + Math.cos(a) * 0.55 } };
   };
-  const [back, front] = legs.map(leg);
-  const armB = arm(-1);
-  const armF = arm(1);
-  const rot = pose === "dive" ? -78 * diveK : 0;
-  const lift = pose === "dive" ? -0.4 * Math.sin(Math.PI * Math.min(1, diveK * 1.1)) : -bounce;
-  const shout = pose === "celebrate" || pose === "dive" || pose === "kick";
+  const rot = pose === "dive" ? -80 * diveK : 0;
+  const lift = pose === "dive" ? -0.35 * Math.sin(Math.PI * Math.min(1, diveK * 1.1)) : -bob;
+  const limb = { strokeLinecap: "round" as const, fill: "none" };
+  const glove = keeper ? "#e5e7eb" : skin;
 
   return (
     <g transform={`translate(${x} ${y})`}>
-      <ellipse cx={0} cy={0} rx={0.4 * scale * (pose === "dive" ? 2.2 : 1) * (1 - bounce)} ry={0.12 * scale} fill="rgba(0,0,0,0.3)" />
-      {you && <ellipse cx={0} cy={0} rx={0.8 * scale} ry={0.28 * scale} fill="none" stroke="#fde047" strokeWidth={0.14} />}
-      <g transform={`scale(${facing * scale} ${scale}) translate(0 ${lift}) rotate(${rot} 0 -0.6)`}>
-        <Seg a={armB.sh} b={armB.el} w={0.16} c={shirt} dim />
-        <Seg a={armB.el} b={armB.hand} w={0.13} c={keeper ? "#f8fafc" : skin} dim />
-        <Seg a={hip} b={back.knee} w={0.19} c={skin} dim />
-        <Seg a={back.knee} b={back.foot} w={0.18} c={socks} dim />
-        <Boot at={back.foot} />
-        {/* torso */}
-        <path d={`M${hip.x - 0.2} ${hip.y + 0.04} L${neck.x - 0.21} ${neck.y + 0.02} Q${neck.x} ${neck.y - 0.08} ${neck.x + 0.21} ${neck.y + 0.02} L${hip.x + 0.2} ${hip.y + 0.04} Z`} fill={shirt} stroke={INK} strokeWidth={0.05} strokeLinejoin="round" />
-        <rect x={hip.x - 0.21} y={hip.y - 0.05} width={0.42} height={0.22} rx={0.06} fill={shorts} stroke={INK} strokeWidth={0.05} />
-        <Seg a={hip} b={front.knee} w={0.2} c={skin} />
-        <Seg a={front.knee} b={front.foot} w={0.19} c={socks} />
-        <Boot at={front.foot} />
-        <Seg a={armF.sh} b={armF.el} w={0.17} c={shirt} />
-        <Seg a={armF.el} b={armF.hand} w={0.14} c={keeper ? "#f8fafc" : skin} />
-        {/* Big head */}
-        <g transform={`translate(${head.x} ${head.y})`}>
-          <circle cx={-0.2} cy={0.03} r={0.07} fill={skin} stroke={INK} strokeWidth={0.035} />
-          <ellipse cx={0} cy={0} rx={0.27} ry={0.29} fill={skin} stroke={INK} strokeWidth={0.05} />
-          <Hair style={hairStyle} color={hair} />
-          {/* eye looks where he's going */}
-          <ellipse cx={0.12} cy={-0.03} rx={0.075} ry={0.09} fill="#fff" stroke={INK} strokeWidth={0.025} />
-          <circle cx={0.15} cy={shout ? -0.05 : -0.02} r={0.04} fill={INK} />
-          <path d={`M0.04 -0.15 L0.2 ${shout ? -0.19 : -0.14}`} stroke={INK} strokeWidth={0.035} strokeLinecap="round" />
-          {shout ? <ellipse cx={0.16} cy={0.15} rx={0.06} ry={0.07} fill="#7f1d1d" stroke={INK} strokeWidth={0.025} /> : <path d="M0.08 0.14 Q0.16 0.19 0.23 0.12" fill="none" stroke={INK} strokeWidth={0.03} strokeLinecap="round" />}
-          <path d="M0.25 0 Q0.32 0.05 0.25 0.08" fill={skin} stroke={INK} strokeWidth={0.025} />
+      {/* contact shadow, long and soft like stadium light */}
+      <ellipse cx={0.35 * scale} cy={0} rx={(pose === "dive" ? 0.9 : 0.45) * scale} ry={0.11 * scale} fill="rgba(0,0,0,0.32)" />
+      {you && <ellipse cx={0} cy={0} rx={0.75 * scale} ry={0.22 * scale} fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth={0.1} />}
+      <g transform={`scale(${facing * scale} ${scale}) translate(0 ${lift}) rotate(${rot} 0 -0.8)`}>
+        {/* far side limbs, slightly darker */}
+        <g opacity={0.8}>
+          <path d={`M${hip.x} ${hip.y} L${legs[0].knee.x} ${legs[0].knee.y} L${legs[0].foot.x} ${legs[0].foot.y}`} stroke={socks} strokeWidth={0.15} {...limb} />
+          <path d={`M${arm(-1).sh.x} ${arm(-1).sh.y} L${arm(-1).hand.x} ${arm(-1).hand.y}`} stroke={glove} strokeWidth={0.1} {...limb} />
         </g>
+        {/* shorts + shirt */}
+        <path d={`M${hip.x - 0.17} ${hip.y - 0.06} L${hip.x + 0.17} ${hip.y - 0.06} L${hip.x + 0.19} ${hip.y + 0.16} L${hip.x - 0.19} ${hip.y + 0.16} Z`} fill={shorts} />
+        <path d={`M${hip.x - 0.17} ${hip.y} L${neck.x - 0.2} ${neck.y + 0.06} Q${neck.x} ${neck.y - 0.04} ${neck.x + 0.2} ${neck.y + 0.06} L${hip.x + 0.17} ${hip.y} Z`} fill={shirt} />
+        <path d={`M${hip.x + 0.03} ${hip.y} L${neck.x + 0.06} ${neck.y + 0.02} L${neck.x + 0.2} ${neck.y + 0.06} L${hip.x + 0.17} ${hip.y} Z`} fill="#000" opacity={0.18} />
+        {/* near side limbs */}
+        <path d={`M${hip.x} ${hip.y} L${legs[1].knee.x} ${legs[1].knee.y} L${legs[1].foot.x} ${legs[1].foot.y}`} stroke={socks} strokeWidth={0.16} {...limb} />
+        <path d={`M${arm(1).sh.x} ${arm(1).sh.y} L${arm(1).hand.x} ${arm(1).hand.y}`} stroke={glove} strokeWidth={0.1} {...limb} />
+        {/* head */}
+        <circle cx={neck.x + 0.02} cy={neck.y - 0.16} r={0.13} fill={skin} />
+        <path d={`M${neck.x - 0.11} ${neck.y - 0.17} A0.13 0.13 0 0 1 ${neck.x + 0.15} ${neck.y - 0.18} Q${neck.x + 0.02} ${neck.y - 0.24} ${neck.x - 0.11} ${neck.y - 0.17} Z`} fill={hair} />
       </g>
-      {you && <path d={`M${-0.26 * scale} ${-2.3 * scale} L${0.26 * scale} ${-2.3 * scale} L0 ${-2.02 * scale} Z`} fill="#fde047" stroke="#713f12" strokeWidth={0.05} className="motion-safe:animate-bounce" />}
+      {you && <path d={`M${-0.2 * scale} ${-2.35 * scale} L${0.2 * scale} ${-2.35 * scale} L0 ${-2.12 * scale} Z`} fill="#fff" opacity={0.9} />}
     </g>
   );
-}
-
-/** Outlined limb segment (dark stroke under a coloured one). */
-function Seg({ a, b, w, c, dim }: { a: P; b: P; w: number; c: string; dim?: boolean }) {
-  return (
-    <g opacity={dim ? 0.85 : 1}>
-      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={INK} strokeWidth={w + 0.07} strokeLinecap="round" />
-      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={c} strokeWidth={w} strokeLinecap="round" />
-    </g>
-  );
-}
-
-function Boot({ at }: { at: P }) {
-  return <ellipse cx={at.x + 0.07} cy={at.y + 0.01} rx={0.15} ry={0.07} fill="#111" stroke={INK} strokeWidth={0.03} />;
-}
-
-/** Cartoon haircuts: buzz, quiff, spikes, afro, man-bun. */
-function Hair({ style, color }: { style: number; color: string }) {
-  const s = { fill: color, stroke: INK, strokeWidth: 0.04, strokeLinejoin: "round" as const };
-  switch (style % 5) {
-    case 0:
-      return <path d="M-0.27 -0.02 Q-0.28 -0.3 0 -0.31 Q0.26 -0.31 0.27 -0.1 Q0.1 -0.2 -0.27 -0.02 Z" {...s} />;
-    case 1:
-      return <path d="M-0.27 0 Q-0.32 -0.36 0.02 -0.38 Q0.36 -0.42 0.36 -0.2 Q0.2 -0.24 0.22 -0.14 Q0 -0.2 -0.27 0 Z" {...s} />;
-    case 2:
-      return <path d="M-0.27 -0.02 L-0.3 -0.3 L-0.14 -0.24 L-0.08 -0.44 L0.04 -0.27 L0.14 -0.43 L0.18 -0.25 L0.32 -0.32 L0.26 -0.1 Q0 -0.2 -0.27 -0.02 Z" {...s} />;
-    case 3:
-      return <path d="M-0.3 0.06 Q-0.42 -0.2 -0.28 -0.36 Q-0.1 -0.52 0.12 -0.44 Q0.36 -0.4 0.33 -0.14 Q0.3 -0.06 0.25 -0.1 Q0 -0.22 -0.3 0.06 Z" {...s} />;
-    default:
-      return (
-        <>
-          <circle cx={-0.22} cy={-0.28} r={0.1} {...s} />
-          <path d="M-0.27 -0.02 Q-0.28 -0.31 0 -0.31 Q0.26 -0.31 0.27 -0.1 Q0.05 -0.2 -0.27 -0.02 Z" {...s} />
-        </>
-      );
-  }
 }
 
 /** Stands behind the far touchline: a crowd in both teams' colours. */
@@ -431,13 +385,12 @@ function Crowd({ colors, jump }: { colors: string[]; jump: boolean }) {
       <rect x={-22} y={-14} width={W + 44} height={10.5} fill="#1f2937" />
       {dots.map((d, i) => (
         <g key={i} className={jump ? "animate-[crowd_0.45s_ease-in-out_infinite]" : undefined} style={jump ? { animationDelay: `${d.d}s` } : undefined}>
-          <circle cx={d.x} cy={d.y} r={0.42} fill={d.c} />
-          <circle cx={d.x} cy={d.y - 0.55} r={0.24} fill="#d6a77a" opacity={0.9} />
+          <circle cx={d.x} cy={d.y} r={0.5} fill={d.c} opacity={0.55} />
         </g>
       ))}
       {/* Advertising boards */}
       {Array.from({ length: 14 }, (_, i) => (
-        <rect key={i} x={-20 + i * 11} y={-3.4} width={10.6} height={1.7} rx={0.2} fill={["#0ea5e9", "#f59e0b", "#e11d48", "#10b981", "#6366f1", "#f8fafc", "#111827"][i % 7]} opacity={0.92} />
+        <rect key={i} x={-20 + i * 11} y={-3.2} width={10.8} height={1.4} fill={["#0c4a6e", "#1e293b", "#7c2d12", "#064e3b", "#312e81", "#334155", "#111827"][i % 7]} opacity={0.95} />
       ))}
     </g>
   );
@@ -530,7 +483,7 @@ export function HighlightClip({
   const follow = clamp((t - script.impact) / 0.15, 0, 1);
   const focus = scorerAt ? { x: lerp(ball.x, scorerAt.x, follow), y: lerp(ball.y, scorerAt.y, follow) } : ball;
   const lead = scorerAt ? focus : leadBall;
-  const zoom = slowMo ? 0.8 : hit ? 0.88 : 1;
+  const zoom = slowMo ? 0.86 : hit ? 0.92 : 1;
   const vw = VIEW_W * zoom;
   const vh = vw * 0.56;
   const cx = clamp(mx(lerp(focus.x, lead.x, 0.5)) + (script.mirror ? -4 : 4), vw / 2 - 6, W + 6 - vw / 2);
@@ -579,7 +532,7 @@ export function HighlightClip({
     );
   };
   const frame = (gx: number) => (
-    <g stroke="#f8fafc" strokeWidth={0.22} strokeLinecap="round">
+    <g stroke="#f8fafc" strokeWidth={0.16} strokeLinecap="round">
       <line x1={gx} y1={sy(H / 2 - 3.66)} x2={gx} y2={sy(H / 2 - 3.66) - goalTop} />
       <line x1={gx} y1={sy(H / 2 + 3.66)} x2={gx} y2={sy(H / 2 + 3.66) - goalTop} />
       <line x1={gx} y1={sy(H / 2 - 3.66) - goalTop} x2={gx} y2={sy(H / 2 + 3.66) - goalTop} />
@@ -591,7 +544,15 @@ export function HighlightClip({
   const crowdColors = [us.primary, us.secondary, them.primary];
 
   const ballScreen = { x: mx(ball.x), y: sy(ball.y) };
-  const ballR = 0.24 * S * 0.8;
+  const ballR = BALL_R;
+  const lift = (z: number) => z * 0.95;
+  // Motion trail while the ball travels (not while dribbled).
+  const trail = ball.owner
+    ? []
+    : Array.from({ length: 7 }, (_, i) => {
+        const b = sim.ballState(Math.max(0, t - (i + 1) * 0.0045));
+        return { x: mx(b.x), y: sy(b.y) - ballR - lift(b.z), o: 0.32 * (1 - i / 7) };
+      });
 
   return (
     <div className="relative overflow-hidden rounded-2xl border-4 border-emerald-950/40 bg-emerald-800 shadow-xl">
@@ -616,13 +577,13 @@ export function HighlightClip({
 
         <Crowd colors={crowdColors} jump={celebrating} />
         {/* Grass with mowing stripes */}
-        <rect x={-22} y={-1.6} width={W + 44} height={sy(H) + 14} fill="#2f7d32" />
+        <rect x={-22} y={-1.6} width={W + 44} height={sy(H) + 14} fill="#2d6b2f" />
         {Array.from({ length: 18 }, (_, i) => (
-          <rect key={i} x={i * (W / 18)} y={-1.6} width={W / 18} height={sy(H) + 14} fill={i % 2 ? "#3a8f3c" : "#338535"} />
+          <rect key={i} x={i * (W / 18)} y={-1.6} width={W / 18} height={sy(H) + 14} fill={i % 2 ? "#357a37" : "#2f7032"} />
         ))}
         <rect x={-22} y={-1.6} width={W + 44} height={sy(H) + 14} fill="url(#hl-light)" />
         {/* Lines */}
-        <g fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth={0.13}>
+        <g fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth={0.12}>
           <rect x={0} y={0} width={W} height={sy(H)} />
           <line x1={W / 2} y1={0} x2={W / 2} y2={sy(H)} />
           <ellipse cx={W / 2} cy={sy(H / 2)} rx={9.15} ry={9.15 * TILT} />
@@ -644,13 +605,13 @@ export function HighlightClip({
         {net(targetGoalX, script.mirror ? -1 : 1, netShake)}
 
         {/* Ball shadow */}
-        <ellipse cx={ballScreen.x + ball.z * 0.08} cy={ballScreen.y} rx={ballR * (1 - Math.min(0.5, ball.z * 0.06))} ry={ballR * 0.35} fill="rgba(0,0,0,0.35)" />
+        <ellipse cx={ballScreen.x + ball.z * 0.12} cy={ballScreen.y} rx={ballR * (1 - Math.min(0.55, ball.z * 0.08))} ry={ballR * 0.32} fill="rgba(0,0,0,0.4)" opacity={1 - Math.min(0.6, ball.z * 0.08)} />
 
         {people.map(({ a, p, amp, pose, facing, phase, diveK }) => {
           const kit = a.team === "att" ? attKit : defKit;
-          const depth = 0.86 + 0.28 * (p.y / H);
+          const depth = 0.78 + 0.42 * (p.y / H); // far side smaller, like a real lens
           return (
-            <Footballer
+            <Figure
               key={a.key}
               x={mx(p.x)}
               y={sy(p.y)}
@@ -665,7 +626,6 @@ export function HighlightClip({
               socks={a.keeper ? "#111827" : kit.primary}
               skin={a.you && playerSkin ? playerSkin : a.skin}
               hair={a.hair}
-              hairStyle={a.hairStyle}
               you={a.you}
               keeper={a.keeper}
             />
@@ -673,11 +633,14 @@ export function HighlightClip({
         })}
 
         {/* Ball (rises with height, spins with distance) */}
-        <g transform={`translate(${ballScreen.x} ${ballScreen.y - ballR - ball.z * S * 0.85})`}>
-          {slowMo && <circle r={ballR * 2.2} fill="rgba(255,255,255,0.18)" />}
-          <circle r={ballR} fill="url(#hl-ball)" stroke="#111" strokeWidth={0.04} />
-          <g transform={`rotate(${(ball.x + ball.y) * 40})`}>
-            <path d={`M0 ${-ballR * 0.45} L${ballR * 0.42} ${-ballR * 0.12} L${ballR * 0.26} ${ballR * 0.38} L${-ballR * 0.26} ${ballR * 0.38} L${-ballR * 0.42} ${-ballR * 0.12} Z`} fill="#111" />
+        {trail.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={ballR * (1 - i * 0.08)} fill="#fff" opacity={p.o} />
+        ))}
+        <g transform={`translate(${ballScreen.x} ${ballScreen.y - ballR - lift(ball.z)})`}>
+          <circle r={ballR * 1.9} fill="rgba(255,255,255,0.12)" />
+          <circle r={ballR} fill="url(#hl-ball)" />
+          <g transform={`rotate(${(ball.x + ball.y) * 40})`} opacity={0.75}>
+            <path d={`M0 ${-ballR * 0.4} L${ballR * 0.38} ${-ballR * 0.1} L${ballR * 0.24} ${ballR * 0.34} L${-ballR * 0.24} ${ballR * 0.34} L${-ballR * 0.38} ${-ballR * 0.1} Z`} fill="#334155" />
           </g>
         </g>
 
