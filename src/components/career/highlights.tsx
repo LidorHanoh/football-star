@@ -287,24 +287,6 @@ function makeSim(s: Script) {
 }
 
 // ---------------------------------------------------------------------------
-// Slow motion around the shot: real time → script time.
-// ---------------------------------------------------------------------------
-function timeWarp(s: Script) {
-  const N = 400;
-  const rate = (t: number) => (t > s.shotAt - 0.015 && t < s.impact + 0.03 ? 0.38 : 1);
-  const cum = [0];
-  for (let i = 1; i <= N; i++) cum.push(cum[i - 1] + 1 / rate((i - 0.5) / N));
-  const total = cum[N];
-  return (real: number) => {
-    const target = real * total;
-    let i = 1;
-    while (i < N && cum[i] < target) i++;
-    const k = (target - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
-    return clamp((i - 1 + k) / N, 0, 1);
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Drawing
 // ---------------------------------------------------------------------------
 type Pose = "run" | "kick" | "celebrate" | "dive" | "ready";
@@ -433,7 +415,6 @@ export function HighlightClip({
   const ended = useRef(false);
   const script = useMemo(() => buildScript(h, isKeeper), [h, isKeeper]);
   const sim = useMemo(() => makeSim(script), [script]);
-  const warp = useMemo(() => timeWarp(script), [script]);
   const away = useMemo(() => awayKit(myKit, oppKit), [myKit, oppKit]);
   const endRef = useRef(onEnd);
   useEffect(() => {
@@ -458,8 +439,7 @@ export function HighlightClip({
     return () => cancelAnimationFrame(raf.current);
   }, [h, speed, at]);
 
-  const t = warp(at ?? real);
-  const slowMo = t > script.shotAt - 0.01 && t < script.impact + 0.025 && real < 1;
+  const t = at ?? real;
   const hit = t >= script.impact;
   const ball = sim.ballState(t);
   const shown: [number, number] = hit || h.kind !== "goal" ? h.score : [Math.max(0, h.score[0] - 1), h.score[1]];
@@ -483,7 +463,7 @@ export function HighlightClip({
   const follow = clamp((t - script.impact) / 0.15, 0, 1);
   const focus = scorerAt ? { x: lerp(ball.x, scorerAt.x, follow), y: lerp(ball.y, scorerAt.y, follow) } : ball;
   const lead = scorerAt ? focus : leadBall;
-  const zoom = slowMo ? 0.86 : hit ? 0.92 : 1;
+  const zoom = hit ? 0.92 : 1;
   const vw = VIEW_W * zoom;
   const vh = vw * 0.56;
   const cx = clamp(mx(lerp(focus.x, lead.x, 0.5)) + (script.mirror ? -4 : 4), vw / 2 - 6, W + 6 - vw / 2);
@@ -559,7 +539,6 @@ export function HighlightClip({
       <div className="absolute top-2 left-2 z-10" dir="ltr">
         {scoreLine(shown)}
       </div>
-      {slowMo && <span className="absolute top-2 right-2 z-10 rounded bg-black/60 px-2 py-0.5 text-[0.65rem] font-bold tracking-widest text-white uppercase">Replay</span>}
 
       <svg viewBox={view} className="block aspect-[16/9] w-full" preserveAspectRatio="xMidYMid slice" style={{ direction: "ltr" }} role="img" aria-label={caption}>
         <defs>

@@ -3,7 +3,8 @@
 import { BriefcaseIcon, MessageCircleIcon, TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { agentTierFor, betterAgentAvailable, rollAgents, switchAgent } from "@/lib/engine/career";
+import { agentAdvice } from "@/lib/engine/advice";
+import { agentTierFor, askForMore, betterAgentAvailable, rollAgents, switchAgent } from "@/lib/engine/career";
 import { agentReport, answerManager, type ManagerChoice, managerMood, mustRetire, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
@@ -11,8 +12,8 @@ import { AgentCard } from "./agent-picker";
 import { Celebration } from "./celebration";
 import { TrophyArt } from "./trophy";
 import { Face } from "./face";
-import { fill, teamName } from "./helpers";
-import { OfferCard } from "./offers";
+import { fill, money, teamName } from "./helpers";
+import { OfferCard, Roulette } from "./offers";
 import { StatusBars } from "./status-bars";
 
 type Step = "review" | "manager" | "newAgent" | "agent";
@@ -23,6 +24,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const [step, setStep] = useState<Step>(save.talks.manager ? (newAgentPending ? "newAgent" : "agent") : "review");
   const [reply, setReply] = useState<ManagerChoice | null>((save.talks.manager as ManagerChoice) ?? null);
   const [report, setReport] = useState<AgentReport | null>(null);
+  const [spin, setSpin] = useState<{ won: boolean; wage: number } | null>(null);
   const summary = seasonSummary(save);
   const trophies = summary.trophies ?? [];
   const [celebrating, setCelebrating] = useState(step === "review" && trophies.length > 0);
@@ -151,7 +153,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
           </Bubble>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {save.agentsOnOffer
-              .filter((a) => a.quality > (save.agent?.quality ?? 0) && a.quality <= agentTierFor(save.player.rating))
+              .filter((a) => a.quality > (save.agent?.quality ?? 0) && a.quality <= agentTierFor(save.player.rating, save.bars.fans))
               .sort((a, b) => b.quality - a.quality)
               .slice(0, 2)
               .map((a, i) => (
@@ -200,11 +202,27 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                 )}
                 {offers.map((o) => (
                   <li key={o.id}>
-                    <OfferCard offer={o} world={world} t={t} locale={locale} agent={save.agent} highlight={o.tag === "renew"} age={save.player.age + 1} onSign={() => onChange(startNextSeason(save, world, o.id))} />
+                    <OfferCard
+                      offer={o}
+                      world={world}
+                      t={t}
+                      locale={locale}
+                      agent={save.agent}
+                      highlight={o.tag === "renew"}
+                      age={save.player.age + 1}
+                      advice={agentAdvice(save, world, o)}
+                      onSign={() => onChange(startNextSeason(save, world, o.id))}
+                      onAskMore={() => {
+                        const r = askForMore(save, o.id);
+                        setSpin({ won: r.won, wage: r.offer.wage });
+                        onChange(r.save);
+                      }}
+                    />
                   </li>
                 ))}
               </ul>
               {offers.length === 0 && <p className="text-muted-foreground">{s.noOffers}</p>}
+              {spin && <Roulette won={spin.won} t={t} message={spin.won ? fill(t.offers.won, { wage: money(spin.wage, locale) }) : t.offers.lost} onClose={() => setSpin(null)} />}
             </>
           )}
         </div>

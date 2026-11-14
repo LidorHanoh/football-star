@@ -75,6 +75,8 @@ export interface Bars {
   fitness: number;
   morale: number;
   fans: number;
+  /** How well you click with your teammates (more assists, more starts). */
+  chemistry: number;
 }
 
 export interface CareerPlayer {
@@ -92,7 +94,11 @@ export interface CareerPlayer {
   kit: number;
   /** Seed for the generated portrait (each career looks different). */
   face: number;
+  /** Out injured for this many more matches. */
+  injury?: { matches: number; kind: InjuryKind };
 }
+
+export type InjuryKind = "knock" | "hamstring" | "ankle" | "knee";
 
 export interface Contract {
   clubId: string;
@@ -119,6 +125,10 @@ export interface MatchResult {
   setPiece?: SetPiece;
   /** Your own numbers in the match (saves from before v5 have none). */
   stats?: MatchStats;
+  /** You got injured in this match. */
+  injured?: InjuryKind;
+  /** You missed this match through injury. */
+  out?: boolean;
 }
 
 /** What you did in a match. Driven by your attributes. */
@@ -183,6 +193,10 @@ export interface SeasonState {
   matches: MatchResult[];
   table: TableRow[];
   highlights: Highlight[];
+  /** In-season situations answered: "half:id" -> option id. */
+  choices?: Record<string, string>;
+  /** Extra injury risk this half (from choices like extra gym work). */
+  risk?: number;
 }
 
 export interface SeasonSummary {

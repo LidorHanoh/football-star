@@ -79,15 +79,18 @@ describe("career features", () => {
     expect(Math.abs(m.player.rating - s.player.rating)).toBeLessThanOrEqual(1);
   });
 
-  it("young players only get 1-star agents; better ones unlock with rating", () => {
+  it("young players only get 1-star agents; better ones need rating and fame", () => {
     const s = start(5);
     expect(agentTierFor(s.player.rating)).toBe(1);
     const top = s.agentsOnOffer.find((a) => a.quality === 5)!;
     expect(hireAgent(s, top.id).agent).toBeNull();
     const one = s.agentsOnOffer.find((a) => a.quality === 1)!;
     expect(hireAgent(s, one.id).agent?.id).toBe(one.id);
-    const better = { ...hireAgent(s, one.id), player: { ...s.player, rating: 68 } };
-    expect(agentTierFor(68)).toBe(4);
+    // A good rating alone isn't enough any more: big agents want fame too.
+    expect(agentTierFor(74, 20)).toBe(1);
+    expect(agentTierFor(74, 66)).toBe(4);
+    const hired = hireAgent(s, one.id);
+    const better = { ...hired, player: { ...s.player, rating: 74 }, bars: { ...hired.bars, fans: 66 } };
     expect(betterAgentAvailable(better)).toBe(true);
     const four = better.agentsOnOffer.find((a) => a.quality === 4)!;
     const switched = switchAgent(better, four.id);

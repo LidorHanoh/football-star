@@ -166,9 +166,10 @@ export function startNextSeason(save: CareerSave, world: World, offerId: string 
   return {
     ...save,
     phase: "season",
-    player: { ...save.player, age: save.player.age + 1 },
+    // The summer heals you; a new dressing room means building chemistry again.
+    player: { ...save.player, age: save.player.age + 1, injury: undefined },
     contract,
-    bars: { ...save.bars, trust, fitness: 95, form: Math.round((save.bars.form + 50) / 2) },
+    bars: { ...save.bars, trust, fitness: 95, form: Math.round((save.bars.form + 50) / 2), chemistry: contract.clubId === save.contract!.clubId ? Math.min(100, (save.bars.chemistry ?? 50) + 5) : 35 },
     offers: [],
     history: [...save.history, summary],
     season: newSeason(year, club.leagueKey),

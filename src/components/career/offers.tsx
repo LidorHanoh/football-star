@@ -1,6 +1,7 @@
 "use client";
 
-import { DicesIcon, PenLineIcon } from "lucide-react";
+import { DicesIcon, PenLineIcon, StarIcon } from "lucide-react";
+import type { Advice } from "@/lib/engine/advice";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
 import { type CareerDict, fill, money, teamName } from "./helpers";
+import { Face } from "./face";
 import { CountryFlag } from "./region-picker";
 
 export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) {
@@ -55,6 +57,7 @@ export function OfferCard({
   onAskMore,
   highlight,
   age = 17,
+  advice,
 }: {
   offer: Offer;
   world: World;
@@ -66,6 +69,8 @@ export function OfferCard({
   highlight?: boolean;
   /** Player age when the contract starts (names the youth side: U17 / U19…) */
   age?: number;
+  /** What your agent thinks of it. */
+  advice?: Advice | null;
 }) {
   const club = world.clubs.find((c) => c.id === offer.clubId)!;
   const league = world.leagues.find((l) => l.key === club.leagueKey);
@@ -118,12 +123,13 @@ export function OfferCard({
           <p className="col-span-2 text-xs text-muted-foreground">{fill(t.offers.afterAgent, { pct: agent.commission, wage: money(netWage(offer.wage, agent), locale) })}</p>
         )}
       </dl>
+      {advice && agent && <AgentTip advice={advice} agent={agent} t={t} />}
       <div className="mt-auto grid gap-2">
         <Button size="lg" className="h-11" onClick={onSign}>
           <PenLineIcon aria-hidden /> {t.offers.sign}
         </Button>
         {onAskMore && (
-          <Button size="lg" variant="outline" className="h-11" disabled={!!offer.negotiated} onClick={onAskMore} title={t.offers.askMoreHint}>
+          <Button size="lg" variant={advice?.verdict === "askMore" ? "secondary" : "outline"} className={cn("h-11", advice?.verdict === "askMore" && !offer.negotiated && "ring-2 ring-amber-400")} disabled={!!offer.negotiated} onClick={onAskMore} title={t.offers.askMoreHint}>
             <DicesIcon aria-hidden /> {offer.negotiated ? t.offers.alreadyAsked : t.offers.askMore}
           </Button>
         )}
@@ -133,8 +139,35 @@ export function OfferCard({
   );
 }
 
-/** 50/50 wheel. The result is already decided; the wheel just lands on it. */
-function Roulette({ won, t, message, onClose }: { won: boolean; t: CareerDict; message: string; onClose: () => void }) {
+/** Your agent's take on the offer: verdict, reasons, and their favourite. */
+function AgentTip({ advice, agent, t }: { advice: Advice; agent: Agent; t: CareerDict }) {
+  const a = t.advice;
+  const tone = { sign: "border-emerald-500/50 bg-emerald-500/10", askMore: "border-amber-400/60 bg-amber-400/10", maybe: "border-sky-500/40 bg-sky-500/10", avoid: "border-rose-500/50 bg-rose-500/10" }[advice.verdict];
+  return (
+    <div className={cn("relative rounded-xl border p-3 text-sm", tone)}>
+      {advice.best && (
+        <span className="absolute -top-2.5 end-3 flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[0.7rem] font-bold text-black shadow">
+          <StarIcon className="size-3 fill-current" aria-hidden /> {a.best}
+        </span>
+      )}
+      <div className="flex items-center gap-2">
+        <Face seed={agent.face} kind="agent" className="size-8 rounded-full" />
+        <div className="min-w-0">
+          <p className="truncate text-xs text-muted-foreground">{agent.name}</p>
+          <p className="font-bold">{a.verdicts[advice.verdict]}</p>
+        </div>
+      </div>
+      <ul className="mt-2 grid gap-0.5 text-xs">
+        {advice.reasons.map((r) => (
+          <li key={r}>• {a.reasons[r]}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Wheel for "ask for more". The result is already decided; the wheel just lands on it. */
+export function Roulette({ won, t, message, onClose }: { won: boolean; t: CareerDict; message: string; onClose: () => void }) {
   const [done, setDone] = useState(false);
   // Gradient starts at the top: green 0–180° (right half), red 180–360° (left half).
   // Rotating the wheel by −θ puts the slice at θ under the top pointer.

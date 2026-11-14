@@ -4,7 +4,7 @@ export const BALANCE = {
     age: 16,
     rating: [44, 50] as const, // world rating range for a new player
     potential: { min: 60, max: 95, mean: 76, sd: 8 }, // hidden
-    bars: { trust: 50, form: 50, training: 50, fitness: 90, morale: 70, fans: 20 },
+    bars: { trust: 50, form: 50, training: 50, fitness: 90, morale: 70, fans: 20, chemistry: 50 },
   },
 
   offers: {
@@ -31,7 +31,9 @@ export const BALANCE = {
     extraOffers: { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 2 } as Record<number, number>,
     reputationReach: { 0: -10, 1: 0, 2: 4, 3: 8, 4: 12, 5: 16 } as Record<number, number>, // how far above your level offers can come from
     /** World rating a player needs before an agent of that quality wants to represent him. */
-    unlockRating: { 1: 0, 2: 55, 3: 61, 4: 67, 5: 73 } as Record<number, number>,
+    unlockRating: { 1: 0, 2: 60, 3: 67, 4: 73, 5: 79 } as Record<number, number>,
+    /** ...and enough fame (fans bar): good agents only chase players people talk about. */
+    unlockFans: { 1: 0, 2: 35, 3: 50, 4: 65, 5: 80 } as Record<number, number>,
     wageBoost: { 0: 0.9, 1: 1, 2: 1.05, 3: 1.1, 4: 1.15, 5: 1.2 } as Record<number, number>,
   },
 
@@ -52,6 +54,19 @@ export const BALANCE = {
     /** Youth player moves up when rating ≥ first-team XI average − this many points. */
     gapToFirstTeam: 6,
     minTrust: 55,
+  },
+
+  injuries: {
+    /** Chance per match played; grows when fitness is low and with risky choices. */
+    base: 0.012,
+    lowFitness: 0.0007, // per point of fitness below 100
+    /** kind -> [min, max] matches out, attribute damage (pace/physical points) */
+    kinds: {
+      knock: { out: [1, 2], damage: 0.3, weight: 5 },
+      ankle: { out: [2, 5], damage: 0.8, weight: 3 },
+      hamstring: { out: [3, 6], damage: 1.2, weight: 3 },
+      knee: { out: [8, 16], damage: 2.5, weight: 1 },
+    } as Record<string, { out: [number, number]; damage: number; weight: number }>,
   },
 
   retirementAge: 43,

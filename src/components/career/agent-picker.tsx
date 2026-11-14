@@ -2,7 +2,7 @@
 
 import { LockIcon, UserXIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { agentTierFor, agentUnlockRating, hireAgent, rollAgents } from "@/lib/engine/career";
+import { agentTierFor, agentUnlockFans, agentUnlockRating, hireAgent, rollAgents } from "@/lib/engine/career";
 import type { Agent } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
@@ -11,7 +11,7 @@ import { type CareerDict, fill } from "./helpers";
 
 export function AgentPicker({ save, t, onChange }: ScreenProps) {
   const agents = save.agentsOnOffer.length ? save.agentsOnOffer : rollAgents(save).agentsOnOffer;
-  const tier = agentTierFor(save.player.rating);
+  const tier = agentTierFor(save.player.rating, save.bars.fans);
   return (
     <section className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="font-heading text-3xl font-extrabold">{t.agent.title}</h1>
@@ -66,7 +66,7 @@ export function AgentCard({ agent: a, t, locked, onHire, hireLabel }: { agent: A
       <p className="text-xs text-muted-foreground">{t.agent.pitch[a.quality - 1]}</p>
       {locked ? (
         <p className="mt-auto flex items-center gap-2 rounded-xl bg-muted px-3 py-2.5 text-sm font-semibold">
-          <LockIcon className="size-4 shrink-0" aria-hidden /> {fill(t.agent.locked, { n: agentUnlockRating(a.quality) })}
+          <LockIcon className="size-4 shrink-0" aria-hidden /> {fill(t.agent.locked, { n: agentUnlockRating(a.quality), fans: agentUnlockFans(a.quality) })}
         </p>
       ) : (
         <Button size="lg" className="mt-auto h-11" onClick={onHire}>

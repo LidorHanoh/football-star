@@ -7,6 +7,7 @@ import { roleFor } from "@/lib/engine/attrs";
 import { netWage, teamStrength } from "@/lib/engine/career";
 import { clubKit } from "@/lib/engine/people";
 import { playHalf, type HalfEvent, sortTable } from "@/lib/engine/season";
+import { situationsPending } from "@/lib/engine/situations";
 import type { CareerSave } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
@@ -17,6 +18,7 @@ import { clubName, fill, leagueRating, money, teamName } from "./helpers";
 import { CountryFlag } from "./region-picker";
 import { PlayerStats } from "./player-stats";
 import { SeasonPlay } from "./season-play";
+import { Situations } from "./situations";
 import { Squad } from "./squad";
 import { StatusBars } from "./status-bars";
 
@@ -173,7 +175,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
             <h3 className="mb-2 font-bold">{t.highlights.summary}</h3>
             <ul className="grid gap-1 text-sm">
               {stage.events.map((e, i) => (
-                <li key={i}>• {fill(t.events[e.key as keyof typeof t.events], { ...e.params, club: e.params?.club ? clubName(world, String(e.params.club), locale) : "" })}</li>
+                <li key={i}>• {fill(t.events[e.key as keyof typeof t.events], { ...e.params, club: e.params?.club ? clubName(world, String(e.params.club), locale) : "", kind: e.params?.kind ? t.injury.kinds[e.params.kind as keyof typeof t.injury.kinds] : "" })}</li>
               ))}
             </ul>
           </div>
@@ -201,10 +203,18 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           ))}
         </dl>
 
+        {view.phase === "season" && season.halvesPlayed < 2 && stage.kind !== "summary" && <Situations save={save} t={t} onChange={onChange} />}
+
+        {view.player.injury && (
+          <p className="flex items-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3 text-sm font-medium">
+            <span aria-hidden>🩹</span> {fill(t.injury.out, { kind: t.injury.kinds[view.player.injury.kind], n: view.player.injury.matches })}
+          </p>
+        )}
+
         {view.phase === "season" && season.halvesPlayed < 2 && (
-          <Button size="lg" className="shine h-14 text-base" disabled={stage.kind === "simulating"} onClick={play}>
+          <Button size="lg" className="shine h-14 text-base" disabled={stage.kind === "simulating" || situationsPending(save)} onClick={play}>
             <PlayIcon aria-hidden />
-            {stage.kind === "simulating" ? d.simulating : season.halvesPlayed === 0 ? d.playFirst : d.playSecond}
+            {stage.kind === "simulating" ? d.simulating : situationsPending(save) ? t.situations.decideFirst : season.halvesPlayed === 0 ? d.playFirst : d.playSecond}
           </Button>
         )}
 
@@ -219,7 +229,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
                   </span>
                   <span className="min-w-0 flex-1 truncate">{teamName(world, m.opponentId, locale, contract.level, view.player.age)}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">
-                    {m.minutes ? `${m.started ? "" : `${d.sub} · `}${m.goals ? `⚽×${m.goals} ` : ""}${m.assists ? `🅰×${m.assists} ` : ""}${m.rating}` : d.didNotPlay}
+                    {m.minutes ? `${m.injured ? "🩹 " : ""}${m.started ? "" : `${d.sub} · `}${m.goals ? `⚽×${m.goals} ` : ""}${m.assists ? `🅰×${m.assists} ` : ""}${m.rating}` : m.out ? `🩹 ${t.injury.injured}` : d.didNotPlay}
                   </span>
                 </li>
               ))}

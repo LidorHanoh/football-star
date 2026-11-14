@@ -276,7 +276,7 @@
       "trust": "Coach trust",
       "sign": "Sign",
       "askMore": "Ask for more",
-      "askMoreHint": "50% chance of a raise — 50% chance the club trusts you less.",
+      "askMoreHint": "A better agent means a better chance of a raise. If it fails, the club trusts you less.",
       "spinning": "Negotiating…",
       "won": "They agreed! New wage: {wage}/week",
       "lost": "They didn't like that. The coach trusts you less.",
@@ -302,7 +302,7 @@
         "Super-agent: one call opens any door."
       ],
       "lockedHint": "You're still young — only starter agents will work with you. Improve and bigger agents will want to represent you.",
-      "locked": "Wants players rated {n}+"
+      "locked": "Wants players rated {n}+ with {fans}+ fans"
     },
     "dashboard": {
       "season": "Season {year}",
@@ -336,7 +336,8 @@
       "training": "Training",
       "fitness": "Fitness",
       "morale": "Morale",
-      "fans": "Fans"
+      "fans": "Fans",
+      "chemistry": "Team chemistry"
     },
     "highlights": {
       "title": "Highlights",
@@ -384,7 +385,9 @@
       "halfwayTable": "Halfway: your club is {pos} in the table.",
       "finalTable": "Final position: {pos} in the table.",
       "ratingDown": "Your world rating dropped: {from} → {to}",
-      "trainingPoints": "You earned {n} training points — spend them in the training tab."
+      "trainingPoints": "You earned {n} training points — spend them in the training tab.",
+      "injured": "You got injured ({kind}) — out for {n} matches, and lost a little pace and strength.",
+      "recovered": "Back from injury! 💪"
     },
     "seasonEnd": {
       "title": "End of season {year}",
@@ -503,11 +506,7 @@
     },
     "setPiece": {
       "penaltyTitle": "Penalty! You step up",
-      "freekickTitle": "Free kick!",
       "penaltySaveTitle": "Penalty against you — you're in goal!",
-      "penaltyHint": "1) Pick a corner. 2) Stop the meter in the green. Top corners are hard to save — but easier to miss.",
-      "freekickHint": "Over the wall into a top corner is your best chance.",
-      "diveHint": "1) Pick where to dive. 2) Stop the meter in the green for a quick reaction.",
       "zones": [
         "Top left",
         "Top middle",
@@ -525,13 +524,8 @@
       "conceded": "Goal…",
       "afterGood": "The fans are singing your name!",
       "afterBad": "Never mind — next time.",
-      "powerHint": "Stop the meter in the green!",
-      "reactHint": "React! Stop the meter in the green",
-      "shoot": "Shoot! ⚽",
-      "dive": "Dive! 🧤",
-      "perfect": "Perfect strike! 🔥",
-      "good": "Good strike",
-      "poor": "Ouch… scuffed it"
+      "pickSide": "Tap where to shoot",
+      "pickDive": "Tap where to dive"
     },
     "region": {
       "title": "Which country do you start in?",
@@ -586,6 +580,142 @@
       "title": "You won it!",
       "many": "{n} trophies this season!",
       "continue": "Let's go on"
+    },
+    "situations": {
+      "title": "This week, off the pitch",
+      "decideFirst": "Decide first 👆",
+      "risk": "Injury risk ↑",
+      "items": {
+        "welcomeNight": {
+          "text": "Your new teammates want to take you out to welcome you to the club.",
+          "options": {
+            "go": "Go out with them",
+            "skip": "Stay in and rest"
+          }
+        },
+        "teamDinner": {
+          "text": "Teammates invite you to dinner the night before training.",
+          "options": {
+            "go": "Go to dinner",
+            "rest": "Train and get full sleep"
+          }
+        },
+        "sponsorShoot": {
+          "text": "A boot brand wants a photo shoot — on a training day.",
+          "options": {
+            "shoot": "Do the shoot (fame)",
+            "train": "Go to training (form)"
+          }
+        },
+        "extraGym": {
+          "text": "The fitness coach offers you extra gym sessions.",
+          "options": {
+            "yes": "Bring it on",
+            "no": "I'll rest"
+          }
+        },
+        "tvInterview": {
+          "text": "A TV sports show wants to interview you.",
+          "options": {
+            "accept": "Do the interview",
+            "decline": "Politely decline"
+          }
+        },
+        "videoSession": {
+          "text": "The coach invites you to video analysis after hours.",
+          "options": {
+            "go": "Join the session",
+            "skip": "Skip it this time"
+          }
+        },
+        "friendParty": {
+          "text": "A friend is throwing a big party — derby week.",
+          "options": {
+            "go": "Go to the party",
+            "stay": "Stay focused"
+          }
+        },
+        "mentorKid": {
+          "text": "A youngster asks you to help him after training.",
+          "options": {
+            "help": "Help him",
+            "no": "No time"
+          }
+        },
+        "socialMedia": {
+          "text": "Your agent wants you to post more on social media.",
+          "options": {
+            "post": "Post videos",
+            "focus": "Focus on football"
+          }
+        },
+        "gamingNight": {
+          "text": "The lads are gaming late at the team hotel.",
+          "options": {
+            "join": "Join in",
+            "sleep": "Go to sleep"
+          }
+        },
+        "finishingDrills": {
+          "text": "You can stay after training to practise finishing.",
+          "options": {
+            "stay": "Stay and practise",
+            "rest": "Go rest"
+          }
+        },
+        "keeperDrills": {
+          "text": "The keeper coach offers extra diving and reflex drills.",
+          "options": {
+            "stay": "Stay and practise",
+            "rest": "Go rest"
+          }
+        },
+        "schoolExams": {
+          "text": "School exams fall in the same week as a training camp.",
+          "options": {
+            "study": "Study for exams",
+            "camp": "Go to the camp"
+          }
+        },
+        "playThroughPain": {
+          "text": "Something hurts in your leg before a big match.",
+          "options": {
+            "play": "Play through it",
+            "rest": "Rest and recover"
+          }
+        }
+      }
+    },
+    "injury": {
+      "injured": "Injured",
+      "out": "Injured ({kind}) — out for {n} more matches",
+      "kinds": {
+        "knock": "knock",
+        "ankle": "ankle",
+        "hamstring": "hamstring",
+        "knee": "knee"
+      }
+    },
+    "advice": {
+      "best": "My pick",
+      "verdicts": {
+        "sign": "Sign it! 👍",
+        "askMore": "Ask for more money 💰",
+        "maybe": "Could work — think it over 🤔",
+        "avoid": "Don't go ✋"
+      },
+      "reasons": {
+        "minutes": "You'll play a lot there",
+        "rotation": "You'd be in rotation — not always starting",
+        "bench": "You'd sit on the bench a lot",
+        "stepUp": "Stronger team — a step up",
+        "stepDown": "Weaker team — a step down",
+        "wageLow": "The wage is below what you're worth",
+        "wageGood": "Very good money",
+        "firstTeam": "First-team football at last",
+        "loyalty": "The club knows and loves you",
+        "abroad": "A move abroad — lots of exposure"
+      }
     }
   },
   "notFound": {

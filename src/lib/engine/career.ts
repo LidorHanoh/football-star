@@ -116,7 +116,8 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string | 
 export function askForMore(save: CareerSave, offerId: string): { save: CareerSave; won: boolean; offer: Offer } {
   const rng = new Rng(save.rng);
   const n = BALANCE.negotiation;
-  const won = rng.chance(n.winChance);
+  // A better agent wins more of these talks (no agent: 40%).
+  const won = rng.chance(Math.min(0.65, n.winChance - 0.1 + (save.agent?.quality ?? 0) * 0.05));
   let updated!: Offer;
   const offers = save.offers.map((o) => {
     if (o.id !== offerId || o.negotiated) return o;
@@ -132,12 +133,16 @@ export function askForMore(save: CareerSave, offerId: string): { save: CareerSav
 // Agents (fictional people). Better agents cost a bigger cut but bring better offers.
 // ---------------------------------------------------------------------------
 
-/** Best agent quality (1..5) that will work with a player of this rating. A young player only gets 1★ agents. */
-export const agentTierFor = (rating: number) => [5, 4, 3, 2, 1].find((q) => rating >= BALANCE.agents.unlockRating[q])!;
+/**
+ * Best agent quality (1..5) that will work with you: they want a good rating
+ * AND a name people know (fans). A young player only gets 1★ agents.
+ */
+export const agentTierFor = (rating: number, fans = 0) => [5, 4, 3, 2, 1].find((q) => rating >= BALANCE.agents.unlockRating[q] && fans >= BALANCE.agents.unlockFans[q])!;
+export const agentUnlockFans = (quality: number) => BALANCE.agents.unlockFans[quality];
 export const agentUnlockRating = (quality: number) => BALANCE.agents.unlockRating[quality];
 
 /** A better agent than the current one now wants to represent you. */
-export const betterAgentAvailable = (save: CareerSave) => agentTierFor(save.player.rating) > (save.agent?.quality ?? 1);
+export const betterAgentAvailable = (save: CareerSave) => agentTierFor(save.player.rating, save.bars.fans) > (save.agent?.quality ?? 1);
 
 export function rollAgents(save: CareerSave): CareerSave {
   const rng = new Rng(save.rng);
@@ -151,13 +156,13 @@ export function rollAgents(save: CareerSave): CareerSave {
 }
 
 export function hireAgent(save: CareerSave, agentId: string | null): CareerSave {
-  const agent = agentId ? (save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating)) ?? null) : null;
+  const agent = agentId ? (save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating, save.bars.fans)) ?? null) : null;
   return { ...save, agent, phase: save.contract ? "season" : save.phase };
 }
 
 /** At the end of a season: switch to a better agent who now wants you (or keep yours). Doesn't change the phase. */
 export function switchAgent(save: CareerSave, agentId: string | null): CareerSave {
-  const agent = agentId ? save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating)) : undefined;
+  const agent = agentId ? save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating, save.bars.fans)) : undefined;
   return { ...save, agent: agent ?? save.agent, talks: { ...save.talks, newAgent: agent ? agent.id : "kept" } };
 }
 
@@ -232,7 +237,7 @@ export { attrWeight };
 // Old saves → current shape.
 // ---------------------------------------------------------------------------
 export function migrateSave(save: CareerSave): CareerSave {
-  if ((save as { version: number }).version === 2) return save;
+  if ((save as { version: number }).version === 2) return save.bars.chemistry === undefined ? { ...save, bars: { ...save.bars, chemistry: 50 } } : save;
   const seed = hash(save.id);
   const player = upgradePlayerFields(save.player, seed);
   const rating = overall(player.attrs, player.position);
@@ -240,6 +245,7 @@ export function migrateSave(save: CareerSave): CareerSave {
     ...save,
     version: 2,
     player: { ...player, rating },
+    bars: { ...save.bars, chemistry: save.bars.chemistry ?? 50 },
     agent: save.agent ? { ...save.agent, face: save.agent.face ?? hash(save.agent.id) } : null,
     agentsOnOffer: save.agentsOnOffer.map((a) => ({ ...a, face: a.face ?? hash(a.id) })),
     offers: save.offers.map((o) => ({ ...o, role: o.role ?? "rotation" })),

@@ -2,7 +2,7 @@ import { growAttrs, overall } from "./attrs";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
 import { clamp, Rng } from "./rng";
-import type { Attrs, CareerSave, Highlight, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
+import type { Attrs, CareerSave, Highlight, InjuryKind, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
 
 /** Share of a team's goals / assists a player in this position is involved in (per 90, as a starter). */
 const GOAL_SHARE: Record<Position, number> = { GK: 0, CB: 0.04, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.08, AM: 0.15, LW: 0.17, RW: 0.17, ST: 0.3 };
@@ -138,6 +138,33 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   const events: HalfEvent[] = [];
   const level = save.contract.level;
   const myStrength = level === "youth" ? myClub.teamRating - 12 : myClub.teamRating;
+  const risk = season.risk ?? 0;
+
+  /** One of your matches: out injured, or played (and maybe injured in it). */
+  const myMatch = (strength: number, opp: WorldClub, home: boolean, roundNo: number): MatchResult => {
+    const out = (player.injury?.matches ?? 0) > 0;
+    const m = playMyMatch(rng, player, bars, strength, opp, home, half, roundNo, highlights, out);
+    if (out) {
+      const left = player.injury!.matches - 1;
+      player.injury = left > 0 ? { ...player.injury!, matches: left } : undefined;
+      if (!left) events.push({ key: "recovered" });
+      return { ...m, out: true };
+    }
+    if (m.minutes && rng.chance(injuryChance(bars.fitness, risk) * (m.minutes / 90))) {
+      const kind = pickInjury(rng);
+      const cfg = BALANCE.injuries.kinds[kind];
+      const n = rng.int(cfg.out[0], cfg.out[1]);
+      // An injury costs a little pace and strength for good (bigger ones cost more).
+      player.attrs = { ...player.attrs, pace: clamp(player.attrs.pace - cfg.damage * rng.range(0.6, 1.4), 1, 99), physical: clamp(player.attrs.physical - cfg.damage * rng.range(0.6, 1.4), 1, 99) };
+      player.attrs = { ...player.attrs, pace: Math.round(player.attrs.pace * 10) / 10, physical: Math.round(player.attrs.physical * 10) / 10 };
+      player.rating = overall(player.attrs, player.position);
+      player.injury = { kind, matches: n };
+      bars.form = Math.max(0, bars.form - 8);
+      events.push({ key: "injured", params: { kind, n } });
+      return { ...m, injured: kind };
+    }
+    return m;
+  };
 
   // --- League fixtures (always simulated, so the table is real) ------------
   rounds.forEach((pairs, r) => {
@@ -147,7 +174,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
       const isMine = level === "first" && (home.id === myClub.id || away.id === myClub.id);
       if (isMine) {
         const opp = home.id === myClub.id ? away : home;
-        const m = playMyMatch(rng, player, bars, myClub.teamRating, opp, home.id === myClub.id, half, roundNo, highlights);
+        const m = myMatch(myClub.teamRating, opp, home.id === myClub.id, roundNo);
         matches.push(m);
         const [h, a] = m.home ? [m.goalsFor, m.goalsAgainst] : [m.goalsAgainst, m.goalsFor];
         record(table.get(home.id)!, h, a);
@@ -166,7 +193,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
     const opponents = rng.shuffle(clubs.filter((c) => c.id !== myClub.id)).slice(0, BALANCE.season.youthMatchesPerHalf);
     opponents.forEach((opp, i) => {
       const youthOpp = { ...opp, teamRating: opp.teamRating - 12 };
-      matches.push(playMyMatch(rng, player, bars, myStrength, youthOpp, i % 2 === 0, half, i + 1, highlights));
+      matches.push(myMatch(myStrength, youthOpp, i % 2 === 0, i + 1));
     });
   }
 
@@ -201,6 +228,8 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   bars.morale = Math.round(clamp(bars.morale + (minutesShare - 0.45) * 30 + goals, 0, 100));
   bars.fans = Math.round(clamp(bars.fans + goals * 2 + assists - (avg !== null && avg < 6 ? 3 : 0), 0, 100));
   bars.training = Math.round(clamp(bars.training + rng.int(-4, 6), 0, 100));
+  // Playing together builds chemistry; sitting out slowly loses it.
+  bars.chemistry = Math.round(clamp((bars.chemistry ?? 50) + minutesShare * 8 - 3, 0, 100));
 
   // --- Youth → first team promotion ----------------------------------------
   let contract = save.contract;
@@ -225,7 +254,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
       player,
       bars,
       contract,
-      season: { ...season, halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)] },
+      season: { ...season, halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0 },
       phase: half === 2 ? "season-end" : "season",
       updatedAt: new Date().toISOString(),
     },
@@ -249,12 +278,14 @@ function playMyMatch(
   half: 1 | 2,
   round: number,
   highlights: Highlight[],
+  unavailable = false,
 ): MatchResult {
-  // Selection: rating vs team level, coach trust, fitness.
-  const edge = (player.rating - (myStrength - 2)) * 0.3 + (bars.trust - 50) * 0.05 + (bars.fitness - 80) * 0.03;
+  // Selection: rating vs team level, coach trust, fitness, how well you click with the team.
+  const chem = bars.chemistry ?? 50;
+  const edge = (player.rating - (myStrength - 2)) * 0.3 + (bars.trust - 50) * 0.05 + (bars.fitness - 80) * 0.03 + (chem - 50) * 0.02;
   const pStart = 1 / (1 + Math.exp(-edge));
-  const started = rng.chance(pStart);
-  const subOn = !started && rng.chance(0.55);
+  const started = !unavailable && rng.chance(pStart);
+  const subOn = !unavailable && !started && rng.chance(0.55);
   const minutes = started ? (rng.chance(0.25) ? rng.int(60, 85) : 90) : subOn ? rng.int(10, 30) : null;
 
   // Player quality nudges the team a little when he plays.
@@ -275,7 +306,7 @@ function playMyMatch(
     const quality = clamp(Math.exp((player.rating - myStrength) * 0.06), 0.4, 2.2);
     // Finishing comes from shooting; creating from passing (and a bit of dribbling).
     const goalQ = quality ** 0.35 * attrEdge(a.shooting, myStrength) ** 0.9 * attrEdge(a.pace, myStrength) ** 0.15;
-    const assistQ = quality ** 0.35 * attrEdge(a.passing, myStrength) ** 0.8 * attrEdge(a.dribbling, myStrength) ** 0.25;
+    const assistQ = quality ** 0.35 * attrEdge(a.passing, myStrength) ** 0.8 * attrEdge(a.dribbling, myStrength) ** 0.25 * (0.85 + chem * 0.003);
     for (let g = 0; g < gf; g++) {
       const minute = rng.int(1, 90);
       const onPitch = started ? minute <= minutes : minute > 90 - minutes;
@@ -360,6 +391,19 @@ function matchStats(rng: Rng, a: Attrs, pos: Position, level: number, share: num
     saves,
     cleanSheet: ga === 0 && share >= 0.66 ? 1 : 0,
   };
+}
+
+/** Chance of getting injured in a full match. */
+export const injuryChance = (fitness: number, risk = 0) => BALANCE.injuries.base + Math.max(0, 100 - fitness) * BALANCE.injuries.lowFitness + risk;
+
+function pickInjury(rng: Rng): InjuryKind {
+  const kinds = Object.entries(BALANCE.injuries.kinds);
+  let roll = rng.range(0, kinds.reduce((s, [, k]) => s + k.weight, 0));
+  for (const [kind, k] of kinds) {
+    roll -= k.weight;
+    if (roll <= 0) return kind as InjuryKind;
+  }
+  return "knock";
 }
 
 /** Chance per match (≥30 min played) that you step up for a penalty. */

@@ -199,11 +199,12 @@ function MatchCard({ m, myName, oppName, myClub, opp, t, big }: { m: MatchResult
             <span className={cn("rounded px-1.5 py-0.5 font-bold text-white tabular-nums", m.rating! >= 7.5 ? "bg-emerald-600" : m.rating! >= 6.5 ? "bg-amber-500" : "bg-rose-600")}>{m.rating}</span>
             {m.goals > 0 && <span>⚽×{m.goals}</span>}
             {m.assists > 0 && <span>🅰×{m.assists}</span>}
+            {m.injured && <span className="font-semibold text-rose-600">🩹 {t.injury.kinds[m.injured]}</span>}
             {sp && <span>{sp.outcome === "goal" ? (m.setPiece!.kind === "penaltySave" ? "🥅✗" : "🎯✓") : m.setPiece!.kind === "penaltySave" ? "🧤✓" : "🎯✗"}</span>}
             {big && <span className="text-muted-foreground">{m.started ? t.play.started : fill(t.play.subOn, { min: m.minutes })}</span>}
           </>
         ) : (
-          <span className="text-muted-foreground">{t.dashboard.didNotPlay}</span>
+          <span className="text-muted-foreground">{m.out ? `🩹 ${t.injury.injured}` : t.dashboard.didNotPlay}</span>
         )}
       </div>
     </li>
