@@ -10,7 +10,7 @@ import { DEFAULT_KIT } from "@/lib/engine/attrs";
 import { newSeed } from "@/lib/engine/rng";
 import { type Position } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
-import { Face } from "./face";
+import { Face, faceCount } from "./face";
 import { type CareerDict, FLAGS } from "./helpers";
 
 /** Where each position sits on the mini pitch (x: 0 left → 100 right, y: 0 attack → 100 own goal). */
@@ -27,8 +27,8 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
   const [position, setPosition] = useState<Position>("ST");
   const [foot, setFoot] = useState<"right" | "left">("right");
   const [kit, setKit] = useState<number | null>(null);
-  const [face, setFace] = useState(() => newSeed());
-  const [spin, setSpin] = useState(0);
+  const [face, setFace] = useState(() => newSeed() % faceCount());
+  const [page, setPage] = useState(() => Math.floor(face / 6));
   const number = kit ?? DEFAULT_KIT[position];
 
   return (
@@ -42,20 +42,30 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
         }}
       >
         <div className="grid content-start gap-5">
-          <div className="flex items-center gap-4 rounded-2xl border bg-card p-3">
-            <Face key={spin} seed={face} number={number} className="animate-pop size-24 shrink-0 overflow-hidden rounded-2xl shadow-md" title={t.create.face} />
-            <div className="grid gap-2">
-              <p className="text-sm font-medium">{t.create.face}</p>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setFace(newSeed());
-                  setSpin(spin + 1);
-                }}
-              >
-                <DicesIcon aria-hidden /> {t.create.newFace}
-              </Button>
+          <div className="grid gap-3 rounded-2xl border bg-card p-3">
+            <div className="flex items-center gap-4">
+              <Face key={face} seed={face} number={number} className="animate-pop size-24 shrink-0 rounded-2xl shadow-md" title={t.create.face} />
+              <div className="grid gap-2">
+                <p className="text-sm font-medium">{t.create.face}</p>
+                <Button type="button" variant="outline" onClick={() => setPage(page + 1)}>
+                  <DicesIcon aria-hidden /> {t.create.newFace}
+                </Button>
+              </div>
+            </div>
+            <div key={page} className="grid grid-cols-6 gap-1.5" role="radiogroup" aria-label={t.create.face}>
+              {Array.from({ length: 6 }, (_, i) => (page * 6 + i) % faceCount()).map((f, i) => (
+                <button
+                  key={f}
+                  type="button"
+                  role="radio"
+                  aria-checked={face % faceCount() === f}
+                  onClick={() => setFace(f)}
+                  className={cn("animate-pop overflow-hidden rounded-lg ring-offset-2 ring-offset-card transition hover:scale-105", face % faceCount() === f ? "ring-2 ring-primary" : "opacity-80")}
+                  style={{ animationDelay: `${i * 40}ms` }}
+                >
+                  <Face seed={f} className="aspect-square w-full" />
+                </button>
+              ))}
             </div>
           </div>
           <div className="grid gap-2">

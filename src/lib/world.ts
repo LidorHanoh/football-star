@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient as createSupabase } from "@supabase/supabase-js";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import type { World } from "@/lib/engine/types";
 import type { Database } from "@/lib/supabase/database.types";
 import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
@@ -12,12 +12,13 @@ import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "@/lib/supabase/e
 export async function getCareerWorld(): Promise<World> {
   "use cache";
   cacheLife("days");
+  cacheTag("world"); // admin rating edits refresh it
   if (!isSupabaseConfigured) return { leagues: [], clubs: [] };
 
   const supabase = createSupabase<Database>(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
   const [{ data: leagues, error: e1 }, { data: clubs, error: e2 }] = await Promise.all([
     supabase.from("leagues").select("id, key, name, country_code, strength, tier").eq("is_playable", true),
-    supabase.from("clubs").select("id, league_id, name, reputation, team_rating"),
+    supabase.from("clubs").select("id, external_id, league_id, name, reputation, team_rating"),
   ]);
   if (e1 || e2) throw new Error(`Failed to load world: ${(e1 ?? e2)!.message}`);
 
@@ -32,6 +33,7 @@ export async function getCareerWorld(): Promise<World> {
       name: c.name as World["clubs"][number]["name"],
       reputation: c.reputation,
       teamRating: c.team_rating,
+      tmId: c.external_id,
     })),
   };
 }

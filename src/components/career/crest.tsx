@@ -1,13 +1,25 @@
-import { useId } from "react";
+"use client";
+
+import { useId, useState } from "react";
 import { clubKit, hash } from "@/lib/engine/people";
 import type { WorldClub } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 
 /**
- * A made-up crest in the club's colours with its initials. Real club badges are
- * trademarks, so the game never shows them.
+ * The club's real crest (downloaded by scripts/fetch-crests.mjs — hobby use only),
+ * falling back to a made-up crest in the club's colours.
  */
-export function Crest({ club, className }: { club: Pick<WorldClub, "id" | "name">; className?: string }) {
+export function Crest({ club, className }: { club: Pick<WorldClub, "id" | "name" | "tmId">; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  if (club.tmId && !failed)
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- tiny static crest, no optimisation needed
+      <img src={`/crests/${club.tmId}.webp`} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} className={cn("block shrink-0 object-contain drop-shadow-sm", className)} />
+    );
+  return <MadeUpCrest club={club} className={className} />;
+}
+
+function MadeUpCrest({ club, className }: { club: Pick<WorldClub, "id" | "name">; className?: string }) {
   const uid = useId().replace(/:/g, "");
   const kit = clubKit(club);
   const h = hash(club.id);

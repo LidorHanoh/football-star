@@ -124,6 +124,13 @@ export function askForMore(save: CareerSave, offerId: string): { save: CareerSav
 // Agents (fictional people). Better agents cost a bigger cut but bring better offers.
 // ---------------------------------------------------------------------------
 
+/** Best agent quality (1..5) that will work with a player of this rating. A young player only gets 1★ agents. */
+export const agentTierFor = (rating: number) => [5, 4, 3, 2, 1].find((q) => rating >= BALANCE.agents.unlockRating[q])!;
+export const agentUnlockRating = (quality: number) => BALANCE.agents.unlockRating[quality];
+
+/** A better agent than the current one now wants to represent you. */
+export const betterAgentAvailable = (save: CareerSave) => agentTierFor(save.player.rating) > (save.agent?.quality ?? 1);
+
 export function rollAgents(save: CareerSave): CareerSave {
   const rng = new Rng(save.rng);
   const qualities = [1, 2, 3, 4, 5];
@@ -136,8 +143,14 @@ export function rollAgents(save: CareerSave): CareerSave {
 }
 
 export function hireAgent(save: CareerSave, agentId: string | null): CareerSave {
-  const agent = agentId ? (save.agentsOnOffer.find((a) => a.id === agentId) ?? null) : null;
+  const agent = agentId ? (save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating)) ?? null) : null;
   return { ...save, agent, phase: save.contract ? "season" : save.phase };
+}
+
+/** At the end of a season: switch to a better agent who now wants you (or keep yours). Doesn't change the phase. */
+export function switchAgent(save: CareerSave, agentId: string | null): CareerSave {
+  const agent = agentId ? save.agentsOnOffer.find((a) => a.id === agentId && a.quality <= agentTierFor(save.player.rating)) : undefined;
+  return { ...save, agent: agent ?? save.agent, talks: { ...save.talks, newAgent: agent ? agent.id : "kept" } };
 }
 
 /** Wage after the agent's commission. */

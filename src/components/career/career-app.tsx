@@ -14,7 +14,7 @@ import { CreatePlayer } from "./create-player";
 import { Crest } from "./crest";
 import { Dashboard } from "./dashboard";
 import { Face } from "./face";
-import { type CareerDict, clubName, fill, loadSaves, storeSaves } from "./helpers";
+import { type CareerDict, fill, loadSaves, storeSaves, teamName } from "./helpers";
 import { LeaguePicker } from "./league-picker";
 import { OffersScreen } from "./offers";
 import { SeasonEnd } from "./season-end";
@@ -160,7 +160,7 @@ function CareerList({ saves, hydrated, world, t, locale, onNew, onOpen, onDelete
                     </span>
                     {club && (
                       <span className="mt-0.5 flex items-center gap-1.5 text-sm">
-                        <Crest club={club} className="size-4" /> <span className="truncate">{clubName(world, club.id, locale)}</span>
+                        <Crest club={club} className="size-4" /> <span className="truncate">{teamName(world, club.id, locale, s.contract!.level, s.player.age)}</span>
                       </span>
                     )}
                   </span>

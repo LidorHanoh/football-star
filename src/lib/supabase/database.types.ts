@@ -337,6 +337,69 @@ export type Database = {
           },
         ]
       }
+      rating_changes: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: number
+          new_position: string
+          new_potential: number | null
+          new_rating: number
+          note: string | null
+          old_position: string
+          old_potential: number | null
+          old_rating: number
+          player_id: string
+          reverted_at: string | null
+          was_locked: boolean
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          new_position: string
+          new_potential?: number | null
+          new_rating: number
+          note?: string | null
+          old_position: string
+          old_potential?: number | null
+          old_rating: number
+          player_id: string
+          reverted_at?: string | null
+          was_locked: boolean
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: never
+          new_position?: string
+          new_potential?: number | null
+          new_rating?: number
+          note?: string | null
+          old_position?: string
+          old_potential?: number | null
+          old_rating?: number
+          player_id?: string
+          reverted_at?: string | null
+          was_locked?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rating_changes_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "player_ratings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rating_changes_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       player_ratings: {
@@ -398,7 +461,20 @@ export type Database = {
       }
     }
     Functions: {
+      admin_revert_change: { Args: { p_change: number }; Returns: undefined }
+      admin_update_player: {
+        Args: {
+          p_note?: string
+          p_player: string
+          p_position: string
+          p_potential: number
+          p_rating: number
+        }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
+      recompute_team_ratings: { Args: { p_club?: string }; Returns: undefined }
+      shift_attributes: { Args: { attrs: Json; delta: number }; Returns: Json }
     }
     Enums: {
       [_ in never]: never

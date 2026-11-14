@@ -1,6 +1,6 @@
 // Load scripts/data/world.json into Supabase: countries, leagues, clubs and
 // players with our formula ratings. Idempotent (upserts by Transfermarkt id);
-// players with ratings_locked keep their hand-tuned ratings. Players who left
+// players with ratings_locked (edited in the admin panel) keep their rating, position and value. Players who left
 // all 20 leagues are detached from their club (club_id = null).
 //
 //   node scripts/import-world.mjs            # build SQL and run it on the linked project
@@ -124,12 +124,13 @@ for (let i = 0; i < players.length; i += CHUNK) {
 on conflict (external_id) do update set
   club_id = excluded.club_id, name = public.players.name || jsonb_build_object('en', excluded.name->>'en'),
   nationality = excluded.nationality, second_nationality = excluded.second_nationality, birth_date = excluded.birth_date,
-  age = excluded.age, position = excluded.position, shirt_number = excluded.shirt_number, height_cm = excluded.height_cm,
+  age = excluded.age, position = case when public.players.ratings_locked then public.players.position else excluded.position end, shirt_number = excluded.shirt_number, height_cm = excluded.height_cm,
   foot = excluded.foot, contract_until = excluded.contract_until,
   rating_world = case when public.players.ratings_locked then public.players.rating_world else excluded.rating_world end,
   attributes   = case when public.players.ratings_locked then public.players.attributes   else excluded.attributes end,
   potential    = case when public.players.ratings_locked then public.players.potential    else excluded.potential end,
-  value = excluded.value, wage = excluded.wage;`,
+  value = case when public.players.ratings_locked then public.players.value else excluded.value end,
+  wage  = case when public.players.ratings_locked then public.players.wage  else excluded.wage end;`,
   );
 }
 
@@ -138,6 +139,9 @@ write(
   `-- Players no longer in any of our squads become free agents.
 update public.players set club_id = null
 where club_id is not null and external_id not in (${players.map((p) => p.external_id).join(",")});
+
+-- Team strength from the stored ratings (includes hand-edited players).
+select public.recompute_team_ratings();
 
 update public.data_snapshots set is_current = false where is_current;
 insert into public.data_snapshots (season, source, is_current) values (${q(world.season)}, 'transfermarkt squads ${world.generatedAt.slice(0, 10)} + researched league lists', true);`,

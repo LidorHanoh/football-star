@@ -299,7 +299,9 @@
         "Good contacts at home, a few abroad.",
         "Well-known agent with links across Europe.",
         "Super-agent: one call opens any door."
-      ]
+      ],
+      "lockedHint": "You're still young — only starter agents will work with you. Improve and bigger agents will want to represent you.",
+      "locked": "Wants players rated {n}+"
     },
     "dashboard": {
       "season": "Season {year}",
@@ -429,7 +431,11 @@
       "noOffers": "No other offers this time.",
       "chooseClub": "Choose your club for next season",
       "startNext": "Start season {year}",
-      "retireForced": "At {age} it's time to hang up the boots."
+      "retireForced": "At {age} it's time to hang up the boots.",
+      "newAgentSays": "People are talking about you! At {rating} rating, bigger agents want to represent you. Want to switch?",
+      "switchAgent": "Sign with this agent",
+      "keepAgent": "Stay with {name}",
+      "stayWithoutAgent": "Carry on without an agent"
     },
     "exit": "Exit",
     "roles": {
@@ -523,5 +529,35 @@
     "title": "الصفحة غير موجودة",
     "body": "يبدو أن الكرة خرجت من الملعب.",
     "backHome": "العودة للرئيسية"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "link": "Admin panel",
+    "subtitle": "Change the ratings of real players. Changes are permanent — the daily Transfermarkt sync never overwrites them.",
+    "search": "Search a player by name",
+    "league": "League",
+    "club": "Club",
+    "pickClub": "Pick a club…",
+    "rating": "Rating",
+    "potential": "Potential",
+    "position": "Position",
+    "note": "Note (optional)",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved! {name}: {from} → {to}",
+    "error": "Error: {msg}",
+    "locked": "Edited by hand",
+    "noResults": "No players found.",
+    "tabs": {
+      "players": "Players",
+      "review": "My changes"
+    },
+    "changes": "Recent changes",
+    "noChanges": "You haven't changed any ratings yet.",
+    "revert": "Undo",
+    "reverted": "Undone",
+    "teamRating": "Team rating: {n}",
+    "age": "Age",
+    "changed": "{name}: {from} → {to}"
   }
 }

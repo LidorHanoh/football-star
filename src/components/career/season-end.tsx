@@ -3,19 +3,22 @@
 import { BriefcaseIcon, MessageCircleIcon, TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { agentTierFor, betterAgentAvailable, rollAgents, switchAgent } from "@/lib/engine/career";
 import { agentReport, answerManager, type ManagerChoice, managerMood, mustRetire, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
+import { AgentCard } from "./agent-picker";
 import { Face } from "./face";
-import { clubName, fill } from "./helpers";
+import { fill, teamName } from "./helpers";
 import { OfferCard } from "./offers";
 import { StatusBars } from "./status-bars";
 
-type Step = "review" | "manager" | "agent";
+type Step = "review" | "manager" | "newAgent" | "agent";
 
 export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const s = t.seasonEnd;
-  const [step, setStep] = useState<Step>(save.talks.manager ? "agent" : "review");
+  const newAgentPending = betterAgentAvailable(save) && !save.talks.newAgent;
+  const [step, setStep] = useState<Step>(save.talks.manager ? (newAgentPending ? "newAgent" : "agent") : "review");
   const [reply, setReply] = useState<ManagerChoice | null>((save.talks.manager as ManagerChoice) ?? null);
   const [report, setReport] = useState<AgentReport | null>(null);
   const summary = seasonSummary(save);
@@ -30,8 +33,8 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const seasonLabel = `${summary.year}/${String((summary.year + 1) % 100).padStart(2, "0")}`;
   const nextLabel = `${summary.year + 1}/${String((summary.year + 2) % 100).padStart(2, "0")}`;
 
-  function openAgent() {
-    const r = agentReport(save, world);
+  function openAgent(from = save) {
+    const r = agentReport(from, world);
     setReport(r.report);
     onChange(r.save);
     setStep("agent");
@@ -49,7 +52,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
       </h1>
       <ol className="mb-6 flex gap-2 text-xs font-semibold text-muted-foreground" aria-label="steps">
         {(["review", "manager", "agent"] as Step[]).map((k, i) => (
-          <li key={k} className={step === k ? "text-primary" : ""}>
+          <li key={k} className={(step === "newAgent" ? "agent" : step) === k ? "text-primary" : ""}>
             {i + 1}. {k === "review" ? s.review : k === "manager" ? s.toManager : s.toAgent}
           </li>
         ))}
@@ -110,11 +113,49 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
                 {s.managerReplies[reply][mood]}
               </Bubble>
-              <Button size="lg" className="h-12 justify-self-end" onClick={openAgent}>
+              <Button
+                size="lg"
+                className="h-12 justify-self-end"
+                onClick={() => {
+                  if (!newAgentPending) return openAgent();
+                  onChange(rollAgents(save));
+                  setStep("newAgent");
+                }}
+              >
                 <BriefcaseIcon aria-hidden /> {s.toAgent}
               </Button>
             </>
           )}
+        </div>
+      )}
+
+      {step === "newAgent" && (
+        <div className="grid gap-5">
+          <Bubble who={save.agent ? `${s.agentTitle} · ${save.agent.name}` : s.agentTitle} icon={agentFace}>
+            {fill(s.newAgentSays, { rating: save.player.rating })}
+          </Bubble>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {save.agentsOnOffer
+              .filter((a) => a.quality > (save.agent?.quality ?? 0) && a.quality <= agentTierFor(save.player.rating))
+              .sort((a, b) => b.quality - a.quality)
+              .slice(0, 2)
+              .map((a, i) => (
+                <li key={a.id} className="animate-rise" style={{ animationDelay: `${i * 120}ms` }}>
+                  <AgentCard agent={a} t={t} hireLabel={s.switchAgent} onHire={() => {
+                    const next = switchAgent(save, a.id);
+                    onChange(next);
+                    openAgent(next);
+                  }} />
+                </li>
+              ))}
+          </ul>
+          <Button size="lg" variant="outline" className="h-12 justify-self-end" onClick={() => {
+            const next = switchAgent(save, null);
+            onChange(next);
+            openAgent(next);
+          }}>
+            {save.agent ? fill(s.keepAgent, { name: save.agent.name }) : s.stayWithoutAgent}
+          </Button>
         </div>
       )}
 
@@ -135,7 +176,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               <ul className="grid gap-4 md:grid-cols-3">
                 {canStay && (
                   <li className="flex flex-col justify-between gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-5">
-                    <p className="font-heading text-xl font-bold">{fill(s.stay, { club: clubName(world, contract.clubId, locale) })}</p>
+                    <p className="font-heading text-xl font-bold">{fill(s.stay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) })}</p>
                     <p className="text-sm text-muted-foreground">{fill(s.underContract, { year: contract.until + 1 })}</p>
                     <Button size="lg" className="h-11" onClick={() => onChange(startNextSeason(save, world, null))}>
                       {fill(s.startNext, { year: nextLabel })}
@@ -144,7 +185,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                 )}
                 {offers.map((o) => (
                   <li key={o.id}>
-                    <OfferCard offer={o} world={world} t={t} locale={locale} agent={save.agent} highlight={o.tag === "renew"} onSign={() => onChange(startNextSeason(save, world, o.id))} />
+                    <OfferCard offer={o} world={world} t={t} locale={locale} agent={save.agent} highlight={o.tag === "renew"} age={save.player.age + 1} onSign={() => onChange(startNextSeason(save, world, o.id))} />
                   </li>
                 ))}
               </ul>

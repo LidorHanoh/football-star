@@ -10,7 +10,7 @@ import type { Agent, Offer, World } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
-import { type CareerDict, clubName, fill, FLAGS, money } from "./helpers";
+import { type CareerDict, fill, FLAGS, money, teamName } from "./helpers";
 
 export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) {
   const [spin, setSpin] = useState<{ offerId: string; won: boolean; wage: number } | null>(null);
@@ -28,6 +28,7 @@ export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) 
               t={t}
               locale={locale}
               agent={save.agent}
+              age={save.player.age}
               onSign={() => onChange(signOffer(save, offer.id, world))}
               onAskMore={() => {
                 const result = askForMore(save, offer.id);
@@ -52,6 +53,7 @@ export function OfferCard({
   onSign,
   onAskMore,
   highlight,
+  age = 17,
 }: {
   offer: Offer;
   world: World;
@@ -61,6 +63,8 @@ export function OfferCard({
   onSign: () => void;
   onAskMore?: () => void;
   highlight?: boolean;
+  /** Player age when the contract starts (names the youth side: U17 / U19…) */
+  age?: number;
 }) {
   const club = world.clubs.find((c) => c.id === offer.clubId)!;
   const league = world.leagues.find((l) => l.key === club.leagueKey);
@@ -70,7 +74,7 @@ export function OfferCard({
       <div className="flex items-start gap-3">
         <Crest club={club} className="size-12" />
         <div className="min-w-0">
-          <h2 className="truncate font-heading text-xl font-bold">{clubName(world, offer.clubId, locale)}</h2>
+          <h2 className="truncate font-heading text-xl font-bold">{teamName(world, offer.clubId, locale, offer.level, age)}</h2>
           <p className="truncate text-sm text-muted-foreground">
             {league ? `${FLAGS[league.country] ?? ""} ${league.name[locale] ?? league.name.en}` : ""}
           </p>

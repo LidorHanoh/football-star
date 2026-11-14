@@ -18,6 +18,8 @@ export interface WorldClub {
   name: Localized;
   reputation: number; // 1..100
   teamRating: number; // avg world rating of the best XI
+  /** Transfermarkt id: the crest lives at /crests/{tmId}.webp */
+  tmId?: number;
 }
 
 export interface World {
@@ -192,5 +194,5 @@ export interface CareerSave {
   season: SeasonState | null;
   history: SeasonSummary[];
   /** End-of-season conversation choices made this season (manager / agent) */
-  talks: { manager?: string; agent?: string };
+  talks: { manager?: string; agent?: string; newAgent?: string };
 }

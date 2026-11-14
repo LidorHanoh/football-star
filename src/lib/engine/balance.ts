@@ -30,6 +30,8 @@ export const BALANCE = {
     commission: { 1: [3, 5], 2: [5, 7], 3: [7, 10], 4: [10, 12], 5: [12, 15] } as Record<number, readonly [number, number]>,
     extraOffers: { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 2 } as Record<number, number>,
     reputationReach: { 0: -10, 1: 0, 2: 4, 3: 8, 4: 12, 5: 16 } as Record<number, number>, // how far above your level offers can come from
+    /** World rating a player needs before an agent of that quality wants to represent him. */
+    unlockRating: { 1: 0, 2: 55, 3: 61, 4: 67, 5: 73 } as Record<number, number>,
     wageBoost: { 0: 0.9, 1: 1, 2: 1.05, 3: 1.1, 4: 1.15, 5: 1.2 } as Record<number, number>,
   },
 

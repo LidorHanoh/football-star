@@ -9,7 +9,7 @@ import { resolveSetPiece } from "@/lib/engine/set-piece";
 import type { CareerSave, MatchResult, World, Zone } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { Crest } from "./crest";
-import { type CareerDict, clubName, fill } from "./helpers";
+import { type CareerDict, fill, teamName } from "./helpers";
 import { HighlightClip } from "./highlights";
 import { SetPieceGame } from "./set-piece";
 
@@ -67,8 +67,10 @@ export function SeasonPlay({ before, after, world, t, locale, onFinish }: { befo
     // eslint-disable-next-line react-hooks/exhaustive-deps -- re-run when the match or speed changes
   }, [i, step, fast]);
 
-  const myName = clubName(world, myClub.id, locale);
-  const oppName = opp ? clubName(world, opp.id, locale) : "";
+  const level = before.contract!.level; // the level these matches were played at
+  const age = before.player.age;
+  const myName = teamName(world, myClub.id, locale, level, age);
+  const oppName = opp ? teamName(world, opp.id, locale, level, age) : "";
   const goals = matches.slice(0, i + 1).reduce((s, x) => s + x.goals, 0);
   const assists = matches.slice(0, i + 1).reduce((s, x) => s + x.assists, 0);
   const rated = matches.slice(0, i + 1).filter((x) => x.rating);
@@ -133,7 +135,7 @@ export function SeasonPlay({ before, after, world, t, locale, onFinish }: { befo
           <ol className="grid gap-1.5">
             {[...done].reverse().map((x, k) => {
               const o = world.clubs.find((c) => c.id === x.opponentId)!;
-              return <MatchCard key={done.length - k} m={x} myName={myName} oppName={clubName(world, o.id, locale)} myClub={myClub} opp={o} t={t} />;
+              return <MatchCard key={done.length - k} m={x} myName={myName} oppName={teamName(world, o.id, locale, level, age)} myClub={myClub} opp={o} t={t} />;
             })}
           </ol>
         )}

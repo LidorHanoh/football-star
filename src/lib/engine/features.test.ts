@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { overall, roleFor } from "./attrs";
-import { createCareer, migrateSave, signOffer, startOffers, train } from "./career";
+import { agentTierFor, betterAgentAvailable, createCareer, hireAgent, migrateSave, signOffer, startOffers, switchAgent, train } from "./career";
 import { playHalf } from "./season";
 import { resolveSetPiece } from "./set-piece";
 import type { CareerSave, World, Zone } from "./types";
@@ -77,5 +77,22 @@ describe("career features", () => {
     expect(m.player.attrs.pace).toBeGreaterThan(0);
     expect(m.player.kit).toBe(9);
     expect(Math.abs(m.player.rating - s.player.rating)).toBeLessThanOrEqual(1);
+  });
+
+  it("young players only get 1-star agents; better ones unlock with rating", () => {
+    const s = start(5);
+    expect(agentTierFor(s.player.rating)).toBe(1);
+    const top = s.agentsOnOffer.find((a) => a.quality === 5)!;
+    expect(hireAgent(s, top.id).agent).toBeNull();
+    const one = s.agentsOnOffer.find((a) => a.quality === 1)!;
+    expect(hireAgent(s, one.id).agent?.id).toBe(one.id);
+    const better = { ...hireAgent(s, one.id), player: { ...s.player, rating: 68 } };
+    expect(agentTierFor(68)).toBe(4);
+    expect(betterAgentAvailable(better)).toBe(true);
+    const four = better.agentsOnOffer.find((a) => a.quality === 4)!;
+    const switched = switchAgent(better, four.id);
+    expect(switched.agent?.quality).toBe(4);
+    expect(switched.phase).toBe(better.phase);
+    expect(switchAgent(better, top.id).agent?.quality).toBe(1);
   });
 });

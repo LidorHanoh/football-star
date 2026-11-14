@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
 import { Face } from "./face";
-import { clubName, fill, FLAGS, leagueRating, money } from "./helpers";
+import { clubName, fill, FLAGS, leagueRating, money, teamName } from "./helpers";
 import { PlayerStats } from "./player-stats";
 import { SeasonPlay } from "./season-play";
 import { Squad } from "./squad";
@@ -92,7 +92,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
             </p>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-sm">
               <Crest club={club} className="size-6" />
-              <strong>{clubName(world, club.id, locale)}</strong>
+              <strong>{teamName(world, club.id, locale, contract.level, view.player.age)}</strong>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{t.offers.level[contract.level]}</span>
               <span className="rounded-full bg-primary/15 px-2 py-0.5 text-xs font-bold text-primary">{t.roles[roleFor(view.player.rating, teamStrength(club, contract.level), view.bars.trust)]}</span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums">#{view.player.kit}</span>
@@ -208,7 +208,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
                   <span className={cn("grid size-6 shrink-0 place-items-center rounded text-xs font-bold text-white", m.goalsFor > m.goalsAgainst ? "bg-emerald-600" : m.goalsFor === m.goalsAgainst ? "bg-slate-500" : "bg-rose-600")}>
                     {m.goalsFor}-{m.goalsAgainst}
                   </span>
-                  <span className="min-w-0 flex-1 truncate">{clubName(world, m.opponentId, locale)}</span>
+                  <span className="min-w-0 flex-1 truncate">{teamName(world, m.opponentId, locale, contract.level, view.player.age)}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {m.minutes ? `${m.started ? "" : `${d.sub} · `}${m.goals ? `⚽×${m.goals} ` : ""}${m.assists ? `🅰×${m.assists} ` : ""}${m.rating}` : d.didNotPlay}
                   </span>

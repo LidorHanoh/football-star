@@ -162,6 +162,11 @@
 }
 
 /* ---- Career animations ---------------------------------------------------- */
+@keyframes crowd {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.6px); }
+}
+
 @keyframes net {
   0%, 100% { transform: scaleX(1); }
   50% { transform: scaleX(1.35); }

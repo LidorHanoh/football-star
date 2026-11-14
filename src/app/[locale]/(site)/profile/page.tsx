@@ -66,6 +66,11 @@ async function ProfileDetails({ dict, locale }: { dict: Dictionary; locale: Loca
             </div>
           ))}
         </dl>
+        {profile.role === "admin" && (
+          <Link href={`/${locale}/admin`} className={buttonVariants({ variant: "outline" })}>
+            🛠️ {dict.admin.link}
+          </Link>
+        )}
         <p className="text-xs text-muted-foreground">
           {t.memberSince}: {new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(profile.created_at))}
         </p>
