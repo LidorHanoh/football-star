@@ -41,8 +41,11 @@ describe("v9: lower divisions, low start, national team, gambles, trivia facts",
 
   it("amateur clubs offer a first-team deal straight away", () => {
     const s = startOffers(createCareer({ name: "A", nationality: "Israel", position: "ST", foot: "right" }, 5), world, ["isr", "isr2", "isr3", "isr4"]);
-    const small = s.offers.find((o) => o.tag === "fast")!;
+    expect(s.offers).toHaveLength(5);
+    const small = s.offers.at(-1)!;
+    expect(small.tag).toBe("fast");
     expect(small.clubId.startsWith("isr4-")).toBe(true);
+    expect(s.offers.find((o) => o.tag === "fast")!.clubId.startsWith("isr3-")).toBe(true);
     expect(small.level).toBe("first");
     const big = s.offers.find((o) => o.tag === "big")!;
     expect(big.level).toBe("youth");

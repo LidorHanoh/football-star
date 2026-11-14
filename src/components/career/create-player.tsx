@@ -22,6 +22,14 @@ const SPOTS: Record<Position, { x: number; y: number }> = {
   CM: { x: 50, y: 50 }, DM: { x: 50, y: 64 }, LB: { x: 14, y: 72 }, RB: { x: 86, y: 72 }, CB: { x: 50, y: 78 }, GK: { x: 50, y: 92 },
 };
 
+/** Twelve different faces from the whole pack (1,000 of them). */
+function randomFaces() {
+  const n = faceCount();
+  const out = new Set<number>();
+  while (out.size < 12) out.add(newSeed() % n);
+  return [...out];
+}
+
 // One entry per country (some have two spellings in the data).
 const NATIONS = Object.keys(FLAGS).filter((n) => !["USA", "Turkey", "Saudi-Arabia"].includes(n));
 
@@ -31,8 +39,8 @@ export function CreatePlayer({ t, locale, onDone }: { t: CareerDict; locale: Loc
   const [position, setPosition] = useState<Position>("ST");
   const [foot, setFoot] = useState<"right" | "left">("right");
   const [kit, setKit] = useState<number | null>(null);
-  const [face, setFace] = useState(() => newSeed() % faceCount());
-  const [page, setPage] = useState(() => Math.floor(face / 6));
+  const [faces, setFaces] = useState(randomFaces);
+  const [face, setFace] = useState(() => faces[0]);
   const [style, setStyle] = useState(0);
   const number = kit ?? DEFAULT_KIT[position];
 
@@ -52,21 +60,21 @@ export function CreatePlayer({ t, locale, onDone }: { t: CareerDict; locale: Loc
               <Face key={face} seed={face} number={number} className="animate-pop size-24 shrink-0 rounded-2xl shadow-md" title={t.create.face} />
               <div className="grid gap-2">
                 <p className="text-sm font-medium">{t.create.face}</p>
-                <Button type="button" variant="outline" onClick={() => setPage(page + 1)}>
+                <Button type="button" variant="outline" onClick={() => setFaces(randomFaces())}>
                   <DicesIcon aria-hidden /> {t.create.newFace}
                 </Button>
               </div>
             </div>
-            <div key={page} className="grid grid-cols-6 gap-1.5" role="radiogroup" aria-label={t.create.face}>
-              {Array.from({ length: 6 }, (_, i) => (page * 6 + i) % faceCount()).map((f, i) => (
+            <div key={faces.join()} className="grid grid-cols-6 gap-1.5" role="radiogroup" aria-label={t.create.face}>
+              {faces.map((f, i) => (
                 <button
                   key={f}
                   type="button"
                   role="radio"
-                  aria-checked={face % faceCount() === f}
+                  aria-checked={face === f}
                   onClick={() => setFace(f)}
-                  className={cn("animate-pop overflow-hidden rounded-lg ring-offset-2 ring-offset-card transition hover:scale-105", face % faceCount() === f ? "ring-2 ring-primary" : "opacity-80")}
-                  style={{ animationDelay: `${i * 40}ms` }}
+                  className={cn("animate-pop overflow-hidden rounded-lg ring-offset-2 ring-offset-card transition hover:scale-105", face === f ? "ring-2 ring-primary" : "opacity-80")}
+                  style={{ animationDelay: `${i * 30}ms` }}
                 >
                   <Face seed={f} className="aspect-square w-full" />
                 </button>

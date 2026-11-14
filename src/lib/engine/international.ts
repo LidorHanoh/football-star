@@ -136,7 +136,9 @@ function playIntl(rng: Rng, save: CareerSave, opp: string, home: boolean, starte
 }
 
 /** International breaks in a half: three in the autumn, one in March. */
-export function internationalBreaks(save: CareerSave, half: 1 | 2): IntlBreak[] {
+export function internationalBreaks(save: CareerSave, half: 1 | 2, topFlight = true): IntlBreak[] {
+  // Only players in a top division's first team are on the national coach's radar.
+  if (!topFlight) return [];
   const year = save.season?.year ?? 2026;
   const rng = new Rng(hash(`${save.id}:${year}:${half}:intl`));
   const country = save.player.nationality;
@@ -158,7 +160,7 @@ export function internationalBreaks(save: CareerSave, half: 1 | 2): IntlBreak[] 
 }
 
 /** The summer tournament after this season (if there is one): qualified? picked? how far? */
-export function playTournament(save: CareerSave): Tournament | null {
+export function playTournament(save: CareerSave, topFlight = true): Tournament | null {
   const year = save.season?.year ?? 2026;
   const country = save.player.nationality;
   const comp = summerTournament(country, year);
@@ -170,7 +172,7 @@ export function playTournament(save: CareerSave): Tournament | null {
   const form = quals.reduce((s, m) => s + (m.gf > m.ga ? 0.03 : m.gf < m.ga ? -0.03 : 0), 0);
   const chance = comp === "copa" ? 1 : clamp((me - 62) / 22 + (comp === "wc" ? 0.12 : 0) + form, 0.05, 0.97);
   const qualified = rng.chance(chance);
-  const picked = qualified && callUpScore(save) + rng.normal() * 1.2 >= 0;
+  const picked = qualified && topFlight && callUpScore(save) + rng.normal() * 1.2 >= 0;
   const starter = callUpScore(save) >= 4;
   const matches: IntlMatch[] = [];
   let last: IntlStage = "group";

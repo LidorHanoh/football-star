@@ -50,10 +50,12 @@ describe("player career", () => {
     }
   });
 
-  it("gives 3 youth offers from big / mid / small clubs, with wages", () => {
+  it("gives 5 offers from big to small clubs, with wages", () => {
     const save = startOffers(createCareer({ name: "A", nationality: "Israel", position: "ST", foot: "right" }, 7), world, "isr");
-    expect(save.offers).toHaveLength(3);
-    expect(save.offers.map((o) => o.tag)).toEqual(["big", "steady", "fast"]);
+    expect(save.offers).toHaveLength(5);
+    expect(save.offers[0].tag).toBe("big");
+    expect(save.offers.at(-1)!.tag).toBe("fast");
+    expect(new Set(save.offers.map((o) => o.clubId)).size).toBe(5);
     for (const o of save.offers) expect(o.wage).toBeGreaterThan(0);
   });
 

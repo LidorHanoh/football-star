@@ -486,23 +486,23 @@ export interface Toast {
   tone?: "gold" | "green" | "red" | "blue";
 }
 
-/** Small notifications that slide in from the top and leave on their own. */
+/** Small achievement chips under the progress bar: they never cover the match. */
 export function Toasts({ items }: { items: Toast[] }) {
   return (
-    <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-0 z-40 flex flex-col items-center gap-2 px-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <div aria-live="polite" className={cn("pointer-events-none flex flex-wrap justify-center gap-1.5 transition-[margin] duration-300", items.length ? "mt-2" : "mt-0")}>
       {items.map((x) => (
-        <div
+        <span
           key={x.id}
           className={cn(
-            "animate-toast flex w-full max-w-sm items-center gap-3 rounded-2xl px-4 py-3 font-bold text-white shadow-2xl ring-1 ring-white/20",
-            x.tone === "green" ? "bg-emerald-600" : x.tone === "red" ? "bg-rose-600" : x.tone === "blue" ? "bg-blue-700" : "bg-gradient-to-r from-amber-500 to-orange-600",
+            "animate-chip inline-flex max-w-full items-center gap-1.5 rounded-full border py-0.5 ps-1 pe-2.5 text-xs font-bold shadow-sm",
+            x.tone === "green" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : x.tone === "red" ? "border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300" : x.tone === "blue" ? "border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-300" : "border-amber-500/50 bg-amber-400/20 text-amber-800 dark:text-amber-200",
           )}
         >
-          <span className="text-2xl" aria-hidden>
+          <span className="grid size-5 place-items-center rounded-full bg-background/70 text-sm leading-none" aria-hidden>
             {x.icon}
           </span>
-          <span className="min-w-0 flex-1 leading-tight">{x.text}</span>
-        </div>
+          <span className="truncate">{x.text}</span>
+        </span>
       ))}
     </div>
   );

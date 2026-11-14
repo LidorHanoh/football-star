@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export type FaceKind = "player" | "agent" | "manager";
 
 const POOL: Record<FaceKind, { prefix: string; size: number }> = {
-  player: { prefix: "fp/f", size: 334 },
+  player: { prefix: "fp/f", size: 1000 },
   agent: { prefix: "a", size: 24 },
   manager: { prefix: "m", size: 26 },
 };

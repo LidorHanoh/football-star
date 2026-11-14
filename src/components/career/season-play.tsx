@@ -195,7 +195,7 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
     if (!items.length) return;
     const withIds = items.map((x, j) => ({ ...x, id: `${Date.now()}-${j}` }));
     setToasts((all) => [...all, ...withIds].slice(-3));
-    setTimeout(() => setToasts((all) => all.filter((x) => !withIds.includes(x))), 2700);
+    setTimeout(() => setToasts((all) => all.filter((x) => !withIds.includes(x))), 3600);
   }
 
   /** Little notifications at kick-off: a knockout draw, a European night. */
@@ -282,7 +282,6 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
 
   return (
     <section className="mx-auto max-w-3xl pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-      <Toasts items={toasts} />
 
       {/* Full-screen moments between matches */}
       {current?.kind === "decision" && (
@@ -377,6 +376,7 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
             <span className="hidden sm:inline">{fast ? t.play.normal : t.play.faster}</span>
           </Button>
         </div>
+        <Toasts items={toasts} />
       </div>
 
       <div className="grid gap-4 px-4 pt-4">

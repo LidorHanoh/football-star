@@ -96,7 +96,7 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
 
   // Offers from other clubs. Count and reach depend on the agent and the season.
   const q = save.agent?.quality ?? 0;
-  const count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (askedToLeave(save) ? 1 : 0), 1, 5);
+  let count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (askedToLeave(save) ? 1 : 0), 1, 5);
   const reach = BALANCE.agents.reputationReach[q];
   let talent: WorldClub | undefined;
   const countryOf = (key: string) => world.leagues.find((l) => l.key === key)?.country;
@@ -110,7 +110,12 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
   const others = world.clubs.filter((c) => c.id !== myClub.id && fits(c));
   // Mostly your own division, then your country, and abroad only when you're very good.
   const sameLeague = others.filter((c) => c.leagueKey === myClub.leagueKey);
-  const sameCountry = others.filter((c) => c.leagueKey !== myClub.leagueKey && countryOf(c.leagueKey) === myCountry && Math.abs(tierOf(c.leagueKey) - tierOf(myClub.leagueKey)) <= 1);
+  // A division up or down; more than one division up only when you're already that level.
+  const sameCountry = others.filter((c) => c.leagueKey !== myClub.leagueKey && countryOf(c.leagueKey) === myCountry && (Math.abs(tierOf(c.leagueKey) - tierOf(myClub.leagueKey)) <= 1 || c.teamRating <= rating + 1));
+  // Playing below the top division but rated like a top-division player: top-flight clubs come for you.
+  const topFlight = tierOf(myClub.leagueKey) > 1 && contract.level === "first"
+    ? world.clubs.filter((c) => c.id !== myClub.id && countryOf(c.leagueKey) === myCountry && tierOf(c.leagueKey) === 1 && c.teamRating <= rating + (strong ? 3 : 1.5)).sort((a, b) => b.teamRating - a.teamRating)
+    : [];
   const abroadOk = rating >= 72 - q && (strong || rating >= 76);
   const abroad = abroadOk ? others.filter((c) => countryOf(c.leagueKey) !== myCountry && c.teamRating <= rating + 1) : [];
   rng.shuffle(sameLeague);
@@ -126,6 +131,10 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
       }
     }
   };
+  if (topFlight.length) {
+    count = clamp(count + 1, 1, 5);
+    add(rng.shuffle(topFlight.slice(0, 6)), rating >= topFlight[topFlight.length - 1].teamRating + 4 ? 2 : 1);
+  }
   add(abroad, rng.chance(0.5) ? 1 : 0);
   add(sameLeague, Math.max(1, count - 1));
   add(sameCountry, count);

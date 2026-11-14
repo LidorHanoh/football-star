@@ -128,7 +128,7 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
           )}
         </div>
       </header>
-      <main key={screen.kind === "career" ? `${screen.id}-${active?.phase}-${!!active?.signed}` : screen.kind} className="animate-rise flex-1">
+      <main key={screen.kind === "career" ? `${screen.id}-${active?.phase}-${!!active?.signed}` : screen.kind} className="animate-fade flex-1">
         {body}
       </main>
     </div>

@@ -281,3 +281,78 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-toast, .animate-spin-in { animation-duration: 0.01s; }
 }
+
+/* v10: offers sheet, contract signing, achievement chips, training call-out */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes paper-in {
+  from { transform: translateY(45vh) rotate(-8deg) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) rotate(-1.5deg) scale(1); opacity: 1; }
+}
+@keyframes write-ltr {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes write-rtl {
+  from { clip-path: inset(0 0 0 100%); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes pen {
+  0% { inset-inline-start: 0%; transform: translateY(0) rotate(0deg); opacity: 1; }
+  25% { transform: translateY(-6px) rotate(-8deg); }
+  50% { transform: translateY(2px) rotate(4deg); }
+  75% { transform: translateY(-4px) rotate(-6deg); }
+  95% { opacity: 1; }
+  100% { inset-inline-start: 100%; transform: translateY(0) rotate(0deg); opacity: 0; }
+}
+@keyframes stamp {
+  0% { transform: scale(3) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(0.9) rotate(-12deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+}
+@keyframes chip {
+  0% { transform: translateY(-6px) scale(0.9); opacity: 0; }
+  10%, 88% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(0) scale(0.96); opacity: 0; }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-primary) 55%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in oklab, var(--color-primary) 0%, transparent); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* Fade only: a leftover transform would turn the element into the containing block of fixed children. */
+@utility animate-fade {
+  animation: fade 0.35s ease-out both;
+}
+@utility animate-sheet-up {
+  animation: sheet-up 0.32s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@utility animate-paper-in {
+  animation: paper-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+@utility animate-write {
+  animation: write-ltr 1.3s ease-in-out 0.7s both;
+}
+[dir="rtl"] .animate-write {
+  animation-name: write-rtl;
+}
+@utility animate-pen {
+  animation: pen 1.3s ease-in-out 0.7s both;
+}
+@utility animate-stamp {
+  animation: stamp 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) 2.1s both;
+}
+@utility animate-chip {
+  animation: chip 3.6s ease-out both;
+}
+@utility animate-glow {
+  animation: glow 1.8s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-sheet-up, .animate-paper-in, .animate-chip, .animate-glow { animation-duration: 0.01s; }
+}

@@ -13,8 +13,8 @@ import { AgentCard } from "./agent-picker";
 import { Celebration } from "./celebration";
 import { TrophyArt } from "./trophy";
 import { Face } from "./face";
-import { fill, money, teamName } from "./helpers";
-import { OfferCard, Roulette } from "./offers";
+import { fill, teamName } from "./helpers";
+import { OfferBoard } from "./offers";
 import { OfficeTalk } from "./office";
 import { CountryFlag } from "./region-picker";
 import { StatusBars } from "./status-bars";
@@ -26,7 +26,6 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const newAgentPending = betterAgentAvailable(save) && !save.talks.newAgent;
   const [step, setStep] = useState<Step>(save.talks.manager ? (newAgentPending ? "newAgent" : "agent") : "review");
   const [report, setReport] = useState<AgentReport | null>(null);
-  const [spin, setSpin] = useState<{ won: boolean; wage: number } | null>(null);
   const summary = seasonSummary(save);
   const trophies = summary.trophies ?? [];
   const [celebrating, setCelebrating] = useState(step === "review" && trophies.length > 0);
@@ -172,7 +171,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
       )}
 
       {step === "agent" && (
-        <div className="grid gap-5">
+        <div className="grid grid-cols-1 gap-5">
           {mustRetire(save) ? (
             <Bubble who={s.agentTitle} icon={agentFace}>
               {fill(s.retireForced, { age: save.player.age + 1 })}
@@ -198,38 +197,23 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               )}
 
               <h2 className="font-heading text-xl font-bold">{s.chooseClub}</h2>
-              <ul className="grid gap-4 md:grid-cols-3">
-                {canStay && (
-                  <li className="flex flex-col justify-between gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-5">
-                    <p className="font-heading text-xl font-bold">{fill(s.stay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) })}</p>
-                    <p className="text-sm text-muted-foreground">{fill(s.underContract, { year: contract.until + 1 })}</p>
-                    <Button size="lg" className="h-12" onClick={() => onChange(startNextSeason(save, world, null))}>
-                      {fill(s.startNext, { year: nextLabel })}
-                    </Button>
-                  </li>
-                )}
-                {offers.map((o) => (
-                  <li key={o.id}>
-                    <OfferCard
-                      offer={o}
-                      world={world}
-                      t={t}
-                      locale={locale}
-                      agent={save.agent}
-                      age={save.player.age + 1}
-                      highlight={o.tag === "renew" || advice?.pick?.id === o.id}
-                      onSign={() => onChange(startNextSeason(save, world, o.id))}
-                      onAskMore={() => {
-                        const r = askForMore(save, o.id);
-                        setSpin({ won: r.won, wage: r.offer.wage });
-                        onChange(r.save);
-                      }}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <OfferBoard
+                save={save}
+                offers={offers}
+                world={world}
+                t={t}
+                locale={locale}
+                age={save.player.age + 1}
+                best={advice?.pick?.id ?? null}
+                stay={canStay ? { title: fill(s.stay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) }), text: fill(s.underContract, { year: contract.until + 1 }), button: fill(s.startNext, { year: nextLabel }), onStay: () => onChange(startNextSeason(save, world, null)) } : undefined}
+                onSign={(id) => onChange(startNextSeason(save, world, id))}
+                onAskMore={(id) => {
+                  const r = askForMore(save, id);
+                  onChange(r.save);
+                  return r;
+                }}
+              />
               {offers.length === 0 && <p className="text-muted-foreground">{s.noOffers}</p>}
-              {spin && <Roulette won={spin.won} t={t} message={spin.won ? fill(t.offers.won, { wage: money(spin.wage, locale) }) : t.offers.lost} onClose={() => setSpin(null)} />}
             </>
           )}
         </div>

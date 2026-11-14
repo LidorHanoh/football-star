@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Crest } from "./crest";
 import { Face } from "./face";
 import { type CareerDict, fill, money, teamName } from "./helpers";
+import { yearsLabel } from "./offers";
 
 type PressKey = "talent" | "renewal" | "goodFit" | "bargain" | "youth" | "abroad" | "bigStep" | "bench" | "bigMoney" | "standard";
 type Persona = "fan" | "critic" | "analyst";
@@ -66,45 +67,46 @@ export function ContractScreen({ save, world, t, locale, onDone }: { save: Caree
   });
 
   return (
-    <section className="mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-lg flex-col px-4 py-5">
+    <section className="mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-lg flex-col gap-3 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {/* The contract */}
       <div className="animate-rise relative overflow-hidden rounded-3xl text-white shadow-2xl" style={{ background: `linear-gradient(135deg, ${kit.primary} 0%, #0b1220 85%)` }}>
         <div aria-hidden className="absolute -end-10 -top-10 size-48 rounded-full bg-white/10 blur-2xl" />
-        <div className="relative p-5">
-          <p className="text-xs font-bold tracking-[0.2em] text-white/70 uppercase">{s.fromClubId ? c.transfer : c.title}</p>
-          <div className="mt-3 flex items-center gap-4">
-            <span className="animate-pop grid size-20 shrink-0 place-items-center rounded-2xl bg-white shadow-lg">
-              <Crest club={club} className="size-14" />
+        <span aria-hidden className="absolute inset-x-0 top-0 h-1.5" style={{ background: `linear-gradient(90deg, ${kit.primary} 0 50%, ${kit.secondary} 50% 100%)` }} />
+        <div className="relative p-4">
+          <div className="flex items-center gap-3">
+            <span className="animate-pop grid size-16 shrink-0 place-items-center rounded-2xl bg-white shadow-lg">
+              <Crest club={club} className="size-12" />
             </span>
-            <div className="min-w-0">
-              <p className="font-heading text-2xl leading-tight font-black">{teamName(world, club.id, locale, s.level, save.player.age)}</p>
-              <p className="mt-1 text-sm text-white/80">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase">{s.fromClubId ? c.transfer : c.title}</p>
+              <p className="truncate font-heading text-xl leading-tight font-black">{teamName(world, club.id, locale, s.level, save.player.age)}</p>
+              <p className="text-xs text-white/80">
                 {t.offers.level[s.level]} · {t.roles[s.role]}
               </p>
             </div>
           </div>
-          <dl className="mt-5 grid grid-cols-2 gap-2 text-sm">
+          <dl className="mt-3 grid grid-cols-4 gap-1.5 text-center text-xs">
             {[
-              [c.wage, fill(t.dashboard.wage, { wage: money(s.wage, locale) })],
-              [c.net, fill(t.dashboard.wage, { wage: money(netWage(s.wage, save.agent), locale) })],
-              [c.length, fill(c.years, { n: s.years })],
+              [c.wage, money(s.wage, locale)],
+              [c.net, money(netWage(s.wage, save.agent), locale)],
+              [c.length, yearsLabel(t, s.years)],
               [c.until, `${s.year + s.years}`],
             ].map(([k, v], i) => (
-              <div key={k} className="animate-rise rounded-xl bg-black/25 p-2.5 backdrop-blur" style={{ animationDelay: `${200 + i * 80}ms` }}>
-                <dt className="text-xs text-white/60">{k}</dt>
-                <dd className="font-bold tabular-nums">{v}</dd>
+              <div key={k} className="animate-rise min-w-0 rounded-xl bg-black/25 px-1 py-1.5 backdrop-blur" style={{ animationDelay: `${150 + i * 70}ms` }}>
+                <dt className="truncate text-[10px] text-white/60">{k}</dt>
+                <dd className="truncate font-bold tabular-nums">{v}</dd>
               </div>
             ))}
           </dl>
-          <div className="mt-4 flex items-center gap-3">
-            <Face seed={save.player.face} kit={kit} number={save.player.kit} className="size-14 rounded-xl ring-2 ring-white/30" />
+          <div className="mt-3 flex items-center gap-3">
+            <Face seed={save.player.face} kit={kit} number={save.player.kit} className="size-11 rounded-xl ring-2 ring-white/30" />
             <div className="min-w-0 flex-1">
               <p className="truncate font-bold">{save.player.name}</p>
               <p className="text-xs text-white/70">
                 #{save.player.kit} · {t.positions[save.player.position]}
               </p>
             </div>
-            <span className="animate-pop -rotate-12 rounded-lg border-2 border-emerald-300 px-2 py-1 font-heading text-lg font-black text-emerald-300 uppercase" style={{ animationDelay: "700ms" }}>
+            <span className="animate-pop -rotate-12 rounded-lg border-2 border-emerald-300 px-2 py-0.5 font-heading text-base font-black text-emerald-300 uppercase" style={{ animationDelay: "500ms" }}>
               {c.signed}
             </span>
           </div>
@@ -112,32 +114,31 @@ export function ContractScreen({ save, world, t, locale, onDone }: { save: Caree
       </div>
 
       {/* The press */}
-      <h2 className="mt-6 mb-3 flex items-center gap-2 font-heading text-xl font-bold">
+      <h2 className="flex items-center gap-2 font-heading text-lg font-bold">
         <NewspaperIcon className="size-5" aria-hidden /> {c.pressTitle}
       </h2>
-      <ul className="grid gap-3">
+      <ul className="grid gap-2">
         {pieces.map((p, k) => {
           const j = c.journalists[p.w];
           return (
-            <li key={p.w} className="animate-rise flex gap-3 rounded-2xl border bg-card p-3.5 shadow-sm" style={{ animationDelay: `${500 + k * 220}ms` }}>
-              <Face seed={hash(`journalist:${p.w}`)} kind="manager" className="size-12 rounded-full" />
+            <li key={p.w} className="animate-rise flex gap-2.5 rounded-2xl border bg-card p-2.5 shadow-sm" style={{ animationDelay: `${400 + k * 200}ms` }}>
+              <Face seed={hash(`journalist:${p.w}`)} kind="manager" className="size-9 rounded-full" />
               <div className="min-w-0 flex-1">
-                <p className="flex flex-wrap items-baseline gap-x-2 text-sm">
+                <p className="flex flex-wrap items-baseline gap-x-2 text-xs">
                   <strong>{j.name}</strong>
-                  <span className="text-xs text-muted-foreground">{j.outlet}</span>
+                  <span className="text-muted-foreground">{j.outlet}</span>
+                  <span aria-hidden>{p.persona === "fan" ? "👏" : p.persona === "critic" ? "🤨" : "📊"}</span>
                 </p>
-                <p className={cn("mt-1 leading-snug", p.persona === "critic" && "text-foreground/90")}>“{p.text}”</p>
+                <p className={cn("mt-0.5 text-sm leading-snug", p.persona === "critic" && "text-foreground/90")}>“{p.text}”</p>
               </div>
             </li>
           );
         })}
       </ul>
 
-      <div className="sticky bottom-0 mt-auto bg-gradient-to-t from-background via-background to-transparent pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <Button size="lg" className="shine h-14 w-full text-lg font-bold" onClick={onDone}>
-          ⚽ {c.toPitch}
-        </Button>
-      </div>
+      <Button size="lg" className="shine mt-auto h-14 w-full text-lg font-bold" onClick={onDone}>
+        ⚽ {c.toPitch}
+      </Button>
     </section>
   );
 }

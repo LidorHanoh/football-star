@@ -14,16 +14,16 @@ const META: { key: keyof Bars; icon: LucideIcon }[] = [
 
 const tone = (v: number) => (v >= 70 ? "bg-emerald-500" : v >= 45 ? "bg-amber-400" : "bg-rose-500");
 
-/** Six bars: 2 columns on a phone, 3 on a computer. */
+/** Six bars, three across. */
 export function StatusBars({ bars, t }: { bars: Bars; t: CareerDict }) {
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3">
+    <ul className="grid grid-cols-3 gap-x-3 gap-y-2">
       {META.map(({ key, icon: Icon }) => {
         const v = bars[key] ?? 50;
         return (
           <li key={key}>
-            <div className="mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-              <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            <div className="mb-1 flex items-center gap-1 text-[11px] sm:text-sm">
+              <Icon className="size-3 shrink-0 text-muted-foreground sm:size-3.5" aria-hidden />
               <span className="flex-1 truncate">{t.bars[key]}</span>
               <span className="font-bold tabular-nums">{v}</span>
             </div>

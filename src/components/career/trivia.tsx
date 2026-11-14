@@ -43,7 +43,7 @@ function TmCrest({ tm, data, className }: { tm: number; data: TriviaData; classN
 /** Start of a career: pick the trivia you want along the way (or none). */
 export function TopicPicker({ t, onDone }: { t: CareerDict; onDone: (topics: TriviaTopic[]) => void }) {
   const tr = t.trivia;
-  const [picked, setPicked] = useState<TriviaTopic[]>(["general"]);
+  const [picked, setPicked] = useState<TriviaTopic[]>([...TOPICS]);
   const toggle = (k: TriviaTopic) => setPicked((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
   return (
     <section className="mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-lg flex-col px-4 py-6">
@@ -77,9 +77,6 @@ export function TopicPicker({ t, onDone }: { t: CareerDict; onDone: (topics: Tri
       <div className="sticky bottom-0 mt-auto grid gap-2 bg-gradient-to-t from-background via-background to-transparent pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Button size="lg" className="h-14 text-base" onClick={() => onDone(picked)} disabled={!picked.length}>
           {t.next}
-        </Button>
-        <Button variant="ghost" onClick={() => onDone([])}>
-          {tr.noTrivia}
         </Button>
       </div>
     </section>

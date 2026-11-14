@@ -319,9 +319,11 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   }
 
   // The national team: breaks during the half, and a tournament some summers.
-  const breaks = internationalBreaks({ ...save, player, bars }, half);
+  // Only a first-team player in a top division gets called up.
+  const topFlight = contract.level === "first" && (world.leagues.find((l) => l.key === season.leagueKey)?.tier ?? 1) === 1;
+  const breaks = internationalBreaks({ ...save, player, bars }, half, topFlight);
   const intl = [...(season.intl ?? []), ...breaks];
-  const tournament = half === 2 ? playTournament({ ...save, player, bars, season: { ...season, intl } }) : undefined;
+  const tournament = half === 2 ? playTournament({ ...save, player, bars, season: { ...season, intl } }, topFlight) : undefined;
 
   return {
     save: {

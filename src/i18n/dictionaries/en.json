@@ -251,7 +251,7 @@
     },
     "offers": {
       "title": "Your offers",
-      "subtitle": "Three clubs want you — in their youth team, or at a small club straight into the first team. Pick one — or try to squeeze out a better wage.",
+      "subtitle": "{n} clubs want you. Tap an offer to see the contract.",
       "tags": {
         "big": "Big club",
         "steady": "Steady path",
@@ -285,7 +285,13 @@
       "alreadyAsked": "Already negotiated",
       "afterAgent": "After agent ({pct}%): {wage}/week",
       "role": "Squad role",
-      "startChance": "~{pct}% starts"
+      "startChance": "~{pct}% starts",
+      "yearsShort": "{n} yrs",
+      "oneYear": "1 yr",
+      "tapHint": "Tap an offer for details and to sign",
+      "confirmSign": "Tap again to sign ✍️",
+      "confirmHint": "Sure? One more tap signs the contract.",
+      "signing": "Signing the contract…"
     },
     "agent": {
       "title": "Hire an agent",
@@ -454,7 +460,11 @@
       "improve": "Improve {attr}",
       "hint": "You earn training points every half season — more if you train well and play a lot. Key skills (★) raise your rating fastest.",
       "weight": "+1 here is worth about {pct}% of a rating point.",
-      "careerTotals": "Career totals"
+      "careerTotals": "Career totals",
+      "tapToTrain": "Tap to train and improve your skills",
+      "spend": "You have {n} points to spend. Each + improves a skill.",
+      "later": "Later",
+      "done": "Done"
     },
     "attrs": {
       "outfield": {
@@ -1180,7 +1190,6 @@
       "pickTitle": "Pick your trivia",
       "pickText": "During the season, trivia questions pop up between matches. Choose your topics:",
       "reward": "Right answer = a bonus training point 💪",
-      "noTrivia": "No trivia",
       "topics": {
         "general": {
           "title": "General football",
@@ -1496,7 +1505,8 @@
           }
         }
       }
-    }
+    },
+    "close": "Close"
   },
   "notFound": {
     "title": "Page not found",
