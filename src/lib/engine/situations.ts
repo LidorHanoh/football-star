@@ -4,11 +4,14 @@ import { clamp, Rng } from "./rng";
 import type { Attrs, Bars, CareerSave } from "./types";
 
 /**
- * In-season situations: before each half season you face two off-the-pitch
- * decisions. Every option moves your bars and some move your attributes or
- * your injury risk, so the choice shows up in the matches that follow.
+ * In-season situations: 2–3 off-the-pitch decisions a season, between matches.
+ * Every option nudges your bars (and some your attributes or injury risk) a
+ * little, and someone tells you what they think of your choice.
  */
 export type AttrKey = keyof Attrs | "key1" | "key2";
+
+/** Who reacts to your choice. */
+export type Reactor = "captain" | "teammate" | "coach" | "fitnessCoach" | "physio" | "agent" | "journalist" | "friend" | "dad" | "fan" | "youngster";
 
 export interface SituationOption {
   id: string;
@@ -16,122 +19,65 @@ export interface SituationOption {
   attrs?: Partial<Record<AttrKey, number>>;
   /** Extra injury chance per match for the coming half. */
   risk?: number;
+  /** Who tells you what they think of it, and whether they liked it. */
+  who: Reactor;
+  good: boolean;
+}
+
+/** Extra facts a situation may need. */
+export interface SituationContext {
+  /** Country of your club's league. */
+  clubCountry?: string;
 }
 
 export interface Situation {
   id: string;
   options: [SituationOption, SituationOption];
   /** Only offered when this holds. */
-  when?: (s: CareerSave) => boolean;
+  when?: (s: CareerSave, ctx: SituationContext) => boolean;
 }
 
 const isGk = (s: CareerSave) => s.player.position === "GK";
+const o = (id: string, who: Reactor, good: boolean, bars: Partial<Bars> = {}, attrs?: SituationOption["attrs"], risk?: number): SituationOption => ({ id, who, good, bars, ...(attrs ? { attrs } : {}), ...(risk ? { risk } : {}) });
 
+// Small nudges: a choice tilts things a little, it never makes or breaks a season.
 export const SITUATIONS: Situation[] = [
-  {
-    id: "welcomeNight",
-    when: (s) => newAtClub(s) && (s.season?.halvesPlayed ?? 0) === 0,
-    options: [
-      { id: "go", bars: { chemistry: 18, morale: 6, form: -8, fitness: -4 } },
-      { id: "skip", bars: { form: 4, chemistry: -10 } },
-    ],
-  },
-  {
-    id: "teamDinner",
-    options: [
-      { id: "go", bars: { chemistry: 12, morale: 5, form: -6, fitness: -3 } },
-      { id: "rest", bars: { form: 5, fitness: 4, chemistry: -6 } },
-    ],
-  },
-  {
-    id: "sponsorShoot",
-    options: [
-      { id: "shoot", bars: { fans: 12, morale: 4, training: -10, form: -5 } },
-      { id: "train", bars: { training: 8, form: 3 }, attrs: { key1: 1 } },
-    ],
-  },
-  {
-    id: "extraGym",
-    options: [
-      { id: "yes", bars: { fitness: -8 }, attrs: { physical: 1.5, pace: 0.5 }, risk: 0.02 },
-      { id: "no", bars: { fitness: 5 } },
-    ],
-  },
-  {
-    id: "tvInterview",
-    options: [
-      { id: "accept", bars: { fans: 8, morale: 3, trust: -4 } },
-      { id: "decline", bars: { trust: 3 } },
-    ],
-  },
-  {
-    id: "videoSession",
-    options: [
-      { id: "go", bars: { trust: 6, morale: -3 }, attrs: { key2: 1 } },
-      { id: "skip", bars: { morale: 3, trust: -5 } },
-    ],
-  },
-  {
-    id: "friendParty",
-    options: [
-      { id: "go", bars: { morale: 10, fans: 2, form: -10, fitness: -5 } },
-      { id: "stay", bars: { form: 5, morale: -4 } },
-    ],
-  },
-  {
-    id: "mentorKid",
-    when: (s) => s.player.age >= 24,
-    options: [
-      { id: "help", bars: { chemistry: 10, trust: 5, fitness: -3 } },
-      { id: "no", bars: { fitness: 2, chemistry: -3 } },
-    ],
-  },
-  {
-    id: "socialMedia",
-    options: [
-      { id: "post", bars: { fans: 10, morale: 3, form: -4 } },
-      { id: "focus", bars: { form: 4, fans: -2 } },
-    ],
-  },
-  {
-    id: "gamingNight",
-    options: [
-      { id: "join", bars: { chemistry: 8, morale: 4, fitness: -6 } },
-      { id: "sleep", bars: { fitness: 6, form: 3, chemistry: -4 } },
-    ],
-  },
-  {
-    id: "finishingDrills",
-    when: (s) => !isGk(s),
-    options: [
-      { id: "stay", bars: { fitness: -5 }, attrs: { shooting: 1.2 } },
-      { id: "rest", bars: { fitness: 3, morale: 2 } },
-    ],
-  },
-  {
-    id: "keeperDrills",
-    when: isGk,
-    options: [
-      { id: "stay", bars: { fitness: -5 }, attrs: { pace: 0.8, dribbling: 0.8 } },
-      { id: "rest", bars: { fitness: 3, morale: 2 } },
-    ],
-  },
-  {
-    id: "schoolExams",
-    when: (s) => s.player.age <= 17,
-    options: [
-      { id: "study", bars: { morale: 6, training: -6, trust: -2 } },
-      { id: "camp", bars: { training: 10, morale: -5 }, attrs: { key1: 0.8 } },
-    ],
-  },
-  {
-    id: "playThroughPain",
-    when: (s) => s.bars.fitness < 80,
-    options: [
-      { id: "play", bars: { trust: 6, fitness: -6 }, risk: 0.05 },
-      { id: "rest", bars: { fitness: 12, trust: -4 } },
-    ],
-  },
+  { id: "welcomeNight", when: (s) => newAtClub(s) && (s.season?.halvesPlayed ?? 0) === 0, options: [o("go", "captain", true, { chemistry: 6, form: -3 }), o("skip", "teammate", false, { form: 2, chemistry: -4 })] },
+  { id: "teamDinner", options: [o("go", "captain", true, { chemistry: 4, fitness: -2 }), o("rest", "teammate", false, { fitness: 3, chemistry: -2 })] },
+  { id: "sponsorShoot", options: [o("shoot", "agent", true, { fans: 5, training: -3 }), o("train", "coach", true, { training: 3 }, { key1: 0.3 })] },
+  { id: "extraGym", options: [o("yes", "fitnessCoach", true, { fitness: -3 }, { physical: 0.5 }, 0.01), o("no", "fitnessCoach", false, { fitness: 2 })] },
+  { id: "tvInterview", options: [o("accept", "journalist", true, { fans: 4, trust: -2 }), o("decline", "coach", true, { trust: 2 })] },
+  { id: "videoSession", options: [o("go", "coach", true, { trust: 3 }, { key2: 0.3 }), o("skip", "coach", false, { trust: -3, fitness: 1 })] },
+  { id: "friendParty", options: [o("go", "friend", true, { fans: 1, form: -4, fitness: -2 }), o("stay", "coach", true, { form: 2 })] },
+  { id: "mentorKid", when: (s) => s.player.age >= 24, options: [o("help", "youngster", true, { chemistry: 4, trust: 2 }), o("no", "youngster", false, { fitness: 1, chemistry: -2 })] },
+  { id: "socialMedia", options: [o("post", "agent", true, { fans: 4, form: -2 }), o("focus", "coach", true, { form: 2, fans: -1 })] },
+  { id: "gamingNight", options: [o("join", "teammate", true, { chemistry: 3, fitness: -2 }), o("sleep", "teammate", false, { fitness: 3, chemistry: -1 })] },
+  { id: "finishingDrills", when: (s) => !isGk(s), options: [o("stay", "coach", true, { fitness: -2 }, { shooting: 0.5 }), o("rest", "coach", false, { fitness: 2 })] },
+  { id: "keeperDrills", when: isGk, options: [o("stay", "coach", true, { fitness: -2 }, { pace: 0.3, dribbling: 0.3 }), o("rest", "coach", false, { fitness: 2 })] },
+  { id: "schoolExams", when: (s) => s.player.age <= 17, options: [o("study", "dad", true, { training: -3, trust: -1 }), o("camp", "dad", false, { training: 4 }, { key1: 0.3 })] },
+  { id: "playThroughPain", when: (s) => s.bars.fitness < 80, options: [o("play", "coach", true, { trust: 3, fitness: -3 }, undefined, 0.03), o("rest", "physio", true, { fitness: 5, trust: -2 })] },
+  { id: "charityVisit", options: [o("go", "fan", true, { fans: 4, fitness: -1 }), o("skip", "fan", false, { training: 2, fans: -1 })] },
+  { id: "yogaClass", options: [o("try", "physio", true, { fitness: 3, training: -1 }), o("skip", "physio", false, { training: 1 })] },
+  { id: "nutritionist", options: [o("follow", "fitnessCoach", true, { fitness: 3, form: 1 }), o("ignore", "fitnessCoach", false, { form: -1, fans: 1 })] },
+  { id: "lateNightFood", options: [o("join", "teammate", true, { chemistry: 3, fitness: -2 }), o("home", "teammate", false, { fitness: 2 })] },
+  { id: "derbyPress", options: [o("bold", "journalist", true, { fans: 4, trust: -2 }), o("humble", "coach", true, { trust: 2 })] },
+  { id: "rivalTaunt", options: [o("reply", "agent", false, { fans: 3, trust: -3 }), o("ignore", "coach", true, { trust: 2 })] },
+  { id: "leadWarmup", options: [o("lead", "captain", true, { chemistry: 3, trust: 2 }), o("decline", "captain", false, { chemistry: -1 })] },
+  { id: "newRole", options: [o("learn", "coach", true, { trust: 3, form: -1 }, { key2: 0.3 }), o("stick", "coach", false, { form: 2, trust: -2 })] },
+  { id: "newBoots", options: [o("wear", "agent", true, { fans: 3, form: -2 }), o("old", "teammate", true, { form: 2 })] },
+  { id: "familyVisit", options: [o("family", "dad", true, { form: 2, fitness: 2, training: -2 }), o("train", "dad", false, { training: 3 })] },
+  { id: "iceBath", options: [o("bath", "physio", true, { fitness: 4 }), o("home", "physio", false, { fitness: -1, form: 1 })] },
+  { id: "overslept", options: [o("sorry", "coach", true, { trust: -1 }), o("excuse", "coach", false, { trust: -4 })] },
+  { id: "youthClinic", options: [o("go", "youngster", true, { fans: 3, chemistry: 1 }), o("skip", "youngster", false, { training: 2 })] },
+  { id: "podcast", options: [o("accept", "journalist", true, { fans: 4, training: -2 }), o("decline", "agent", false, { training: 2 })] },
+  { id: "dressingRoomFight", options: [o("calm", "captain", true, { chemistry: 4 }), o("stayOut", "teammate", false, { chemistry: -1 })] },
+  { id: "sprintCoach", when: (s) => !isGk(s), options: [o("hire", "fitnessCoach", true, { fitness: -2 }, { pace: 0.5 }), o("no", "agent", false, { fitness: 1 })] },
+  { id: "birthday", options: [o("go", "teammate", true, { chemistry: 4, form: -2 }), o("gift", "teammate", false, { chemistry: 1 })] },
+  { id: "stormTraining", options: [o("go", "coach", true, { training: 3, fitness: -2 }, undefined, 0.01), o("gym", "coach", false, { fitness: 1 })] },
+  { id: "fanSelfies", options: [o("stay", "fan", true, { fans: 4, fitness: -1 }), o("leave", "fan", false, { fitness: 1, fans: -2 })] },
+  { id: "agentDinner", when: (s) => !!s.agent, options: [o("go", "agent", true, { trust: -3, fans: 1 }), o("decline", "agent", false, { trust: 2 })] },
+  { id: "language", when: (s, ctx) => !!ctx.clubCountry && ctx.clubCountry !== s.player.nationality, options: [o("learn", "teammate", true, { chemistry: 4, training: -2 }), o("skip", "teammate", false, { chemistry: -2 })] },
+  { id: "penaltyPractice", when: (s) => !isGk(s), options: [o("practice", "coach", true, { fitness: -1 }, { shooting: 0.4 }), o("skip", "coach", false, { fitness: 1 })] },
 ];
 
 const byId = new Map(SITUATIONS.map((s) => [s.id, s]));
@@ -144,15 +90,18 @@ export function newAtClub(s: CareerSave) {
 }
 
 /**
- * The situations of a half season and when they come up (after which of your
- * matches, as a fraction of the half). 2–3 per season: 1–2 in the first half,
- * 1 in the second. Deterministic, so a reload brings the same ones.
+ * The situations of a half season and when they come up (as a fraction of the
+ * half). 2–3 per season: 1–2 in the first half, 1 in the second. Recent ones
+ * don't come back too soon. Deterministic, so a reload brings the same ones.
  * `save` is the state BEFORE the half is played.
  */
-export function halfSituations(save: CareerSave, half: 1 | 2): { situation: Situation; at: number }[] {
+export function halfSituations(save: CareerSave, half: 1 | 2, ctx: SituationContext = {}): { situation: Situation; at: number }[] {
   if (!save.season) return [];
   const rng = new Rng(hash(`${save.id}:${save.season.year}:${half}`));
-  const pool = SITUATIONS.filter((s) => !s.when || s.when(save));
+  const recent = new Set(save.seenSituations ?? []);
+  const fits = SITUATIONS.filter((s) => !s.when || s.when(save, ctx));
+  const fresh = fits.filter((s) => !recent.has(s.id));
+  const pool = fresh.length >= 3 ? fresh : fits;
   const forced = half === 1 ? pool.filter((s) => s.id === "welcomeNight") : [];
   const rest = rng.shuffle(pool.filter((s) => s.id !== "welcomeNight"));
   const count = half === 1 ? (forced.length || rng.chance(0.5) ? 2 : 1) : 1;
@@ -174,7 +123,7 @@ export function resolveAttr(save: CareerSave, k: AttrKey): keyof Attrs {
 /** Apply a choice. Effects land straight away (bars, attributes) and risky ones raise the injury risk for the next stretch. */
 export function chooseSituation(save: CareerSave, half: number, situationId: string, optionId: string): CareerSave {
   const sit = byId.get(situationId);
-  const opt = sit?.options.find((o) => o.id === optionId);
+  const opt = sit?.options.find((x) => x.id === optionId);
   if (!sit || !opt || !save.season || choiceOf(save, half, situationId)) return save;
   const bars = { ...save.bars };
   for (const [k, v] of Object.entries(opt.bars ?? {}) as [keyof Bars, number][]) bars[k] = Math.round(clamp((bars[k] ?? 50) + v, 0, 100));
@@ -192,5 +141,6 @@ export function chooseSituation(save: CareerSave, half: number, situationId: str
       choices: { ...save.season.choices, [key(half, situationId)]: optionId },
       risk: (save.season.risk ?? 0) + (opt.risk ?? 0),
     },
+    seenSituations: [...(save.seenSituations ?? []).filter((id) => id !== situationId), situationId].slice(-24),
   };
 }

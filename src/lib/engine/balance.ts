@@ -4,7 +4,7 @@ export const BALANCE = {
     age: 16,
     rating: [44, 50] as const, // world rating range for a new player
     potential: { min: 60, max: 95, mean: 76, sd: 8 }, // hidden
-    bars: { trust: 50, form: 50, training: 50, fitness: 90, morale: 70, fans: 20, chemistry: 50 },
+    bars: { trust: 50, form: 50, training: 50, fitness: 90, fans: 20, chemistry: 50 },
   },
 
   offers: {

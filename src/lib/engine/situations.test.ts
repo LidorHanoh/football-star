@@ -39,8 +39,8 @@ describe("in-season situations", () => {
   it("choices move bars and attributes", () => {
     const s = pro(2);
     const shoot = chooseSituation(s, 1, "sponsorShoot", "shoot");
-    expect(shoot.bars.fans).toBe(s.bars.fans + 12);
-    expect(shoot.bars.form).toBe(s.bars.form - 5);
+    expect(shoot.bars.fans).toBe(s.bars.fans + 5);
+    expect(shoot.bars.training).toBe(s.bars.training - 3);
     const train = chooseSituation(s, 1, "sponsorShoot", "train");
     expect(train.player.attrs.shooting).toBeGreaterThan(s.player.attrs.shooting); // ST's key attribute
     expect(train.player.rating).toBe(overall(train.player.attrs, "ST"));

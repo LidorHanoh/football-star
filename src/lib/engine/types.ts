@@ -73,7 +73,6 @@ export interface Bars {
   form: number;
   training: number;
   fitness: number;
-  morale: number;
   fans: number;
   /** How well you click with your teammates (more assists, more starts). */
   chemistry: number;
@@ -129,7 +128,17 @@ export interface MatchResult {
   injured?: InjuryKind;
   /** You missed this match through injury. */
   out?: boolean;
+  /** Competition (absent = league). */
+  comp?: Comp;
+  /** Knockout round (absent = league / European league phase). */
+  stage?: KnockoutStage;
+  /** A knockout draw decided on penalties. */
+  pens?: "won" | "lost";
 }
+
+export type EuroComp = "cl" | "el";
+export type Comp = "league" | "cup" | EuroComp;
+export type KnockoutStage = "po" | "r16" | "qf" | "sf" | "final";
 
 /** What you did in a match. Driven by your attributes. */
 export interface MatchStats {
@@ -148,7 +157,7 @@ export interface MatchStats {
 }
 export const STAT_KEYS: (keyof MatchStats)[] = ["shots", "onTarget", "keyPasses", "passes", "passesDone", "dribbles", "dribblesWon", "tackles", "interceptions", "saves", "cleanSheet"];
 
-export type Trophy = "league" | "youthCup" | "goldenBoot" | "playmaker" | "playerOfSeason" | "goldenGlove" | "wall";
+export type Trophy = "league" | "cup" | "cl" | "el" | "youthCup" | "goldenBoot" | "playmaker" | "playerOfSeason" | "goldenGlove" | "wall";
 
 export type SetPieceKind = "penalty" | "freekick" | "penaltySave";
 /** Goal target zones, seen from the shooter: 0 top-left, 1 top-centre, 2 top-right, 3 bottom-left, 4 bottom-centre, 5 bottom-right. */
@@ -197,6 +206,12 @@ export interface SeasonState {
   choices?: Record<string, string>;
   /** Extra injury risk this half (from choices like extra gym work). */
   risk?: number;
+  /** This season's European campaign (null = not in Europe, absent = not decided yet). */
+  europe?: { comp: EuroComp; draw: string[] } | null;
+  /** Where the league finish takes the club next season (set after the last half). */
+  qualified?: EuroComp | null;
+  /** Trivia answered this season: "half:index" -> right? */
+  trivia?: Record<string, boolean>;
 }
 
 export interface SeasonSummary {
@@ -214,6 +229,25 @@ export interface SeasonSummary {
   /** Apps that have stats (for per-match averages). */
   statApps?: number;
   trophies?: Trophy[];
+  /** European place earned for next season. */
+  qualified?: EuroComp | null;
+  /** Furthest round in the cup / Europe. */
+  cup?: KnockoutStage | null;
+  europe?: { comp: EuroComp; last: KnockoutStage | "league" } | null;
+}
+
+export type TriviaTopic = "general" | "cl" | "top5" | "israel";
+
+/** A contract just signed: shown once on the contract screen with the press reactions. */
+export interface Signing {
+  clubId: string;
+  level: Level;
+  wage: number;
+  years: number;
+  role: Role;
+  tag: Offer["tag"];
+  fromClubId?: string;
+  year: number;
 }
 
 export type Phase = "offers" | "agent" | "season" | "season-end" | "retired";
@@ -235,4 +269,10 @@ export interface CareerSave {
   history: SeasonSummary[];
   /** End-of-season conversation choices made this season (manager / agent) */
   talks: { manager?: string; agent?: string; newAgent?: string };
+  /** Trivia topics picked at the start (empty = no trivia), plus the questions already asked. */
+  trivia?: { topics: TriviaTopic[]; seen: string[]; right: number; asked: number };
+  /** Situations faced recently (so they don't repeat too soon). */
+  seenSituations?: string[];
+  /** The contract screen to show next. */
+  signed?: Signing;
 }

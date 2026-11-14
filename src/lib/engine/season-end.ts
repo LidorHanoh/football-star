@@ -1,4 +1,5 @@
 import { BALANCE } from "./balance";
+import { isLeague, runOf } from "./competitions";
 import { newSeason, offerRole, readPotential, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
@@ -16,6 +17,12 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
   const avgRating = ratings.length ? Math.round((ratings.reduce((t, r) => t + r, 0) / ratings.length) * 100) / 100 : null;
   const leaguePosition = pos >= 0 ? pos + 1 : null;
   const level = save.contract!.level;
+  const league = s.matches.filter(isLeague);
+  const cup = runOf(s.matches, "cup");
+  const euro = s.europe ? runOf(s.matches, s.europe.comp) : null;
+  const trophies = seasonTrophies({ level, position: save.player.position, leaguePosition, matches: league, apps: league.filter((m) => m.minutes).length, goals: league.reduce((t, m) => t + m.goals, 0), assists: league.reduce((t, m) => t + m.assists, 0), avgRating, cleanSheets: total.cleanSheet });
+  if (cup.won) trophies.unshift("cup");
+  if (euro?.won && s.europe) trophies.unshift(s.europe.comp);
   return {
     year: s.year,
     clubId: save.contract!.clubId,
@@ -28,7 +35,10 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
     leaguePosition,
     stats: total,
     statApps,
-    trophies: seasonTrophies({ level, position: save.player.position, leaguePosition, matches: s.matches, apps: played.length, goals, assists, avgRating, cleanSheets: total.cleanSheet }),
+    trophies,
+    qualified: level === "first" ? (s.qualified ?? null) : null,
+    cup: cup.last && cup.last !== "league" ? cup.last : null,
+    europe: s.europe && euro?.last ? { comp: s.europe.comp, last: euro.last } : null,
   };
 }
 
@@ -71,7 +81,7 @@ export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSa
   switch (choice) {
     case "moreMinutes":
       bars.trust += yes ? 8 : no ? -6 : 2;
-      bars.morale += no ? -4 : 5;
+      bars.form += no ? -3 : 3;
       break;
     case "workHarder":
       bars.training += 12;
@@ -79,11 +89,9 @@ export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSa
       break;
     case "raise":
       if (yes && contract) contract = { ...contract, wage: Math.round(contract.wage * 1.15) };
-      bars.morale += yes ? 6 : no ? -4 : 0;
       bars.trust += yes ? 0 : no ? -7 : -2;
       break;
     case "captain":
-      bars.morale += yes ? 8 : no ? -3 : 2;
       bars.chemistry = (bars.chemistry ?? 50) + (yes ? 10 : 0);
       bars.fans += yes ? 5 : 0;
       bars.trust += no ? -5 : 1;
@@ -91,11 +99,9 @@ export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSa
     case "trustMe":
       // A second chance: helps most when things went badly.
       bars.trust += managerMood(save) === "unhappy" ? 7 : 3;
-      bars.morale += 3;
       break;
     case "wantToLeave":
       bars.trust -= out === "maybe" ? 6 : 12;
-      bars.morale += 3;
       break;
   }
   for (const k of Object.keys(bars) as (keyof typeof bars)[]) bars[k] = Math.round(clamp(bars[k] ?? 50, 0, 100));
@@ -229,10 +235,12 @@ export function startNextSeason(save: CareerSave, world: World, offerId: string 
   const year = summary.year + 1;
   let contract = save.contract!;
   let trust = save.bars.trust;
+  let signed: CareerSave["signed"];
   if (offerId) {
     const offer = save.offers.find((o) => o.id === offerId)!;
     contract = { clubId: offer.clubId, level: offer.level, wage: offer.wage, until: year + offer.years - 1 };
     trust = offer.trust;
+    signed = { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year, ...(offer.clubId !== save.contract!.clubId ? { fromClubId: save.contract!.clubId } : {}) };
   } else if (contract.until < year) {
     return save; // must choose an offer: contract over
   }
@@ -248,6 +256,7 @@ export function startNextSeason(save: CareerSave, world: World, offerId: string 
     history: [...save.history, summary],
     season: newSeason(year, club.leagueKey),
     talks: {},
+    ...(signed ? { signed } : {}),
     updatedAt: new Date().toISOString(),
   };
 }

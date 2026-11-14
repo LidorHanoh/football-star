@@ -338,7 +338,6 @@
       "form": "Form",
       "training": "Training",
       "fitness": "Fitness",
-      "morale": "Morale",
       "fans": "Fans",
       "chemistry": "Team chemistry"
     },
@@ -390,7 +389,9 @@
       "ratingDown": "Your world rating dropped: {from} → {to}",
       "trainingPoints": "You earned {n} training points — spend them in the training tab.",
       "injured": "You got injured ({kind}) — out for {n} matches, and lost a little pace and strength.",
-      "recovered": "Back from injury! 💪"
+      "recovered": "Back from injury! 💪",
+      "qualifiedCl": "We qualified for next season's Champions League! ⭐",
+      "qualifiedEl": "We qualified for next season's Europa League! 🟠"
     },
     "seasonEnd": {
       "title": "End of season {year}",
@@ -528,7 +529,17 @@
       "faster": "Faster",
       "normal": "Normal speed",
       "started": "Started",
-      "subOn": "Came off the bench ({min} min)"
+      "subOn": "Came off the bench ({min} min)",
+      "fullTime": "FT",
+      "goal": "Goal",
+      "conceded": "Conceded",
+      "pensWon": "Won on penalties",
+      "pensLost": "Lost on penalties",
+      "result": {
+        "w": "Win",
+        "d": "Draw",
+        "l": "Loss"
+      }
     },
     "setPiece": {
       "penaltyTitle": "Penalty! You step up",
@@ -600,7 +611,10 @@
       "playmaker": "Assist King",
       "playerOfSeason": "Player of the Season",
       "goldenGlove": "Golden Glove",
-      "wall": "Defender of the Season"
+      "wall": "Defender of the Season",
+      "cup": "National Cup",
+      "cl": "Champions League",
+      "el": "Europa League"
     },
     "celebrate": {
       "title": "You won it!",
@@ -608,63 +622,95 @@
       "continue": "Let's go on"
     },
     "situations": {
-      "title": "This week, off the pitch",
+      "title": "Off the pitch",
       "risk": "Injury risk ↑",
       "items": {
         "welcomeNight": {
-          "text": "Your new teammates want to take you out to welcome you to the club.",
+          "text": "The players at your new club invite you out for a welcome night.",
           "options": {
             "go": "Go out with them",
-            "skip": "Stay in and rest"
+            "skip": "Stay home and rest"
+          },
+          "reactions": {
+            "go": "That's how you start! You're one of us now 🍻",
+            "skip": "Shame... the lads were a bit hurt you didn't come."
           }
         },
         "teamDinner": {
-          "text": "Teammates invite you to dinner the night before training.",
+          "text": "Your teammates invite you to dinner before a training day.",
           "options": {
             "go": "Go to dinner",
-            "rest": "Train and get full sleep"
+            "rest": "Train and sleep well"
+          },
+          "reactions": {
+            "go": "What a night! That's how you build a team.",
+            "rest": "Skipping again? Next time, then."
           }
         },
         "sponsorShoot": {
-          "text": "A boot brand wants a photo shoot — on a training day.",
+          "text": "A boot brand wants an ad shoot — on a training day.",
           "options": {
-            "shoot": "Do the shoot (fame)",
-            "train": "Go to training (form)"
+            "shoot": "Do the shoot",
+            "train": "Go to training"
+          },
+          "reactions": {
+            "shoot": "Brilliant! The brand loves you, great for your name.",
+            "train": "That's the attitude I like to see. Well done."
           }
         },
         "extraGym": {
           "text": "The fitness coach offers you extra gym sessions.",
           "options": {
-            "yes": "Bring it on",
-            "no": "I'll rest"
+            "yes": "Yes, more work",
+            "no": "I'm good, I'll rest"
+          },
+          "reactions": {
+            "yes": "I can already see the difference. Don't overdo it.",
+            "no": "Fine, but you won't get stronger like this."
           }
         },
         "tvInterview": {
-          "text": "A TV sports show wants to interview you.",
+          "text": "A TV sports show wants an interview.",
           "options": {
             "accept": "Do the interview",
             "decline": "Politely decline"
+          },
+          "reactions": {
+            "accept": "Great interview! The viewers loved you.",
+            "decline": "Good. Less talking, more football."
           }
         },
         "videoSession": {
-          "text": "The coach invites you to video analysis after hours.",
+          "text": "The coach invites you to a video session after training.",
           "options": {
-            "go": "Join the session",
+            "go": "Go to the session",
             "skip": "Skip it this time"
+          },
+          "reactions": {
+            "go": "See what we fixed? That's how you improve.",
+            "skip": "I expected you there. I remember these things."
           }
         },
         "friendParty": {
-          "text": "A friend is throwing a big party — derby week.",
+          "text": "A friend throws a big party — in a big-match week.",
           "options": {
             "go": "Go to the party",
             "stay": "Stay focused"
+          },
+          "reactions": {
+            "go": "Mate, you were the king of the party! 🎉",
+            "stay": "A real pro. Exactly what I need before a game like this."
           }
         },
         "mentorKid": {
-          "text": "A youngster asks you to help him after training.",
+          "text": "A young player asks you to help him after training.",
           "options": {
             "help": "Help him",
             "no": "No time"
+          },
+          "reactions": {
+            "help": "Thanks so much! I learned so much from you.",
+            "no": "Oh... okay. I thought you'd help me."
           }
         },
         "socialMedia": {
@@ -672,43 +718,322 @@
           "options": {
             "post": "Post videos",
             "focus": "Focus on football"
+          },
+          "reactions": {
+            "post": "The video blew up! Thousands of new followers 📈",
+            "focus": "Good. Social media can wait, football first."
           }
         },
         "gamingNight": {
-          "text": "The lads are gaming late at the team hotel.",
+          "text": "The lads at the hotel are gaming until late.",
           "options": {
             "join": "Join in",
             "sleep": "Go to sleep"
+          },
+          "reactions": {
+            "join": "You beat everyone! What a night.",
+            "sleep": "Boring... but maybe you're right."
           }
         },
         "finishingDrills": {
-          "text": "You can stay after training to practise finishing.",
+          "text": "You can stay after training to practise shooting.",
           "options": {
             "stay": "Stay and practise",
-            "rest": "Go rest"
+            "rest": "Go and rest"
+          },
+          "reactions": {
+            "stay": "Your shooting looks sharper. Keep it up.",
+            "rest": "The spare keeper waited for you. Shame."
           }
         },
         "keeperDrills": {
-          "text": "The keeper coach offers extra diving and reflex drills.",
+          "text": "The goalkeeping coach offers extra diving and reflex drills.",
           "options": {
             "stay": "Stay and practise",
-            "rest": "Go rest"
+            "rest": "Go and rest"
+          },
+          "reactions": {
+            "stay": "Your reactions are quicker. Good work!",
+            "rest": "Fine, but keepers live off those drills."
           }
         },
         "schoolExams": {
-          "text": "School exams fall in the same week as a training camp.",
+          "text": "You have exams this week — and a training camp at the same time.",
           "options": {
-            "study": "Study for exams",
+            "study": "Study for the exams",
             "camp": "Go to the camp"
+          },
+          "reactions": {
+            "study": "So proud of you! School matters just as much.",
+            "camp": "Hope you won't regret it... school matters."
           }
         },
         "playThroughPain": {
-          "text": "Something hurts in your leg before a big match.",
+          "text": "Your leg hurts a bit, but there's a big game on Saturday.",
           "options": {
-            "play": "Play through it",
-            "rest": "Rest and recover"
+            "play": "Play anyway",
+            "rest": "Rest and treat it"
+          },
+          "reactions": {
+            "play": "That's what I like — a warrior! Just be careful.",
+            "rest": "Smart call. A few days and you'll be good as new."
+          }
+        },
+        "charityVisit": {
+          "text": "A children's hospital invites you for a visit.",
+          "options": {
+            "go": "Go and visit",
+            "skip": "Skip it"
+          },
+          "reactions": {
+            "go": "The kids couldn't stop smiling. You're their hero ❤️",
+            "skip": "The kids were waiting for you... maybe next time."
+          }
+        },
+        "yogaClass": {
+          "text": "The physio suggests a yoga class for flexibility.",
+          "options": {
+            "try": "Try yoga",
+            "skip": "Not for me"
+          },
+          "reactions": {
+            "try": "Your body will thank you. Fewer injuries!",
+            "skip": "Shame, it would help your muscles."
+          }
+        },
+        "nutritionist": {
+          "text": "The club nutritionist made you a new meal plan.",
+          "options": {
+            "follow": "Follow the plan",
+            "ignore": "Eat as usual"
+          },
+          "reactions": {
+            "follow": "It shows in your fitness. Excellent!",
+            "ignore": "Pizza before a match? Really?"
+          }
+        },
+        "lateNightFood": {
+          "text": "After a win the lads go for burgers in the middle of the night.",
+          "options": {
+            "join": "Go with them",
+            "home": "Go home"
+          },
+          "reactions": {
+            "join": "That was a crazy night! 🍔",
+            "home": "You missed out! It was fun."
+          }
+        },
+        "derbyPress": {
+          "text": "Before the derby, reporters want a juicy quote from you.",
+          "options": {
+            "bold": "\"We'll beat them\"",
+            "humble": "\"We respect them\""
+          },
+          "reactions": {
+            "bold": "What a headline! Everyone's talking about you.",
+            "humble": "Good. No need to fire the rival up."
+          }
+        },
+        "rivalTaunt": {
+          "text": "Rival fans are taunting you online.",
+          "options": {
+            "reply": "Reply to them",
+            "ignore": "Ignore it"
+          },
+          "reactions": {
+            "reply": "Oh no... that didn't end well. Leave it for the pitch.",
+            "ignore": "Exactly. Answer them on the pitch."
+          }
+        },
+        "leadWarmup": {
+          "text": "The captain asks you to lead today's warm-up.",
+          "options": {
+            "lead": "Lead the warm-up",
+            "decline": "Rather not"
+          },
+          "reactions": {
+            "lead": "You're a leader. Well done!",
+            "decline": "I thought you were ready for it..."
+          }
+        },
+        "newRole": {
+          "text": "The coach wants to try you in a slightly different role.",
+          "options": {
+            "learn": "Happy to learn",
+            "stick": "I prefer my role"
+          },
+          "reactions": {
+            "learn": "Open mind. That's how I like my players.",
+            "stick": "Fine... but I expected more flexibility."
+          }
+        },
+        "newBoots": {
+          "text": "Your sponsor sent new boots — you haven't played in them yet.",
+          "options": {
+            "wear": "Wear the new ones",
+            "old": "Keep the old ones"
+          },
+          "reactions": {
+            "wear": "Perfect for the sponsor! Hope you don't get blisters...",
+            "old": "Smart. You don't change boots before a match."
+          }
+        },
+        "familyVisit": {
+          "text": "Your family comes to visit — you have a day off.",
+          "options": {
+            "family": "Day with the family",
+            "train": "Train on your own"
+          },
+          "reactions": {
+            "family": "So good to see you. We're proud of you!",
+            "train": "A bit sad you weren't with us... but we understand."
+          }
+        },
+        "iceBath": {
+          "text": "After a tough game — ice bath or straight home?",
+          "options": {
+            "bath": "Ice bath 🥶",
+            "home": "Straight home"
+          },
+          "reactions": {
+            "bath": "Your muscles already feel better.",
+            "home": "You'll feel that in your legs tomorrow..."
+          }
+        },
+        "overslept": {
+          "text": "You overslept and you're late for training!",
+          "options": {
+            "sorry": "Apologise to the coach",
+            "excuse": "Make up an excuse"
+          },
+          "reactions": {
+            "sorry": "It happens. I appreciate the honesty.",
+            "excuse": "You really think I believe that?"
+          }
+        },
+        "youthClinic": {
+          "text": "The academy asks you to coach kids on Sunday.",
+          "options": {
+            "go": "Go and coach",
+            "skip": "Not this time"
+          },
+          "reactions": {
+            "go": "The kids can't stop talking about you! ⚽",
+            "skip": "The kids were a bit disappointed..."
+          }
+        },
+        "podcast": {
+          "text": "A popular football podcast invites you on.",
+          "options": {
+            "accept": "Go on the podcast",
+            "decline": "Not now"
+          },
+          "reactions": {
+            "accept": "Great episode! Thousands of listens in a day.",
+            "decline": "Shame, it would've been good for your name."
+          }
+        },
+        "dressingRoomFight": {
+          "text": "Two players are arguing in the dressing room.",
+          "options": {
+            "calm": "Calm things down",
+            "stayOut": "Stay out of it"
+          },
+          "reactions": {
+            "calm": "Thanks. The room is calm thanks to you.",
+            "stayOut": "You could've helped... it affected everyone."
+          }
+        },
+        "sprintCoach": {
+          "text": "A private sprint coach offers to work with you.",
+          "options": {
+            "hire": "Work with him",
+            "no": "Don't need it"
+          },
+          "reactions": {
+            "hire": "You're already quicker. It shows!",
+            "no": "Shame, it would've made a difference."
+          }
+        },
+        "birthday": {
+          "text": "It's a teammate's birthday — party tonight.",
+          "options": {
+            "go": "Go to the party",
+            "gift": "Send a gift and rest"
+          },
+          "reactions": {
+            "go": "You're the best! Thanks for coming 🎂",
+            "gift": "Thanks for the gift... but you should've come."
+          }
+        },
+        "stormTraining": {
+          "text": "There's a storm. Outdoor training is optional.",
+          "options": {
+            "go": "Train in the rain",
+            "gym": "Indoor gym"
+          },
+          "reactions": {
+            "go": "That's character! I saw you out there.",
+            "gym": "Most of the lads went out... shame you weren't there."
+          }
+        },
+        "fanSelfies": {
+          "text": "Fans are waiting for you outside the training ground.",
+          "options": {
+            "stay": "Stop for selfies",
+            "leave": "Hurry home"
+          },
+          "reactions": {
+            "stay": "Legend! I waited two hours for you 🤳",
+            "leave": "We waited so long for you..."
+          }
+        },
+        "agentDinner": {
+          "text": "Your agent wants you at dinner with another club's director.",
+          "options": {
+            "go": "Go to dinner",
+            "decline": "Not now"
+          },
+          "reactions": {
+            "go": "We opened doors! They're interested in you.",
+            "decline": "Fine, but that's not how you build contacts."
+          }
+        },
+        "language": {
+          "text": "You're playing abroad. The club offers language lessons.",
+          "options": {
+            "learn": "Learn the language",
+            "skip": "Get by in English"
+          },
+          "reactions": {
+            "learn": "Wow, you already sound like a local!",
+            "skip": "It's hard to talk to you on the pitch..."
+          }
+        },
+        "penaltyPractice": {
+          "text": "The coach is looking for someone to practise penalties after training.",
+          "options": {
+            "practice": "Practise penalties",
+            "skip": "Go home"
+          },
+          "reactions": {
+            "practice": "Maybe you're our next taker 🎯",
+            "skip": "Someone else will take them, then."
           }
         }
+      },
+      "reactors": {
+        "captain": "The captain",
+        "teammate": "Teammate",
+        "coach": "The coach",
+        "fitnessCoach": "Fitness coach",
+        "physio": "The physio",
+        "agent": "Your agent",
+        "journalist": "Reporter",
+        "friend": "Childhood friend",
+        "dad": "Dad",
+        "fan": "A fan",
+        "youngster": "The young player"
       }
     },
     "injury": {
@@ -752,7 +1077,7 @@
     },
     "fans": {
       "title": "Your fans",
-      "bonus": "+3 fans · +2 morale",
+      "bonus": "+4 fans",
       "items": {
         "poster": {
           "title": "A giant poster in the stands!",
@@ -783,6 +1108,185 @@
     "roleNews": {
       "down": "Manager: \"You're not in form. From now on you're {role}.\"",
       "up": "Manager: \"You're in great shape. From now on you're {role}.\""
+    },
+    "comps": {
+      "league": "League",
+      "cup": "Cup",
+      "cl": "Champions League",
+      "el": "Europa League"
+    },
+    "cupNames": {
+      "Israel": "State Cup",
+      "England": "FA Cup",
+      "Spain": "Copa del Rey",
+      "Italy": "Coppa Italia",
+      "Germany": "DFB-Pokal",
+      "France": "Coupe de France",
+      "Portugal": "Taça de Portugal",
+      "Netherlands": "KNVB Cup",
+      "Belgium": "Belgian Cup",
+      "Turkey": "Turkish Cup",
+      "Scotland": "Scottish Cup",
+      "Greece": "Greek Cup"
+    },
+    "stages": {
+      "league": "League phase",
+      "po": "Play-off",
+      "r16": "Round of 16",
+      "qf": "Quarter-final",
+      "sf": "Semi-final",
+      "final": "Final"
+    },
+    "draw": {
+      "title": "The draw",
+      "pot": "Pot {n}",
+      "drawing": "Drawing…"
+    },
+    "compNews": {
+      "outTitle": "Out of the {comp}",
+      "outText": "{club} knocked us out in the {stage}. We'll come back stronger.",
+      "throughTitle": "Through in the {comp}!",
+      "toR16": "{pts} points in the league phase — straight into the round of 16! 🌟",
+      "toPo": "{pts} points — we're in the play-off for the round of 16.",
+      "leagueOut": "Only {pts} points in the league phase. Our European run is over.",
+      "qualifiedTitle": "Europe next season!",
+      "qualifiedText": "Our league finish takes us into the {comp} next season. 🎉"
+    },
+    "toasts": {
+      "koDraw": "{comp} · {stage}: vs {club}",
+      "euroNight": "European night! {comp} vs {club}",
+      "hatTrick": "Hat-trick for {name}! 🎩",
+      "brace": "A brace for {name}!",
+      "firstGoal": "Your first goal of the season!",
+      "seasonGoals": "{n} goals this season!",
+      "careerGoals": "{n} career goals! 🐐",
+      "debut": "First-team debut!",
+      "through": "Through to the {stage} of the {comp}!",
+      "throughPens": "Won on penalties! Into the {stage}"
+    },
+    "trivia": {
+      "title": "Trivia",
+      "pickTitle": "Pick your trivia",
+      "pickText": "During the season, trivia questions pop up between matches. Choose your topics:",
+      "reward": "Right answer = a bonus training point 💪",
+      "noTrivia": "No trivia",
+      "topics": {
+        "general": {
+          "title": "General football",
+          "text": "Transfers from all over the world"
+        },
+        "cl": {
+          "title": "Champions League",
+          "text": "Europe's biggest clubs and champions"
+        },
+        "top5": {
+          "title": "Top 5 leagues",
+          "text": "England, Spain, Italy, Germany, France"
+        },
+        "israel": {
+          "title": "Israeli league",
+          "text": "Transfers and champions in Israeli football"
+        }
+      },
+      "loan": "Loan",
+      "free": "Free",
+      "whoTransfer": "Who made this move?",
+      "whoWonCl": "Who won the Champions League in {year}?",
+      "whoWonIsr": "Who won the Israeli title in {year}?",
+      "right": "Correct! 🎉",
+      "wrong": "Wrong",
+      "rewardWon": "+1 training point",
+      "itWas": "The right answer: {answer}"
+    },
+    "contractScreen": {
+      "title": "New contract",
+      "transfer": "Official transfer",
+      "wage": "Gross wage",
+      "net": "Net (after agent)",
+      "length": "Length",
+      "years": "{n} years",
+      "until": "Until summer",
+      "signed": "Signed!",
+      "pressTitle": "What the press says",
+      "toPitch": "Take it to the pitch",
+      "journalists": [
+        {
+          "name": "Yoav Sagi",
+          "outlet": "Sport Gate"
+        },
+        {
+          "name": "Michael Barkan",
+          "outlet": "The Kick"
+        },
+        {
+          "name": "Ori Danino",
+          "outlet": "Israeli Football"
+        },
+        {
+          "name": "Noam Perlman",
+          "outlet": "The Pitch"
+        },
+        {
+          "name": "Alon Kadmi",
+          "outlet": "Sport 24"
+        },
+        {
+          "name": "Danny Azulay",
+          "outlet": "The Striker Podcast"
+        }
+      ],
+      "press": {
+        "talent": [
+          "{club} spotted a rare talent. {name} could be the next big thing.",
+          "Too early for a club like this? The pressure on {name} will be huge.",
+          "A {years}-year deal shows {club} believes in {name}'s potential."
+        ],
+        "renewal": [
+          "{club} won't let {name} go. The right signature.",
+          "Fine renewal, but {name} still has to prove he deserves it.",
+          "{name} stays at {club} for {years} more years. Continuity."
+        ],
+        "goodFit": [
+          "{name} walks straight into the {club} team. A perfect fit.",
+          "{name} should start — no excuses now.",
+          "{club} see {name} as a {role}. Plenty of minutes ahead."
+        ],
+        "bargain": [
+          "What a bargain for {club}! {name} is worth much more.",
+          "Low wage — {name} could have got more.",
+          "On paper, a very cheap deal for {club}."
+        ],
+        "youth": [
+          "{name} joins the {club} academy. His future is ahead of him.",
+          "The road from youth to first team is long. {name} will need patience.",
+          "A youth player at {club} — only a few make it from here."
+        ],
+        "abroad": [
+          "{name} goes abroad! A big step for his career.",
+          "Moving abroad isn't easy. Let's see if {name} settles.",
+          "{name} joins {club} — new league, new culture."
+        ],
+        "bigStep": [
+          "{name} takes a huge step up. I believe in him!",
+          "Is {club} too big for him right now? He may end up on the bench.",
+          "The gap between {name} and the {club} squad is big. It'll take time."
+        ],
+        "bench": [
+          "Even from the bench {name} can learn a lot at {club}.",
+          "{name} will sit on the {club} bench. Not sure it's the right move.",
+          "{name} arrives as {role}. He'll have to make every minute count."
+        ],
+        "bigMoney": [
+          "{club} paid big — because {name} is worth it.",
+          "An inflated wage for {name}. Expectations are sky-high now.",
+          "A generous {years}-year deal. {club} are betting on {name}."
+        ],
+        "standard": [
+          "{name} signs for {club}. Can't wait to see him play!",
+          "Another signing at {club}. {name} will need to stand out.",
+          "{name} at {club} for {years} years. Let's see how it goes."
+        ]
+      }
     }
   },
   "notFound": {

@@ -1,8 +1,9 @@
 import { growAttrs, overall, roleFor } from "./attrs";
+import { afterLeaguePhase, CUP_STAGES, EURO_KO, europeDraw, europeThisSeason, euroPoints, knockoutOpponent, qualification, wonTie } from "./competitions";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
 import { clamp, Rng } from "./rng";
-import type { Attrs, CareerSave, Highlight, InjuryKind, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
+import type { Attrs, CareerSave, Comp, EuroComp, Highlight, InjuryKind, KnockoutStage, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
 
 /** Share of a team's goals / assists a player in this position is involved in (per 90, as a starter). */
 const GOAL_SHARE: Record<Position, number> = { GK: 0, CB: 0.04, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.08, AM: 0.15, LW: 0.17, RW: 0.17, ST: 0.3 };
@@ -166,8 +167,64 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
     return m;
   };
 
+  // --- Europe & the cup (first team only) ----------------------------------
+  let europe = season.europe;
+  if (level === "first" && half === 1 && europe === undefined) {
+    const comp = europeThisSeason(save, world, myClub);
+    europe = comp ? { comp, draw: europeDraw(save, world, myClub, comp) } : null;
+  }
+  if (level !== "first") europe = europe ?? null;
+  const prior = season.matches;
+  /** Plays one knockout tie: a draw goes to penalties. */
+  const tie = (opp: WorldClub, comp: Comp, stage: KnockoutStage, roundNo: number) => {
+    const home = stage === "final" ? false : rng.chance(0.5);
+    const m: MatchResult = { ...myMatch(myClub.teamRating, opp, home, roundNo), comp, stage };
+    if (m.goalsFor === m.goalsAgainst) m.pens = rng.chance(clamp(0.5 + (myClub.teamRating - opp.teamRating) / 60, 0.2, 0.8)) ? "won" : "lost";
+    return m;
+  };
+  const euroMatches = () => [...prior, ...matches].filter((m) => m.comp === europe?.comp);
+  const playEuro = (k: number) => {
+    if (!europe) return;
+    const done = euroMatches();
+    const lp = done.filter((m) => !m.stage).length;
+    const roundNo = 100 + done.length + 1;
+    if (lp < 6) {
+      const opp = world.clubs.find((c) => c.id === europe!.draw[lp]);
+      if (opp) matches.push({ ...myMatch(myClub.teamRating, opp, lp % 2 === 0, roundNo), comp: europe.comp });
+      return;
+    }
+    // Knockouts: where are we?
+    const ko = done.filter((m) => m.stage);
+    let stage: KnockoutStage | null;
+    if (!ko.length) stage = afterLeaguePhase(euroPoints(done));
+    else stage = wonTie(ko.at(-1)!) && ko.at(-1)!.stage !== "final" ? EURO_KO[EURO_KO.indexOf(ko.at(-1)!.stage!) + 1] : null;
+    if (!stage || k < 0) return;
+    const opp = knockoutOpponent(rng, world, myClub, europe.comp, stage, [...europe.draw, ...ko.map((m) => m.opponentId)]);
+    matches.push(tie(opp, europe.comp, stage, roundNo));
+  };
+  const playCup = () => {
+    const ko = [...prior, ...matches].filter((m) => m.comp === "cup");
+    const last = ko.at(-1);
+    if (last && (!wonTie(last) || last.stage === "final")) return;
+    const stage = CUP_STAGES[ko.length];
+    if (!stage) return;
+    const opp = knockoutOpponent(rng, world, myClub, "cup", stage, ko.map((m) => m.opponentId));
+    matches.push(tie(opp, "cup", stage, 200 + ko.length + 1));
+  };
+  // When each fixture comes up during the half (as a fraction of it).
+  type Slot = { f: number; play: () => void };
+  const slots: Slot[] = [];
+  if (level === "first") {
+    const euroAt = half === 1 ? [0.18, 0.5, 0.82] : [0.07, 0.19, 0.31, 0.45, 0.58, 0.7, 0.82, 0.96];
+    if (europe) euroAt.forEach((f, k) => slots.push({ f, play: () => playEuro(k) }));
+    if (half === 2) [0.25, 0.52, 0.76, 0.99].forEach((f) => slots.push({ f, play: playCup }));
+  }
+
   // --- League fixtures (always simulated, so the table is real) ------------
-  rounds.forEach((pairs, r) => {
+  rounds.forEach((pairs, r) => slots.push({ f: (r + 0.5) / rounds.length, play: () => leagueRound(pairs, r) }));
+  slots.sort((a, b) => a.f - b.f).forEach((s) => s.play());
+
+  function leagueRound(pairs: [number, number][], r: number) {
     const roundNo = half === 1 ? r + 1 : rounds.length + r + 1;
     for (const [hi, ai] of pairs) {
       const [home, away] = half === 1 ? [clubs[hi], clubs[ai]] : [clubs[ai], clubs[hi]];
@@ -186,7 +243,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
         record(table.get(away.id)!, ag, hg);
       }
     }
-  });
+  }
 
   // --- Youth team: U19 matches against the youth sides of league rivals ----
   if (level === "youth") {
@@ -227,7 +284,6 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   bars.form = Math.round(clamp(avg === null ? bars.form - 10 : 50 + (avg - 6.5) * 40, 0, 100));
   bars.trust = Math.round(clamp(bars.trust + (avg === null ? -3 : (avg - 6.6) * 12) + goals * 1.5, 0, 100));
   bars.fitness = Math.round(clamp(100 - minutesShare * 25 - rng.int(0, 8), 40, 100));
-  bars.morale = Math.round(clamp(bars.morale + (minutesShare - 0.45) * 30 + goals, 0, 100));
   bars.fans = Math.round(clamp(bars.fans + goals * 2 + assists - (avg !== null && avg < 6 ? 3 : 0), 0, 100));
   bars.training = Math.round(clamp(bars.training + rng.int(-4, 6), 0, 100));
   // Playing together builds chemistry; sitting out slowly loses it.
@@ -254,6 +310,12 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   const newTable = sortTable([...table.values()]);
   const pos = newTable.findIndex((r) => r.clubId === myClub.id) + 1;
   events.push({ key: half === 1 ? "halfwayTable" : "finalTable", params: { pos, club: myClub.id } });
+  // Where the league finish takes the club next season.
+  let qualified: EuroComp | null | undefined;
+  if (half === 2) {
+    qualified = qualification(world, season.leagueKey, newTable, myClub.id);
+    if (qualified && level === "first") events.push({ key: qualified === "cl" ? "qualifiedCl" : "qualifiedEl" });
+  }
 
   return {
     save: {
@@ -262,7 +324,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
       player,
       bars,
       contract,
-      season: { ...season, halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0 },
+      season: { ...season, halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0, europe: europe ?? null, ...(half === 2 ? { qualified: qualified ?? null } : {}) },
       phase: half === 2 ? "season-end" : "season",
       updatedAt: new Date().toISOString(),
     },

@@ -2,7 +2,7 @@ import { useId } from "react";
 import type { Trophy } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 
-const SILVER: Trophy[] = ["youthCup", "wall"];
+const SILVER: Trophy[] = ["youthCup", "wall", "cup", "cl", "el"];
 
 /** Hand-drawn SVG trophies, one shape per award, on a wooden plinth. */
 export function TrophyArt({ kind, className, title }: { kind: Trophy; className?: string; title?: string }) {
@@ -49,6 +49,9 @@ export function TrophyArt({ kind, className, title }: { kind: Trophy; className?
         {kind === "playerOfSeason" && <Star metal={metal} />}
         {kind === "goldenGlove" && <Glove metal={metal} />}
         {kind === "wall" && <Shield metal={metal} dark={dark} />}
+        {kind === "cup" && <Cup metal={metal} />}
+        {kind === "cl" && <BigEars metal={metal} />}
+        {kind === "el" && <TallCup metal={metal} />}
       </g>
       {/* shine */}
       <path d="M34 26 Q36 44 44 54" stroke="#fff" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.55" />
@@ -134,5 +137,29 @@ function Shield({ metal, dark }: { metal: string; dark: string }) {
       <path d="M50 22 L68 29 V46 Q68 63 50 73 Q32 63 32 46 V29 Z" fill="none" stroke={dark} strokeOpacity="0.6" />
       <path d="M41 46 L48 53 L61 38" fill="none" stroke={dark} strokeWidth="4" strokeLinecap="round" />
     </g>
+  );
+}
+
+/** The one with the big ears. */
+function BigEars({ metal }: { metal: string }) {
+  return (
+    <>
+      <path d="M30 14 C10 12 6 40 34 50 M70 14 C90 12 94 40 66 50" fill="none" stroke={metal} strokeWidth="7" strokeLinecap="round" />
+      <path d="M30 12 H70 C70 40 62 56 50 60 C38 56 30 40 30 12 Z" fill={metal} />
+      <path d="M44 60 H56 L58 80 H42 Z" fill={metal} />
+      <path d="M34 80 H66 L70 98 H30 Z" fill={metal} />
+    </>
+  );
+}
+
+/** A tall, slim cup on a long stem. */
+function TallCup({ metal }: { metal: string }) {
+  return (
+    <>
+      <path d="M36 8 H64 L60 44 C58 52 54 56 50 56 C46 56 42 52 40 44 Z" fill={metal} />
+      <path d="M36 12 C26 14 26 30 38 34 M64 12 C74 14 74 30 62 34" fill="none" stroke={metal} strokeWidth="3" />
+      <path d="M47 56 H53 L54 84 H46 Z" fill={metal} />
+      <path d="M36 84 H64 L68 98 H32 Z" fill={metal} />
+    </>
   );
 }

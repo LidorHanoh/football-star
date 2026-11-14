@@ -19,8 +19,8 @@ export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) 
   const [spin, setSpin] = useState<{ offerId: string; won: boolean; wage: number } | null>(null);
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="font-heading text-3xl font-extrabold">{t.offers.title}</h1>
+    <section className="mx-auto max-w-5xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
+      <h1 className="font-heading text-2xl font-extrabold sm:text-3xl">{t.offers.title}</h1>
       <p className="mb-6 text-muted-foreground">{t.offers.subtitle}</p>
       <ul className="grid gap-4 md:grid-cols-3">
         {save.offers.map((offer, i) => (
@@ -76,7 +76,7 @@ export function OfferCard({
   const league = world.leagues.find((l) => l.key === club.leagueKey);
   const tagColor = { big: "bg-amber-500/15 text-amber-600 dark:text-amber-300", steady: "bg-sky-500/15 text-sky-600 dark:text-sky-300", fast: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", renew: "bg-violet-500/15 text-violet-600 dark:text-violet-300", transfer: "bg-rose-500/15 text-rose-600 dark:text-rose-300", talent: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300" }[offer.tag];
   return (
-    <article className={cn("flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg", highlight && "border-primary ring-2 ring-primary/30")}>
+    <article className={cn("flex h-full flex-col gap-4 rounded-2xl border bg-card p-4 shadow-sm transition sm:p-5 md:hover:-translate-y-1 md:hover:shadow-lg", highlight && "border-primary ring-2 ring-primary/30")}>
       <div className="flex items-start gap-3">
         <Crest club={club} className="size-12" />
         <div className="min-w-0">
@@ -125,11 +125,11 @@ export function OfferCard({
       </dl>
       {advice && agent && <AgentTip advice={advice} agent={agent} t={t} />}
       <div className="mt-auto grid gap-2">
-        <Button size="lg" className="h-11" onClick={onSign}>
+        <Button size="lg" className="h-12" onClick={onSign}>
           <PenLineIcon aria-hidden /> {t.offers.sign}
         </Button>
         {onAskMore && (
-          <Button size="lg" variant={advice?.verdict === "askMore" ? "secondary" : "outline"} className={cn("h-11", advice?.verdict === "askMore" && !offer.negotiated && "ring-2 ring-amber-400")} disabled={!!offer.negotiated} onClick={onAskMore} title={t.offers.askMoreHint}>
+          <Button size="lg" variant={advice?.verdict === "askMore" ? "secondary" : "outline"} className={cn("h-12", advice?.verdict === "askMore" && !offer.negotiated && "ring-2 ring-amber-400")} disabled={!!offer.negotiated} onClick={onAskMore} title={t.offers.askMoreHint}>
             <DicesIcon aria-hidden /> {offer.negotiated ? t.offers.alreadyAsked : t.offers.askMore}
           </Button>
         )}

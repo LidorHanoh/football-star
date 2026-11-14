@@ -35,8 +35,8 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
   const number = kit ?? DEFAULT_KIT[position];
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 font-heading text-3xl font-extrabold">{t.create.title}</h1>
+    <section className="mx-auto max-w-3xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
+      <h1 className="mb-6 font-heading text-2xl font-extrabold sm:text-3xl">{t.create.title}</h1>
       <form
         className="grid gap-6 md:grid-cols-2"
         onSubmit={(e) => {
@@ -96,7 +96,7 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
             <legend className="mb-2 text-sm font-medium">{t.create.foot}</legend>
             <div className="grid grid-cols-2 gap-2">
               {(["right", "left"] as const).map((f) => (
-                <Button key={f} type="button" variant={foot === f ? "default" : "outline"} className="h-11" onClick={() => setFoot(f)} aria-pressed={foot === f}>
+                <Button key={f} type="button" variant={foot === f ? "default" : "outline"} className="h-12" onClick={() => setFoot(f)} aria-pressed={foot === f}>
                   {t.create[f]}
                 </Button>
               ))}

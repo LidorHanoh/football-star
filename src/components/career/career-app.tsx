@@ -10,6 +10,7 @@ import { clubKit } from "@/lib/engine/people";
 import type { CareerSave, World } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { AgentPicker } from "./agent-picker";
+import { ContractScreen } from "./contract-screen";
 import { CreatePlayer } from "./create-player";
 import { Crest } from "./crest";
 import { Dashboard } from "./dashboard";
@@ -18,8 +19,9 @@ import { type CareerDict, fill, loadSaves, storeSaves, teamName } from "./helper
 import { RegionPicker } from "./region-picker";
 import { OffersScreen } from "./offers";
 import { SeasonEnd } from "./season-end";
+import { TopicPicker } from "./trivia";
 
-type Screen = { kind: "list" } | { kind: "create" } | { kind: "league"; input: NewPlayerInput } | { kind: "career"; id: string };
+type Screen = { kind: "list" } | { kind: "create" } | { kind: "topics"; input: NewPlayerInput } | { kind: "league"; input: NewPlayerInput } | { kind: "career"; id: string };
 
 const subscribe = () => () => {};
 
@@ -37,9 +39,11 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
     if (hydrated) setSaves(loadSaves()); // eslint-disable-line react-hooks/set-state-in-effect -- one-time load from device storage
   }, [hydrated]);
 
+  const active0 = screen.kind === "career" ? saves.find((s) => s.id === screen.id) : undefined;
+  const view = `${screen.kind}:${active0?.phase}:${!!active0?.signed}`;
   useEffect(() => {
     window.scrollTo({ top: 0 });
-  }, [screen.kind]);
+  }, [view]);
 
   const active = screen.kind === "career" ? saves.find((s) => s.id === screen.id) : undefined;
 
@@ -60,12 +64,14 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
     });
   }
 
-  const back = screen.kind === "list" ? null : screen.kind === "league" ? () => setScreen({ kind: "create" }) : () => setScreen({ kind: "list" });
+  const back = screen.kind === "list" ? null : screen.kind === "league" ? () => setScreen({ kind: "topics", input: screen.input }) : screen.kind === "topics" ? () => setScreen({ kind: "create" }) : () => setScreen({ kind: "list" });
   const BackIcon = getDir(locale) === "rtl" ? ArrowRightIcon : ArrowLeftIcon;
 
   let body: React.ReactNode;
   if (screen.kind === "create") {
-    body = <CreatePlayer t={t} onDone={(input) => setScreen({ kind: "league", input })} />;
+    body = <CreatePlayer t={t} onDone={(input) => setScreen({ kind: "topics", input })} />;
+  } else if (screen.kind === "topics") {
+    body = <TopicPicker t={t} onDone={(trivia) => setScreen({ kind: "league", input: { ...screen.input, trivia } })} />;
   } else if (screen.kind === "league") {
     body = (
       <RegionPicker
@@ -81,8 +87,9 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
     );
   } else if (active) {
     const props = { save: active, world, t, locale, onChange: update };
-    body =
-      active.phase === "offers" ? (
+    body = active.signed ? (
+      <ContractScreen save={active} world={world} t={t} locale={locale} onDone={() => update({ ...active, signed: undefined })} />
+    ) : active.phase === "offers" ? (
         <OffersScreen {...props} />
       ) : active.phase === "agent" ? (
         <AgentPicker {...props} />
@@ -98,9 +105,9 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
   const club = active?.contract ? world.clubs.find((c) => c.id === active.contract!.clubId) : undefined;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-gradient-to-b from-primary/5 via-background to-background">
+    <div className="flex min-h-dvh flex-col overflow-x-clip bg-gradient-to-b from-primary/5 via-background to-background">
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-2 pt-[env(safe-area-inset-top)] sm:px-4">
           {back ? (
             <Button variant="ghost" size="sm" onClick={back} className="gap-1.5">
               <BackIcon aria-hidden /> {t.back}
@@ -121,7 +128,7 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
           )}
         </div>
       </header>
-      <main key={screen.kind === "career" ? `${screen.id}-${active?.phase}` : screen.kind} className="animate-rise flex-1 pb-10">
+      <main key={screen.kind === "career" ? `${screen.id}-${active?.phase}-${!!active?.signed}` : screen.kind} className="animate-rise flex-1">
         {body}
       </main>
     </div>
@@ -130,9 +137,9 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
 
 function CareerList({ saves, hydrated, world, t, locale, onNew, onOpen, onDelete }: { saves: CareerSave[]; hydrated: boolean; world: World; t: CareerDict; locale: Locale; onNew: () => void; onOpen: (id: string) => void; onDelete: (id: string) => void }) {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8">
+    <section className="mx-auto max-w-3xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-heading text-3xl font-extrabold">{t.title}</h1>
+        <h1 className="font-heading text-2xl font-extrabold sm:text-3xl">{t.title}</h1>
         <Button size="lg" className="shine h-12" onClick={onNew}>
           <PlusIcon aria-hidden /> {t.newCareer}
         </Button>

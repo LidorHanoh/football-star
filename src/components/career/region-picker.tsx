@@ -25,8 +25,8 @@ export function RegionPicker({ t, world, locale, onPick }: { t: CareerDict; worl
   const countries = countriesOf(world);
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="animate-rise font-heading text-3xl font-extrabold sm:text-4xl">{r.title}</h1>
+    <section className="mx-auto max-w-5xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
+      <h1 className="animate-rise font-heading text-2xl font-extrabold sm:text-3xl sm:text-4xl">{r.title}</h1>
       <p className="animate-rise mb-6 text-muted-foreground" style={{ animationDelay: "60ms" }}>
         {r.subtitle}
       </p>

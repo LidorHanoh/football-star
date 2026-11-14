@@ -2,7 +2,7 @@ import { attrWeight, DEFAULT_KIT, makeAttrs, overall, roleFor, upgradePlayerFiel
 import { BALANCE } from "./balance";
 import { hash, personName } from "./people";
 import { clamp, newSeed, Rng } from "./rng";
-import type { Agent, Attrs, CareerSave, Level, Offer, Position, World, WorldClub } from "./types";
+import type { Agent, Attrs, CareerSave, Level, Offer, Position, TriviaTopic, World, WorldClub } from "./types";
 
 // ---------------------------------------------------------------------------
 // Hidden potential: stored obfuscated, never shown.
@@ -21,6 +21,8 @@ export interface NewPlayerInput {
   foot: "right" | "left";
   kit?: number;
   face?: number;
+  /** Trivia topics for the career (none = no trivia). */
+  trivia?: TriviaTopic[];
 }
 
 export function createCareer(input: NewPlayerInput, seed = newSeed()): CareerSave {
@@ -58,6 +60,7 @@ export function createCareer(input: NewPlayerInput, seed = newSeed()): CareerSav
     season: null,
     history: [],
     talks: {},
+    trivia: { topics: input.trivia ?? [], seen: [], right: 0, asked: 0 },
   };
 }
 
@@ -187,10 +190,11 @@ function signOfferRaw(save: CareerSave, offerId: string, world: World): CareerSa
   return {
     ...save,
     contract: { clubId: offer.clubId, level: offer.level, wage: offer.wage, until: year + offer.years - 1 },
-    bars: { ...save.bars, trust: offer.trust, morale: clamp(save.bars.morale + (offer.negotiated === "won" ? 8 : 0), 0, 100) },
+    bars: { ...save.bars, trust: offer.trust },
     offers: [],
     phase: save.agent || save.history.length ? "season" : "agent",
     season: newSeason(year, club.leagueKey),
+    signed: { clubId: offer.clubId, level: offer.level, wage: offer.wage, years: offer.years, role: offer.role, tag: offer.tag, year },
   };
 }
 

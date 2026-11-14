@@ -54,9 +54,9 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const advice = agentSummary(save, world, canStay);
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-8">
+    <section className="mx-auto max-w-5xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
       {celebrating && <Celebration trophies={trophies} t={t} subtitle={`${teamName(world, contract.clubId, locale, contract.level, save.player.age)} · ${seasonLabel}`} onClose={() => setCelebrating(false)} />}
-      <h1 className="mb-1 flex items-center gap-2 font-heading text-3xl font-extrabold">
+      <h1 className="mb-1 flex items-center gap-2 font-heading text-2xl font-extrabold sm:text-3xl">
         <TrophyIcon className="text-amber-500" aria-hidden /> {fill(s.title, { year: seasonLabel })}
       </h1>
       <ol className="mb-6 flex gap-2 text-xs font-semibold text-muted-foreground" aria-label="steps">
@@ -69,7 +69,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
 
       {step === "review" && (
         <div className="grid gap-5">
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+          <dl className="grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-3">
             {[
               [t.dashboard.apps, summary.apps],
               [t.dashboard.goals, summary.goals],
@@ -77,9 +77,9 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               [t.dashboard.avg, summary.avgRating ?? "–"],
               [s.position, summary.leaguePosition ?? "–"],
             ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border bg-card p-4 text-center">
-                <dd className="font-heading text-3xl font-black tabular-nums">{value}</dd>
-                <dt className="text-sm text-muted-foreground">{label}</dt>
+              <div key={String(label)} className="rounded-2xl border bg-card p-3 text-center sm:p-4">
+                <dd className="font-heading text-2xl font-black tabular-nums sm:text-3xl">{value}</dd>
+                <dt className="truncate text-xs text-muted-foreground sm:text-sm">{label}</dt>
               </div>
             ))}
           </dl>
@@ -93,10 +93,24 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               ))}
             </ul>
           )}
-          <div className="rounded-2xl border bg-card p-5">
+          {(summary.cup || summary.europe) && (
+            <div className="flex flex-wrap gap-2 text-sm font-semibold">
+              {summary.europe && (
+                <span className={summary.europe.comp === "cl" ? "rounded-full bg-blue-700 px-3 py-1 text-white" : "rounded-full bg-orange-600 px-3 py-1 text-white"}>
+                  {summary.europe.comp === "cl" ? "⭐" : "🟠"} {t.comps[summary.europe.comp]} · {summary.trophies?.includes(summary.europe.comp) ? "🏆" : t.stages[summary.europe.last]}
+                </span>
+              )}
+              {summary.cup && (
+                <span className="rounded-full bg-amber-500 px-3 py-1 text-black">
+                  🏆 {t.comps.cup} · {summary.trophies?.includes("cup") ? "🏆" : t.stages[summary.cup]}
+                </span>
+              )}
+            </div>
+          )}
+          <div className="rounded-2xl border bg-card p-4 sm:p-5">
             <StatusBars bars={save.bars} t={t} />
           </div>
-          <Button size="lg" className="h-12 justify-self-end" onClick={() => setStep("manager")}>
+          <Button size="lg" className="h-14 w-full sm:h-12 sm:w-auto sm:justify-self-end" onClick={() => setStep("manager")}>
             <MessageCircleIcon aria-hidden /> {s.toManager}
           </Button>
         </div>
@@ -211,7 +225,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                   <li className="flex flex-col justify-between gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-5">
                     <p className="font-heading text-xl font-bold">{fill(s.stay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) })}</p>
                     <p className="text-sm text-muted-foreground">{fill(s.underContract, { year: contract.until + 1 })}</p>
-                    <Button size="lg" className="h-11" onClick={() => onChange(startNextSeason(save, world, null))}>
+                    <Button size="lg" className="h-12" onClick={() => onChange(startNextSeason(save, world, null))}>
                       {fill(s.startNext, { year: nextLabel })}
                     </Button>
                   </li>

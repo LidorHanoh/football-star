@@ -13,8 +13,8 @@ export function AgentPicker({ save, t, onChange }: ScreenProps) {
   const agents = save.agentsOnOffer.length ? save.agentsOnOffer : rollAgents(save).agentsOnOffer;
   const tier = agentTierFor(save.player.rating, save.bars.fans);
   return (
-    <section className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="font-heading text-3xl font-extrabold">{t.agent.title}</h1>
+    <section className="mx-auto max-w-4xl px-3 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-8">
+      <h1 className="font-heading text-2xl font-extrabold sm:text-3xl">{t.agent.title}</h1>
       <p className="mb-2 text-muted-foreground">{t.agent.subtitle}</p>
       <p className="mb-6 rounded-xl bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">{t.agent.lockedHint}</p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -31,7 +31,7 @@ export function AgentPicker({ save, t, onChange }: ScreenProps) {
             <p className="font-bold">{t.agent.none}</p>
           </div>
           <p className="text-sm text-muted-foreground">{t.agent.noneHint}</p>
-          <Button size="lg" variant="outline" className="mt-auto h-11" onClick={() => onChange(hireAgent(save, null))}>
+          <Button size="lg" variant="outline" className="mt-auto h-12" onClick={() => onChange(hireAgent(save, null))}>
             {t.next}
           </Button>
         </li>
@@ -69,7 +69,7 @@ export function AgentCard({ agent: a, t, locked, onHire, hireLabel }: { agent: A
           <LockIcon className="size-4 shrink-0" aria-hidden /> {fill(t.agent.locked, { n: agentUnlockRating(a.quality), fans: agentUnlockFans(a.quality) })}
         </p>
       ) : (
-        <Button size="lg" className="mt-auto h-11" onClick={onHire}>
+        <Button size="lg" className="mt-auto h-12" onClick={onHire}>
           {hireLabel ?? t.agent.hire}
         </Button>
       )}
