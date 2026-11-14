@@ -2,7 +2,7 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { getDir, type Locale } from "@/i18n/config";
-import { FLAG_CODE, REGIONS, regionLeagues } from "@/lib/engine/regions";
+import { COUNTRY_NAMES, countriesOf, FLAG_CODE } from "@/lib/engine/regions";
 import type { World } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { type CareerDict, fill, localized } from "./helpers";
@@ -18,11 +18,11 @@ export function CountryFlag({ country, className }: { country: string; className
   return code ? <Flag code={code} className={className} /> : null;
 }
 
-/** Start of a career: pick a region; the academy offers come from its leagues. */
+/** Start of a career: pick a country; the academy offers come from its leagues. */
 export function RegionPicker({ t, world, locale, onPick }: { t: CareerDict; world: World; locale: Locale; onPick: (leagueKeys: string[]) => void }) {
   const r = t.region;
   const Arrow = getDir(locale) === "rtl" ? ChevronLeftIcon : ChevronRightIcon;
-  const regions = REGIONS.map((region) => ({ region, leagues: regionLeagues(world, region.key) })).filter((x) => x.leagues.length);
+  const countries = countriesOf(world);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-8">
@@ -30,52 +30,44 @@ export function RegionPicker({ t, world, locale, onPick }: { t: CareerDict; worl
       <p className="animate-rise mb-6 text-muted-foreground" style={{ animationDelay: "60ms" }}>
         {r.subtitle}
       </p>
-      <ul className="grid gap-4 sm:grid-cols-2">
-        {regions.map(({ region, leagues }, i) => (
-          <li key={region.key} className={cn("animate-rise", i === 0 && "sm:col-span-2")} style={{ animationDelay: `${100 + i * 70}ms` }}>
-            <button
-              type="button"
-              onClick={() => onPick(leagues.map((l) => l.key))}
-              className="group relative flex h-full w-full flex-col gap-4 overflow-hidden rounded-3xl border bg-card p-5 text-start shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:ring-4 focus-visible:ring-primary/40 focus-visible:outline-none"
-            >
-              {/* Colour wash + big blurred flag in the background */}
-              <span aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.16] transition-opacity duration-300 group-hover:opacity-25" style={{ background: `linear-gradient(135deg, ${region.colors[0]}, ${region.colors[1]})` }} />
-              <Flag code={region.flags[0]} className="pointer-events-none absolute -end-10 -top-10 size-44 rotate-12 rounded-full opacity-15 blur-[2px] transition duration-500 group-hover:scale-110 group-hover:rotate-6" />
-
-              <span className="relative flex items-center gap-4">
-                <span className="flex -space-x-3 rtl:space-x-reverse">
-                  {region.flags.map((code) => (
-                    <Flag key={code} code={code} className="size-12 rounded-full shadow-md ring-[3px] ring-card transition duration-300 group-hover:-translate-y-0.5 sm:size-14" />
-                  ))}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-heading text-2xl font-black leading-tight">{r.names[region.key]}</span>
-                  <span className="text-sm text-muted-foreground">{fill(r.leagues, { n: leagues.length })}</span>
-                </span>
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow transition duration-300 group-hover:scale-110">
-                  <Arrow aria-hidden />
-                </span>
-              </span>
-
-              <span className="relative text-sm">{r.blurbs[region.key]}</span>
-
-              <span className="relative flex flex-wrap gap-1.5">
-                {leagues.map((l) => {
-                  const stars = Math.max(1, Math.min(5, Math.round((l.strength - 50) / 9)));
-                  return (
-                    <span key={l.key} className="flex items-center gap-1.5 rounded-full border bg-background/70 px-2.5 py-1 text-xs font-medium backdrop-blur">
-                      <CountryFlag country={l.country} className="size-4 rounded-full" />
-                      <span className="max-w-36 truncate">{localized(l.name, locale)}</span>
-                      <span className="text-amber-500" aria-label={`${t.league.strength} ${stars}/5`}>
-                        {"★".repeat(stars)}
-                      </span>
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {countries.map(({ country, leagues }, i) => {
+          const name = COUNTRY_NAMES[country]?.[locale === "he" ? "he" : "en"] ?? country;
+          const code = FLAG_CODE[country];
+          const top = leagues[0];
+          const stars = Math.max(1, Math.min(5, Math.round((top.strength - 50) / 9)));
+          return (
+            <li key={country} className={cn("animate-rise", i === 0 && "col-span-2")} style={{ animationDelay: `${80 + Math.min(i, 14) * 45}ms` }}>
+              <button
+                type="button"
+                onClick={() => onPick(leagues.map((l) => l.key))}
+                className="group relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-start shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:ring-4 focus-visible:ring-primary/40 focus-visible:outline-none"
+              >
+                {/* The flag washes the card */}
+                {code && <Flag code={code} className="pointer-events-none absolute inset-0 size-full opacity-[0.12] blur-[1px] transition duration-500 group-hover:scale-110 group-hover:opacity-20" />}
+                <span className="relative flex items-center gap-3">
+                  {code && <Flag code={code} className={cn("rounded-full shadow-md ring-[3px] ring-card transition duration-300 group-hover:scale-110 group-hover:-rotate-6", i === 0 ? "size-16" : "size-12")} />}
+                  <span className="min-w-0 flex-1">
+                    <span className={cn("block truncate font-heading font-black leading-tight", i === 0 ? "text-3xl" : "text-xl")}>{name}</span>
+                    <span className="text-xs text-amber-500" aria-label={`${t.league.strength} ${stars}/5`}>
+                      {"★".repeat(stars)}
+                      <span className="text-muted-foreground/40">{"★".repeat(5 - stars)}</span>
                     </span>
-                  );
-                })}
-              </span>
-            </button>
-          </li>
-        ))}
+                  </span>
+                  <Arrow className="size-5 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary rtl:group-hover:-translate-x-0.5" aria-hidden />
+                </span>
+                <span className="relative flex flex-wrap gap-1">
+                  {leagues.map((l) => (
+                    <span key={l.key} className="max-w-full truncate rounded-full border bg-background/75 px-2 py-0.5 text-[0.7rem] font-medium backdrop-blur">
+                      {localized(l.name, locale)}
+                    </span>
+                  ))}
+                  {leagues.length > 1 && <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[0.7rem] font-bold text-primary">{fill(r.leagues, { n: leagues.length })}</span>}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

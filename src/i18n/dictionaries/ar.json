@@ -532,30 +532,10 @@
       "poor": "Ouch… scuffed it"
     },
     "region": {
-      "title": "Where do you start?",
-      "subtitle": "Pick a region — we'll find academies that want to sign you.",
+      "title": "Which country do you start in?",
+      "subtitle": "Pick a country — we'll find academies that want to sign you.",
       "leagues": "{n} leagues",
-      "pick": "Pick",
-      "names": {
-        "israel": "Israel",
-        "british": "British Isles",
-        "iberia": "Iberia",
-        "west": "France & Benelux",
-        "central": "Central & Northern Europe",
-        "med": "Mediterranean",
-        "americas": "The Americas",
-        "gulf": "The Gulf"
-      },
-      "blurbs": {
-        "israel": "From Liga Leumit to the Premier League — home.",
-        "british": "The most competitive league on earth. Fast and physical.",
-        "iberia": "Technique, ball on the floor, legendary academies.",
-        "west": "Football schools that produce stars.",
-        "central": "High tempo, packed stadiums, professionalism.",
-        "med": "Tactics, passion and crazy fans.",
-        "americas": "Raw talent and a dream of Europe.",
-        "gulf": "Rich clubs and veteran superstars."
-      }
+      "pick": "Pick"
     }
   },
   "notFound": {
