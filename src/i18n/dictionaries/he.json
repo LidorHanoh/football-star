@@ -1598,6 +1598,32 @@
     "breakthrough": {
       "title": "פריצה! 🚀",
       "text": "משהו פשוט התחבר. אתה משחק כמו שחקן אחר — הדירוג שלך זינק מ-{from} ל-{to}."
+    },
+    "leaders": {
+      "title": "מלכי הליגה",
+      "sub": "המובילים ב{league} העונה",
+      "tabs": {
+        "goldenBoot": "שערים",
+        "playmaker": "בישולים",
+        "playerOfSeason": "ציון",
+        "goldenGlove": "שערים נקיים",
+        "wall": "הגנה"
+      },
+      "cols": {
+        "player": "שחקן",
+        "apps": "מש׳",
+        "goals": "שע׳",
+        "assists": "בש׳",
+        "rating": "ציון",
+        "cleanSheets": "נקי"
+      },
+      "you": "אתה",
+      "race": "מי שיסיים ראשון יזכה ב{trophy}",
+      "winner": "הזוכה ב{trophy}",
+      "youWon": "זכית ב{trophy}! 🏆",
+      "behind": "אתה במקום {pos}, {n} מאחורי המוביל",
+      "regular": "רק שחקנים ששיחקו לפחות 60% מהמשחקים",
+      "empty": "הטבלה תתמלא אחרי המשחקים הראשונים."
     }
   },
   "notFound": {

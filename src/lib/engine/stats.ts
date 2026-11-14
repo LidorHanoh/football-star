@@ -1,4 +1,5 @@
-import { STAT_KEYS, type Level, type MatchResult, type MatchStats, type Position, type SeasonSummary, type Trophy } from "./types";
+import type { AwardKey } from "./awards";
+import { STAT_KEYS, type Level, type MatchResult, type MatchStats, type SeasonSummary, type Trophy } from "./types";
 
 export const emptyStats = (): MatchStats => Object.fromEntries(STAT_KEYS.map((k) => [k, 0])) as unknown as MatchStats;
 
@@ -38,20 +39,10 @@ export const pct = (part: number, whole: number) => (whole ? Math.round((part / 
 
 /**
  * Trophies won in a season. League titles come from the real table; individual
- * awards from your numbers against the number of matches your team played.
+ * awards go to whoever tops the league's charts (see awards.ts).
  */
-export function seasonTrophies(input: {
-  level: Level;
-  position: Position;
-  leaguePosition: number | null;
-  matches: MatchResult[];
-  apps: number;
-  goals: number;
-  assists: number;
-  avgRating: number | null;
-  cleanSheets: number;
-}): Trophy[] {
-  const { level, position, leaguePosition, matches, apps, goals, assists, avgRating, cleanSheets } = input;
+export function seasonTrophies(input: { level: Level; leaguePosition: number | null; matches: MatchResult[]; awards: AwardKey[] }): Trophy[] {
+  const { level, leaguePosition, matches, awards } = input;
   const n = matches.length;
   if (!n) return [];
   const out: Trophy[] = [];
@@ -60,12 +51,7 @@ export function seasonTrophies(input: {
     const wins = matches.filter((m) => m.goalsFor > m.goalsAgainst).length;
     if (wins / n >= 0.65) out.push("youthCup");
   }
-  if (goals >= Math.max(6, Math.round(n * 0.5))) out.push("goldenBoot");
-  if (assists >= Math.max(5, Math.round(n * 0.33))) out.push("playmaker");
-  if (position === "GK" && apps >= n * 0.6 && cleanSheets >= Math.max(4, Math.round(n * 0.38))) out.push("goldenGlove");
-  if (["CB", "LB", "RB", "DM"].includes(position) && apps >= n * 0.6 && (avgRating ?? 0) >= 7.1) out.push("wall");
-  if (apps >= n * 0.6 && (avgRating ?? 0) >= 7.4) out.push("playerOfSeason");
-  return out;
+  return [...out, ...awards];
 }
 
 /** Every trophy of the career, newest season last. */

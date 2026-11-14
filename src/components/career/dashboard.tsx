@@ -16,6 +16,7 @@ import { Crest } from "./crest";
 import { Face } from "./face";
 import { clubName, fill, leagueRating, money, teamName } from "./helpers";
 import { CountryFlag } from "./region-picker";
+import { LeagueLeaders } from "./league-leaders";
 import { PlayerStats, TrainingSheet } from "./player-stats";
 import { SeasonPlay } from "./season-play";
 import { Squad } from "./squad";
@@ -184,6 +185,11 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
       {tab === "stats" && (
         <div className="animate-rise lg:col-span-2">
           <PlayerStats save={view} t={t} onChange={train} />
+          {view.season && view.season.halvesPlayed > 0 && (
+            <div className="mt-4">
+              <LeagueLeaders save={view} world={world} t={t} locale={locale} final={view.season.halvesPlayed === 2} />
+            </div>
+          )}
         </div>
       )}
       {tab === "career" && (

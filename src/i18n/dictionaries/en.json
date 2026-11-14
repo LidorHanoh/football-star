@@ -1598,6 +1598,32 @@
     "breakthrough": {
       "title": "Breakthrough! 🚀",
       "text": "Something just clicked. You're playing like a different player — your rating jumped from {from} to {to}."
+    },
+    "leaders": {
+      "title": "League leaders",
+      "sub": "The {league} charts this season",
+      "tabs": {
+        "goldenBoot": "Goals",
+        "playmaker": "Assists",
+        "playerOfSeason": "Rating",
+        "goldenGlove": "Clean sheets",
+        "wall": "Defenders"
+      },
+      "cols": {
+        "player": "Player",
+        "apps": "Apps",
+        "goals": "G",
+        "assists": "A",
+        "rating": "Rtg",
+        "cleanSheets": "CS"
+      },
+      "you": "You",
+      "race": "Whoever finishes top wins the {trophy}",
+      "winner": "Winner of the {trophy}",
+      "youWon": "You won the {trophy}! 🏆",
+      "behind": "You're {pos}, {n} behind the leader",
+      "regular": "Only players with 60%+ of the games",
+      "empty": "The charts fill up after the first games."
     }
   },
   "notFound": {

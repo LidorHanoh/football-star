@@ -103,8 +103,8 @@ describe("season stats and trophies", () => {
 
   it("champions and top scorers get trophies", () => {
     const matches = Array.from({ length: 26 }, () => ({ half: 1 as const, round: 1, opponentId: "x", home: true, goalsFor: 2, goalsAgainst: 0, minutes: 90, started: true, goals: 1, assists: 0, rating: 7.6 }));
-    const t = seasonTrophies({ level: "first", position: "ST", leaguePosition: 1, matches, apps: 26, goals: 20, assists: 3, avgRating: 7.6, cleanSheets: 0 });
+    const t = seasonTrophies({ level: "first", leaguePosition: 1, matches, awards: ["goldenBoot", "playerOfSeason"] });
     expect(t).toEqual(expect.arrayContaining(["league", "goldenBoot", "playerOfSeason"]));
-    expect(seasonTrophies({ level: "first", position: "ST", leaguePosition: 9, matches, apps: 5, goals: 1, assists: 0, avgRating: 6.3, cleanSheets: 0 })).toEqual([]);
+    expect(seasonTrophies({ level: "first", leaguePosition: 9, matches, awards: [] })).toEqual([]);
   });
 });

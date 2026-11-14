@@ -1,5 +1,6 @@
 "use client";
 
+import { AWARD_KEYS, type AwardKey } from "@/lib/engine/awards";
 import { BriefcaseIcon, MessageCircleIcon, TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
 import { AgentCard } from "./agent-picker";
 import { Celebration } from "./celebration";
+import { LeagueLeaders } from "./league-leaders";
 import { TrophyArt } from "./trophy";
 import { Face } from "./face";
 import { fill, teamName } from "./helpers";
@@ -95,6 +97,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               ))}
             </ul>
           )}
+          <LeagueLeaders save={save} world={world} t={t} locale={locale} final rows={5} initial={trophies.find((k): k is AwardKey => (AWARD_KEYS as string[]).includes(k))} />
           {(summary.cup || summary.europe || !!summary.intl?.caps || summary.tournament) && (
             <div className="flex flex-wrap gap-2 text-sm font-semibold">
               {summary.europe && (

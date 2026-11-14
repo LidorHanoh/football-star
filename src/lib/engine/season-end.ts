@@ -1,3 +1,4 @@
+import { awardsWon, leagueLeaders } from "./awards";
 import { BALANCE } from "./balance";
 import { isLeague, runOf } from "./competitions";
 import { intlTotals } from "./international";
@@ -22,7 +23,7 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
   const league = s.matches.filter(isLeague);
   const cup = runOf(s.matches, "cup");
   const euro = s.europe ? runOf(s.matches, s.europe.comp) : null;
-  const trophies = seasonTrophies({ level, position: save.player.position, leaguePosition, matches: league, apps: league.filter((m) => m.minutes).length, goals: league.reduce((t, m) => t + m.goals, 0), assists: league.reduce((t, m) => t + m.assists, 0), avgRating, cleanSheets: total.cleanSheet });
+  const trophies = seasonTrophies({ level, leaguePosition, matches: league, awards: awardsWon(leagueLeaders(save)) });
   if (cup.won) trophies.unshift("cup");
   if (euro?.won && s.europe) trophies.unshift(s.europe.comp);
   const tour = s.tournament;
