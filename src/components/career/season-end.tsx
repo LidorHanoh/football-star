@@ -3,9 +3,9 @@
 import { BriefcaseIcon, MessageCircleIcon, TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { agentAdvice } from "@/lib/engine/advice";
+import { agentSummary } from "@/lib/engine/advice";
 import { agentTierFor, askForMore, betterAgentAvailable, rollAgents, switchAgent } from "@/lib/engine/career";
-import { agentReport, answerManager, type ManagerChoice, managerMood, mustRetire, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
+import { agentReport, answerManager, MANAGER_CHOICES, type ManagerChoice, managerMood, managerOutcome, mustRetire, relation, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
 import { AgentCard } from "./agent-picker";
@@ -23,6 +23,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const newAgentPending = betterAgentAvailable(save) && !save.talks.newAgent;
   const [step, setStep] = useState<Step>(save.talks.manager ? (newAgentPending ? "newAgent" : "agent") : "review");
   const [reply, setReply] = useState<ManagerChoice | null>((save.talks.manager as ManagerChoice) ?? null);
+  const [answer, setAnswer] = useState<"yes" | "maybe" | "no">("maybe");
   const [report, setReport] = useState<AgentReport | null>(null);
   const [spin, setSpin] = useState<{ won: boolean; wage: number } | null>(null);
   const summary = seasonSummary(save);
@@ -50,6 +51,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const offers = save.offers;
   const contractOver = contract.until <= summary.year;
   const canStay = !contractOver && !(report?.released ?? false) && !(contract.level === "youth" && save.player.age + 1 >= 19);
+  const advice = agentSummary(save, world, canStay);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-8">
@@ -103,11 +105,11 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
       {step === "manager" && (
         <div className="grid gap-4">
           <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
-            {s.managerSays[mood]}
+            {s.relation[relation(save)]} {s.managerSays[mood]}
           </Bubble>
           {!reply ? (
             <div className="grid gap-2 sm:grid-cols-3">
-              {(Object.keys(s.managerChoices) as ManagerChoice[]).map((c) => (
+              {MANAGER_CHOICES.map((c) => (
                 <Button
                   key={c}
                   size="lg"
@@ -115,6 +117,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                   className="h-auto min-h-12 py-3 whitespace-normal"
                   onClick={() => {
                     setReply(c);
+                    setAnswer(managerOutcome(save, c));
                     onChange(answerManager(save, c));
                   }}
                 >
@@ -128,7 +131,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                 {s.managerChoices[reply]}
               </Bubble>
               <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
-                {s.managerReplies[reply][mood]}
+                {s.managerReplies[reply][answer]}
               </Bubble>
               <Button
                 size="lg"
@@ -188,6 +191,19 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                 {!save.agent && <>{s.noAgent} </>}
                 {report?.released ? s.released : contractOver ? (offers.some((o) => o.tag === "renew") ? s.renewal : s.noRenewal) : fill(s.underContract, { year: contract.until + 1 })}
               </Bubble>
+              {advice && save.agent && (
+                <Bubble who={`${s.agentTitle} · ${save.agent.name}`} icon={agentFace}>
+                  {advice.pick ? (
+                    <>
+                      <strong>{fill(advice.nothingGood ? t.advice.summaryWeak : t.advice.summaryGo, { club: teamName(world, advice.pick.clubId, locale, advice.pick.level, save.player.age + 1) })}</strong>{" "}
+                      {advice.reasons.map((r) => t.advice.reasons[r]).join(". ")}.
+                      {advice.askMore && <> {t.advice.summaryAskMore}</>}
+                    </>
+                  ) : (
+                    <strong>{fill(t.advice.summaryStay, { club: teamName(world, contract.clubId, locale, contract.level, save.player.age + 1) })}</strong>
+                  )}
+                </Bubble>
+              )}
 
               <h2 className="font-heading text-xl font-bold">{s.chooseClub}</h2>
               <ul className="grid gap-4 md:grid-cols-3">
@@ -208,9 +224,8 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
                       t={t}
                       locale={locale}
                       agent={save.agent}
-                      highlight={o.tag === "renew"}
                       age={save.player.age + 1}
-                      advice={agentAdvice(save, world, o)}
+                      highlight={o.tag === "renew" || advice?.pick?.id === o.id}
                       onSign={() => onChange(startNextSeason(save, world, o.id))}
                       onAskMore={() => {
                         const r = askForMore(save, o.id);

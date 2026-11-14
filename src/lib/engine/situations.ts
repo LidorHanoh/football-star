@@ -143,23 +143,26 @@ export function newAtClub(s: CareerSave) {
   return !!last && !!s.contract && last.clubId !== s.contract.clubId;
 }
 
-/** The half you're about to play (1 or 2), or null when the season is done. */
-const nextHalf = (s: CareerSave) => (s.season && s.season.halvesPlayed < 2 ? ((s.season.halvesPlayed + 1) as 1 | 2) : null);
-
-/** The (two) situations before the next half. Deterministic for a save, so a reload shows the same ones. */
-export function upcomingSituations(save: CareerSave): Situation[] {
-  const half = nextHalf(save);
-  if (!half || !save.season) return [];
+/**
+ * The situations of a half season and when they come up (after which of your
+ * matches, as a fraction of the half). 2–3 per season: 1–2 in the first half,
+ * 1 in the second. Deterministic, so a reload brings the same ones.
+ * `save` is the state BEFORE the half is played.
+ */
+export function halfSituations(save: CareerSave, half: 1 | 2): { situation: Situation; at: number }[] {
+  if (!save.season) return [];
   const rng = new Rng(hash(`${save.id}:${save.season.year}:${half}`));
   const pool = SITUATIONS.filter((s) => !s.when || s.when(save));
-  const forced = pool.filter((s) => s.id === "welcomeNight");
+  const forced = half === 1 ? pool.filter((s) => s.id === "welcomeNight") : [];
   const rest = rng.shuffle(pool.filter((s) => s.id !== "welcomeNight"));
-  return [...forced, ...rest].slice(0, 2);
+  const count = half === 1 ? (forced.length || rng.chance(0.5) ? 2 : 1) : 1;
+  const picked = [...forced, ...rest].slice(0, count);
+  // Spread them out: the welcome night comes right away, the rest during the half.
+  return picked.map((situation, i) => ({ situation, at: situation.id === "welcomeNight" ? 0 : count === 1 ? rng.range(0.3, 0.7) : i === 0 ? rng.range(0.15, 0.4) : rng.range(0.55, 0.85) }));
 }
 
-const key = (save: CareerSave, id: string) => `${nextHalf(save)}:${id}`;
-export const choiceOf = (save: CareerSave, id: string) => save.season?.choices?.[key(save, id)];
-export const situationsPending = (save: CareerSave) => upcomingSituations(save).some((s) => !choiceOf(save, s.id));
+const key = (half: number, id: string) => `${half}:${id}`;
+export const choiceOf = (save: CareerSave, half: number, id: string) => save.season?.choices?.[key(half, id)];
 
 /** Resolve "key1"/"key2" to the position's most important attributes. */
 export function resolveAttr(save: CareerSave, k: AttrKey): keyof Attrs {
@@ -168,10 +171,11 @@ export function resolveAttr(save: CareerSave, k: AttrKey): keyof Attrs {
   return k;
 }
 
-export function chooseSituation(save: CareerSave, situationId: string, optionId: string): CareerSave {
+/** Apply a choice. Effects land straight away (bars, attributes) and risky ones raise the injury risk for the next stretch. */
+export function chooseSituation(save: CareerSave, half: number, situationId: string, optionId: string): CareerSave {
   const sit = byId.get(situationId);
   const opt = sit?.options.find((o) => o.id === optionId);
-  if (!sit || !opt || !save.season || choiceOf(save, situationId)) return save;
+  if (!sit || !opt || !save.season || choiceOf(save, half, situationId)) return save;
   const bars = { ...save.bars };
   for (const [k, v] of Object.entries(opt.bars ?? {}) as [keyof Bars, number][]) bars[k] = Math.round(clamp((bars[k] ?? 50) + v, 0, 100));
   const attrs = { ...save.player.attrs };
@@ -185,7 +189,7 @@ export function chooseSituation(save: CareerSave, situationId: string, optionId:
     player: { ...save.player, attrs, rating: overall(attrs, save.player.position) },
     season: {
       ...save.season,
-      choices: { ...save.season.choices, [key(save, situationId)]: optionId },
+      choices: { ...save.season.choices, [key(half, situationId)]: optionId },
       risk: (save.season.risk ?? 0) + (opt.risk ?? 0),
     },
   };

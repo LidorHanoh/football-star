@@ -77,3 +77,27 @@ export function agentAdvice(save: CareerSave, world: World, offer: Offer): Advic
   const shown = agent.quality <= 1 ? 1 : agent.quality <= 2 ? 2 : 4;
   return { verdict, reasons: me.reasons.slice(0, shown), best: all.length > 1 && me.score === bestScore && verdict !== "avoid", score: me.score };
 }
+
+export interface AgentSummary {
+  /** The offer to take, or null = stay where you are. */
+  pick: Offer | null;
+  reasons: Reason[];
+  /** Push for more money on the pick first. */
+  askMore: boolean;
+  /** Nothing on the table is worth it. */
+  nothingGood: boolean;
+}
+
+/** One message from the agent: which way to go and whether to ask for more. */
+export function agentSummary(save: CareerSave, world: World, canStay: boolean): AgentSummary | null {
+  if (!save.agent || !save.offers.length) return null;
+  const rated = save.offers.map((o) => ({ o, a: agentAdvice(save, world, o)! }));
+  rated.sort((x, y) => y.a.score - x.a.score);
+  const top = rated[0];
+  // Staying is worth about what a starter role at your own club is worth.
+  const club = world.clubs.find((c) => c.id === save.contract?.clubId);
+  const stayRole: Role | null = club && save.contract ? (save.player.rating >= club.teamRating ? "starter" : save.player.rating >= club.teamRating - 4 ? "rotation" : "bench") : null;
+  const stayScore = stayRole ? ROLE_SCORE[stayRole] + 0.3 : -9;
+  if (canStay && stayScore >= top.a.score) return { pick: null, reasons: [], askMore: false, nothingGood: false };
+  return { pick: top.o, reasons: top.a.reasons, askMore: top.a.verdict === "askMore", nothingGood: top.a.verdict === "avoid" };
+}

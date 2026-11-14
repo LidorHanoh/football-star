@@ -1,5 +1,5 @@
 import { BALANCE } from "./balance";
-import { newSeason, offerRole, seniorWage, youthWage } from "./career";
+import { newSeason, offerRole, readPotential, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
 import { seasonTrophies, sumMatchStats } from "./stats";
@@ -35,32 +35,71 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
 // ---------------------------------------------------------------------------
 // Talk with the manager
 // ---------------------------------------------------------------------------
-export type ManagerChoice = "moreMinutes" | "workHarder" | "wantToLeave";
+export type ManagerChoice = "moreMinutes" | "workHarder" | "raise" | "captain" | "trustMe" | "wantToLeave";
+export const MANAGER_CHOICES: ManagerChoice[] = ["moreMinutes", "workHarder", "raise", "captain", "trustMe", "wantToLeave"];
+export type Mood = "happy" | "neutral" | "unhappy";
+export type Relation = "close" | "ok" | "cold";
 
-/** What the manager says depends on your season; your reply moves trust / training / morale. */
-export function managerMood(save: CareerSave): "happy" | "neutral" | "unhappy" {
+/** What the manager thinks of your season (numbers + how much he trusts you). */
+export function managerMood(save: CareerSave): Mood {
   const s = seasonSummary(save);
   if (s.avgRating === null || s.apps < 5) return "unhappy";
   if (s.avgRating >= 6.9 || save.bars.trust >= 70) return "happy";
-  if (s.avgRating < 6.3) return "unhappy";
+  if (s.avgRating < 6.3 && save.bars.trust < 60) return "unhappy";
   return "neutral";
 }
 
-export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSave {
+/** Your relationship with him. */
+export const relation = (save: CareerSave): Relation => (save.bars.trust >= 65 ? "close" : save.bars.trust >= 40 ? "ok" : "cold");
+
+/** The answer depends on your season AND your relationship: he gives more to players he trusts. */
+export function managerOutcome(save: CareerSave, choice: ManagerChoice): "yes" | "maybe" | "no" {
   const mood = managerMood(save);
+  const rel = relation(save);
+  const score = (mood === "happy" ? 2 : mood === "neutral" ? 1 : 0) + (rel === "close" ? 1 : rel === "cold" ? -1 : 0);
+  const need: Record<ManagerChoice, number> = { moreMinutes: 2, workHarder: 0, raise: 3, captain: 3, trustMe: 0, wantToLeave: 0 };
+  if (choice === "wantToLeave") return score >= 2 ? "maybe" : "yes"; // "maybe" = he'd rather keep you
+  return score >= need[choice] + 1 ? "yes" : score >= need[choice] ? "maybe" : "no";
+}
+
+export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSave {
+  const out = managerOutcome(save, choice);
   const bars = { ...save.bars };
-  if (choice === "moreMinutes") {
-    bars.trust += mood === "happy" ? 8 : mood === "neutral" ? 2 : -6;
-    bars.morale += mood === "unhappy" ? -4 : 5;
-  } else if (choice === "workHarder") {
-    bars.training += 12;
-    bars.trust += 4;
-  } else {
-    bars.trust -= 12;
-    bars.morale += 3;
+  let contract = save.contract;
+  const yes = out === "yes";
+  const no = out === "no";
+  switch (choice) {
+    case "moreMinutes":
+      bars.trust += yes ? 8 : no ? -6 : 2;
+      bars.morale += no ? -4 : 5;
+      break;
+    case "workHarder":
+      bars.training += 12;
+      bars.trust += 4;
+      break;
+    case "raise":
+      if (yes && contract) contract = { ...contract, wage: Math.round(contract.wage * 1.15) };
+      bars.morale += yes ? 6 : no ? -4 : 0;
+      bars.trust += yes ? 0 : no ? -7 : -2;
+      break;
+    case "captain":
+      bars.morale += yes ? 8 : no ? -3 : 2;
+      bars.chemistry = (bars.chemistry ?? 50) + (yes ? 10 : 0);
+      bars.fans += yes ? 5 : 0;
+      bars.trust += no ? -5 : 1;
+      break;
+    case "trustMe":
+      // A second chance: helps most when things went badly.
+      bars.trust += managerMood(save) === "unhappy" ? 7 : 3;
+      bars.morale += 3;
+      break;
+    case "wantToLeave":
+      bars.trust -= out === "maybe" ? 6 : 12;
+      bars.morale += 3;
+      break;
   }
-  for (const k of Object.keys(bars) as (keyof typeof bars)[]) bars[k] = Math.round(clamp(bars[k], 0, 100));
-  return { ...save, bars, talks: { ...save.talks, manager: choice } };
+  for (const k of Object.keys(bars) as (keyof typeof bars)[]) bars[k] = Math.round(clamp(bars[k] ?? 50, 0, 100));
+  return { ...save, bars, contract, talks: { ...save.talks, manager: choice } };
 }
 
 // ---------------------------------------------------------------------------
@@ -113,21 +152,51 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
   const q = save.agent?.quality ?? 0;
   const count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (save.talks.manager === "wantToLeave" ? 1 : 0), 1, 5);
   const reach = BALANCE.agents.reputationReach[q];
-  const playerLevel = rating; // a club is interested if you'd fit their squad
+  let talent: WorldClub | undefined;
   const countryOf = (key: string) => world.leagues.find((l) => l.key === key)?.country;
+  const tierOf = (key: string) => world.leagues.find((l) => l.key === key)?.tier ?? 1;
   const myCountry = countryOf(myClub.leagueKey);
-  const candidates = world.clubs
-    .filter((c) => c.id !== myClub.id)
-    .filter((c) => c.teamRating >= playerLevel - 10 && c.teamRating <= playerLevel + 3 + reach / 2)
-    // Abroad only once you're good enough (or with a strong agent).
-    .filter((c) => countryOf(c.leagueKey) === myCountry || rating >= 66 - q * 2);
-  // Safety net: someone always wants you — the weakest clubs in your league.
+  const strong = (summary.avgRating ?? 0) >= 7 || summary.goals + summary.assists >= 12;
+  // How far above your current club a team may be and still want you:
+  // only really good players (rating near their level) after a strong season get a step up.
+  const stepUp = strong && rating >= myClub.teamRating ? 3 + reach / 4 : rating >= myClub.teamRating - 2 ? 1 : -1;
+  const fits = (c: WorldClub) => c.teamRating <= Math.max(rating + 1, myClub.teamRating + stepUp) && c.teamRating >= Math.min(rating, myClub.teamRating) - 10;
+  const others = world.clubs.filter((c) => c.id !== myClub.id && fits(c));
+  // Mostly your own division, then your country, and abroad only when you're very good.
+  const sameLeague = others.filter((c) => c.leagueKey === myClub.leagueKey);
+  const sameCountry = others.filter((c) => c.leagueKey !== myClub.leagueKey && countryOf(c.leagueKey) === myCountry && Math.abs(tierOf(c.leagueKey) - tierOf(myClub.leagueKey)) <= 1);
+  const abroadOk = rating >= 72 - q && (strong || rating >= 76);
+  const abroad = abroadOk ? others.filter((c) => countryOf(c.leagueKey) !== myCountry && c.teamRating <= rating + 1) : [];
+  rng.shuffle(sameLeague);
+  rng.shuffle(sameCountry);
+  rng.shuffle(abroad);
+  const candidates: WorldClub[] = [];
+  const add = (list: WorldClub[], n: number) => {
+    for (const c of list) {
+      if (n <= 0 || candidates.length >= count) break;
+      if (!candidates.includes(c)) {
+        candidates.push(c);
+        n--;
+      }
+    }
+  };
+  add(abroad, rng.chance(0.5) ? 1 : 0);
+  add(sameLeague, Math.max(1, count - 1));
+  add(sameCountry, count);
+  add(sameLeague, count);
+  // Safety net: someone always wants you — the weakest clubs in your league (or the division below).
   if (!candidates.length) {
-    candidates.push(...world.clubs.filter((c) => c.leagueKey === myClub.leagueKey && c.id !== myClub.id).sort((a, b) => a.teamRating - b.teamRating).slice(0, 4));
+    add(world.clubs.filter((c) => c.leagueKey === myClub.leagueKey && c.id !== myClub.id).sort((a, b) => a.teamRating - b.teamRating), 2);
   }
-  rng.shuffle(candidates);
-  // Prefer the strongest clubs that would still give minutes.
-  candidates.sort((a, b) => Math.abs(a.teamRating - (playerLevel + reach / 4)) - Math.abs(b.teamRating - (playerLevel + reach / 4)));
+  // Elite talent: a big club takes a chance on a young player with huge potential.
+  const pot = readPotential(save.player.p);
+  if (nextAge <= 21 && pot >= 84 && (summary.avgRating ?? 0) >= 6.8 && rng.chance(0.45)) {
+    const big = world.clubs
+      .filter((c) => c.id !== myClub.id && !candidates.includes(c) && c.teamRating >= myClub.teamRating + 6 && (countryOf(c.leagueKey) === myCountry || rating >= 64))
+      .sort((a, b) => b.teamRating - a.teamRating)
+      .slice(0, 6);
+    if (big.length) talent = rng.pick(big);
+  }
   const offers: Offer[] = candidates.slice(0, count).map((club: WorldClub) => {
     const level = nextAge < 19 && club.teamRating > rating + 8 ? "youth" : "first";
     const wage = level === "first" ? seniorWage(club, rating, rng) : youthWage(club, rng);
@@ -144,6 +213,11 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
     };
   });
 
+  if (talent) {
+    const level = nextAge < 19 ? "youth" : "first";
+    const trust = 40;
+    offers.unshift({ id: `g${talent.id.slice(0, 6)}${rng.int(100, 999)}`, clubId: talent.id, level, years: 4, wage: level === "first" ? seniorWage(talent, rating, rng) : youthWage(talent, rng), trust, tag: "talent", role: offerRole(rating, talent, level, trust) });
+  }
   return { save: { ...save, rng: rng.state, offers: [...(renewal ? [renewal] : []), ...offers] }, report: { contractExpired, renewal, released, offers } };
 }
 

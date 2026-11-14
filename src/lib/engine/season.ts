@@ -1,4 +1,4 @@
-import { growAttrs, overall } from "./attrs";
+import { growAttrs, overall, roleFor } from "./attrs";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
 import { clamp, Rng } from "./rng";
@@ -199,6 +199,8 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
 
   // --- Growth (hidden potential decides speed and ceiling) -----------------
   const played = matches.filter((m) => m.minutes);
+  const ratings = played.map((m) => m.rating!).filter(Boolean);
+  const roleBefore = roleFor(save.player.rating, myStrength, save.bars.trust);
   const minutesShare = played.reduce((s, m) => s + (m.minutes ?? 0), 0) / Math.max(matches.length * 90, 1);
   const pot = readPotential(player.p);
   const gap = pot - player.rating;
@@ -212,13 +214,13 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   if (player.rating > before) events.push({ key: "ratingUp", params: { from: before, to: player.rating } });
   else if (player.rating < before) events.push({ key: "ratingDown", params: { from: before, to: player.rating } });
 
-  // Training points: earned by training well and playing.
-  const points = Math.round(0.6 + bars.training / 45 + minutesShare * 1.2);
+  // Training points: earned by training well, playing — and playing WELL.
+  const formBonus = ratings.length ? (ratings.reduce((s, r) => s + r, 0) / ratings.length - 6.6) * 2.2 : -0.6;
+  const points = Math.max(0, Math.round(0.3 + bars.training / 55 + minutesShare * 1.1 + formBonus));
   player.trainingPoints += points;
   if (points) events.push({ key: "trainingPoints", params: { n: points } });
 
   // --- Bars -----------------------------------------------------------------
-  const ratings = played.map((m) => m.rating!).filter(Boolean);
   const avg = ratings.length ? ratings.reduce((s, r) => s + r, 0) / ratings.length : null;
   const goals = matches.reduce((s, m) => s + m.goals, 0);
   const assists = matches.reduce((s, m) => s + m.assists, 0);
@@ -231,9 +233,15 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   // Playing together builds chemistry; sitting out slowly loses it.
   bars.chemistry = Math.round(clamp((bars.chemistry ?? 50) + minutesShare * 8 - 3, 0, 100));
 
+  // --- Your place in the squad changed? The manager tells you. --------------
+  const roleAfter = roleFor(player.rating, myStrength, bars.trust);
+  const ORDER = ["bench", "rotation", "starter", "star"];
+  if (ORDER.indexOf(roleAfter) < ORDER.indexOf(roleBefore)) events.push({ key: "roleDown", params: { from: roleBefore, to: roleAfter } });
+  else if (ORDER.indexOf(roleAfter) > ORDER.indexOf(roleBefore)) events.push({ key: "roleUp", params: { from: roleBefore, to: roleAfter } });
+
   // --- Youth → first team promotion ----------------------------------------
   let contract = save.contract;
-  if (level === "youth" && player.rating >= myClub.teamRating - BALANCE.promotion.gapToFirstTeam && bars.trust >= BALANCE.promotion.minTrust) {
+  if (level === "youth" && canPromote(player.rating, player.age, myClub.teamRating, bars.trust)) {
     contract = { ...contract, level: "first" };
     bars.trust = Math.max(40, bars.trust - 15);
     events.push({ key: "promoted", params: { club: myClub.id } });
@@ -392,6 +400,10 @@ function matchStats(rng: Rng, a: Attrs, pos: Position, level: number, share: num
     cleanSheet: ga === 0 && share >= 0.66 ? 1 : 0,
   };
 }
+
+/** Rating a youth player needs for a first-team call-up (younger talents get called up a bit earlier). */
+export const promotionRating = (age: number, teamRating: number) => Math.round(teamRating - BALANCE.promotion.gapToFirstTeam - Math.max(0, 19 - age) * 1.5);
+export const canPromote = (rating: number, age: number, teamRating: number, trust: number) => rating >= promotionRating(age, teamRating) && trust >= BALANCE.promotion.minTrust;
 
 /** Chance of getting injured in a full match. */
 export const injuryChance = (fitness: number, risk = 0) => BALANCE.injuries.base + Math.max(0, 100 - fitness) * BALANCE.injuries.lowFitness + risk;

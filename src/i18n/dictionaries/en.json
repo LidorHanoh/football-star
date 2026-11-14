@@ -257,14 +257,16 @@
         "steady": "Steady path",
         "fast": "Fast track",
         "renew": "Renewal",
-        "transfer": "Transfer"
+        "transfer": "Transfer",
+        "talent": "Elite talent"
       },
       "tagHints": {
         "big": "Fewer minutes, slower path to the first team",
         "steady": "A balanced path",
         "fast": "Quick route to first-team football",
         "renew": "Your club wants to keep you",
-        "transfer": "A new club wants you"
+        "transfer": "A new club wants you",
+        "talent": "A big club scouted you: big talent, high potential"
       },
       "level": {
         "youth": "Youth team (U19)",
@@ -328,7 +330,8 @@
       "youthNote": "You're in the youth team. Play well and earn your promotion to the first team!",
       "history": "Career",
       "retire": "Retire",
-      "contract": "Contract"
+      "contract": "Contract",
+      "callUp": "First-team call-up: rating {n}+"
     },
     "bars": {
       "trust": "Coach trust",
@@ -403,23 +406,41 @@
       "managerChoices": {
         "moreMinutes": "I want more minutes",
         "workHarder": "I'll work even harder",
+        "raise": "I want a pay rise",
+        "captain": "I want to be captain",
+        "trustMe": "Trust me, I'll prove it",
         "wantToLeave": "I'm thinking about leaving"
       },
       "managerReplies": {
         "moreMinutes": {
-          "happy": "You'll get them. Keep performing.",
-          "neutral": "Show me in training and we'll see.",
-          "unhappy": "Minutes are earned, not asked for."
+          "yes": "You've earned it. More minutes it is.",
+          "maybe": "Show me in training and we'll see.",
+          "no": "Minutes are earned, not asked for."
         },
         "workHarder": {
-          "happy": "That's the attitude!",
-          "neutral": "Good. I'll be watching.",
-          "unhappy": "Prove it."
+          "yes": "That's the attitude! I love it.",
+          "maybe": "Good. I'll be watching.",
+          "no": "Words are easy. Prove it."
+        },
+        "raise": {
+          "yes": "You deserve it. I'll talk to the board — you got the raise.",
+          "maybe": "Another season like that and we'll talk.",
+          "no": "A raise? After that season? Not now."
+        },
+        "captain": {
+          "yes": "You're a real leader. Wear the armband.",
+          "maybe": "You're getting there. Not yet.",
+          "no": "A captain leads — you're not there yet."
+        },
+        "trustMe": {
+          "yes": "I trust you. Don't let me down.",
+          "maybe": "I'll give you a chance. Take it.",
+          "no": "Trust is earned."
         },
         "wantToLeave": {
-          "happy": "I'd hate to lose you, but I understand.",
-          "neutral": "If that's what you want…",
-          "unhappy": "Maybe that's best for everyone."
+          "yes": "I'd hate to lose you, but I understand.",
+          "maybe": "If that's what you want…",
+          "no": "Maybe that's best for everyone."
         }
       },
       "toAgent": "Talk with your agent",
@@ -439,7 +460,12 @@
       "newAgentSays": "People are talking about you! At {rating} rating, bigger agents want to represent you. Want to switch?",
       "switchAgent": "Sign with this agent",
       "keepAgent": "Stay with {name}",
-      "stayWithoutAgent": "Carry on without an agent"
+      "stayWithoutAgent": "Carry on without an agent",
+      "relation": {
+        "close": "(Great relationship) ",
+        "ok": "",
+        "cold": "(Things are cold between you) "
+      }
     },
     "exit": "Exit",
     "roles": {
@@ -583,7 +609,6 @@
     },
     "situations": {
       "title": "This week, off the pitch",
-      "decideFirst": "Decide first 👆",
       "risk": "Injury risk ↑",
       "items": {
         "welcomeNight": {
@@ -694,7 +719,11 @@
         "ankle": "ankle",
         "hamstring": "hamstring",
         "knee": "knee"
-      }
+      },
+      "title": "Injured — {kind}",
+      "text": "You'll miss {n} matches. Come back stronger.",
+      "backTitle": "You're fit again!",
+      "backText": "The doctors cleared you — you're back in the squad."
     },
     "advice": {
       "best": "My pick",
@@ -715,7 +744,45 @@
         "firstTeam": "First-team football at last",
         "loyalty": "The club knows and loves you",
         "abroad": "A move abroad — lots of exposure"
+      },
+      "summaryGo": "My advice: sign with {club}.",
+      "summaryWeak": "Nothing here is really good. If you must — {club}.",
+      "summaryStay": "My advice: stay at {club}. No offer is worth the move.",
+      "summaryAskMore": "But first — ask for more money, I think they'll pay."
+    },
+    "fans": {
+      "title": "Your fans",
+      "bonus": "+3 fans · +2 morale",
+      "items": {
+        "poster": {
+          "title": "A giant poster in the stands!",
+          "text": "The fans made a giant poster of {name} and hung it in the stand."
+        },
+        "song": {
+          "title": "You have a song!",
+          "text": "The whole stand is singing a new song about {name}."
+        },
+        "banner": {
+          "title": "A huge banner for you",
+          "text": "The fans unrolled a huge banner with {name} on it."
+        },
+        "ovation": {
+          "title": "Standing ovation",
+          "text": "The whole stadium stands up for {name} on the way off."
+        },
+        "kidShirt": {
+          "title": "A little fan in your shirt",
+          "text": "A kid in the stand wears {name}'s shirt and waves at you."
+        },
+        "tifo": {
+          "title": "A giant tifo!",
+          "text": "The whole stand made a giant tifo with {name}'s name and number."
+        }
       }
+    },
+    "roleNews": {
+      "down": "Manager: \"You're not in form. From now on you're {role}.\"",
+      "up": "Manager: \"You're in great shape. From now on you're {role}.\""
     }
   },
   "notFound": {

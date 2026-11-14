@@ -113,9 +113,7 @@ export function SetPieceGame({
   const target = result
     ? result.outcome === "miss"
       ? { x: zx(result.zone) + [-20, 0, 20][zoneCol(result.zone)], y: zoneHigh(result.zone) || zoneCol(result.zone) === 1 ? GOAL.top - 9 : zy(result.zone) }
-      : result.outcome === "saved"
-        ? { x: zx(result.keeper) * 0.85 + 80 * 0.15, y: zy(result.keeper) }
-        : { x: zx(result.zone), y: zy(result.zone) }
+      : { x: zx(result.zone), y: zy(result.zone) }
     : SPOT;
   const bend = result ? [-6, 0, 6][zoneCol(result.zone)] : 0;
   const k = ease(flyK);
@@ -128,7 +126,7 @@ export function SetPieceGame({
     const a = ease(afterK);
     if (result.outcome === "goal") ball = { x: lerp(ball.x, ball.x + (80 - ball.x) * 0.1, a), y: lerp(ball.y, GOAL.line - 1, a), r: 1 };
     else if (result.outcome === "saved") {
-      const dir = zoneCol(result.keeper) === 0 ? -1 : zoneCol(result.keeper) === 2 ? 1 : (result.zone % 2 ? 1 : -1);
+      const dir = zoneCol(result.zone) === 0 ? -1 : zoneCol(result.zone) === 2 ? 1 : (result.keeper % 2 ? 1 : -1);
       ball = { x: ball.x + dir * 34 * a, y: ball.y + 26 * a - 16 * Math.sin(Math.PI * afterK), r: lerp(1.1, 1.8, a) };
     } else ball = { x: ball.x + (ball.x - 80) * 0.35 * a, y: ball.y - 10 * a, r: lerp(1.05, 0.8, a) };
   }
@@ -136,7 +134,8 @@ export function SetPieceGame({
 
   // Keeper: sways, then dives late (reacts as the ball is struck).
   const diveK = result ? ease(clamp((clock - RUN + 120) / (FLIGHT + 80), 0, 1)) : 0;
-  const keeperZone = result?.keeper ?? 4;
+  // On a save the keeper gets to where the ball went; otherwise he goes his own way.
+  const keeperZone: Zone = result ? (result.outcome === "saved" ? result.zone : result.keeper) : 4;
   const keeperTo = { x: zx(keeperZone), y: zoneHigh(keeperZone) ? 44 : 55 };
   const keeperDir = zoneCol(keeperZone) === 0 ? -1 : zoneCol(keeperZone) === 2 ? 1 : 0;
   const sway = result ? 0 : Math.sin(idle / 420) * 2.2;
@@ -163,7 +162,7 @@ export function SetPieceGame({
         {!result && <p className="text-sm text-muted-foreground">{keeperMode ? s.pickDive : s.pickSide}</p>}
       </div>
 
-      <div className={cn("relative overflow-hidden rounded-2xl border-4 border-black/40 bg-[#0d1a12] shadow-xl", netHit && netHit.a > 0.5 && "motion-safe:animate-[shake_0.3s_ease-in-out]")}>
+      <div dir="ltr" className={cn("relative overflow-hidden rounded-2xl border-4 border-black/40 bg-[#0d1a12] shadow-xl", netHit && netHit.a > 0.5 && "motion-safe:animate-[shake_0.3s_ease-in-out]")}>
         <svg viewBox="0 0 160 100" className="block aspect-[16/10] w-full" role="img" aria-label={keeperMode ? s.penaltySaveTitle : s.penaltyTitle}>
           <defs>
             <linearGradient id="pk-sky" x1="0" y1="0" x2="0" y2="1">
@@ -248,7 +247,7 @@ export function SetPieceGame({
 
         {/* Tap targets on the goal */}
         {!result && (
-          <div className="absolute grid grid-cols-3 grid-rows-2 gap-1" style={{ left: `${(GOAL.l / 160) * 100}%`, right: `${100 - (GOAL.r / 160) * 100}%`, top: `${(GOAL.top / 100) * 100}%`, bottom: `${100 - (GOAL.line / 100) * 100}%` }}>
+          <div dir="ltr" className="absolute grid grid-cols-3 grid-rows-2 gap-1" style={{ left: `${(GOAL.l / 160) * 100}%`, right: `${100 - (GOAL.r / 160) * 100}%`, top: `${(GOAL.top / 100) * 100}%`, bottom: `${100 - (GOAL.line / 100) * 100}%` }}>
             {ZONES.map((z) => (
               <button
                 key={z}

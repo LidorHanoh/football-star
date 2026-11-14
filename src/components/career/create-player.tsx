@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { Face, faceCount } from "./face";
 import { type CareerDict, FLAGS } from "./helpers";
 import { KIT_STYLES, KitPreview } from "./kit-preview";
+import { CountryFlag } from "./region-picker";
 
 /** Where each position sits on the mini pitch (x: 0 left → 100 right, y: 0 attack → 100 own goal). */
 const SPOTS: Record<Position, { x: number; y: number }> = {
@@ -76,13 +77,16 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
           </div>
           <div className="grid gap-2">
             <Label htmlFor="pnat">{t.create.nationality}</Label>
-            <select id="pnat" value={nationality} onChange={(e) => setNationality(e.target.value)} className="h-11 rounded-lg border bg-background px-3 text-base">
+            <div className="flex items-center gap-2">
+            <CountryFlag country={nationality} className="h-7 w-10 rounded shadow-sm" />
+            <select id="pnat" value={nationality} onChange={(e) => setNationality(e.target.value)} className="h-11 min-w-0 flex-1 rounded-lg border bg-background px-3 text-base">
               {NATIONS.map((n) => (
                 <option key={n} value={n}>
-                  {FLAGS[n]} {n}
+                  {n}
                 </option>
               ))}
             </select>
+            </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="pkit">{t.create.kit}</Label>

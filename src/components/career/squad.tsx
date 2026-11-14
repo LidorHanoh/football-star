@@ -10,7 +10,8 @@ import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { cn } from "@/lib/utils";
 import { Face } from "./face";
-import { type CareerDict, fill, FLAGS } from "./helpers";
+import { type CareerDict, fill } from "./helpers";
+import { CountryFlag } from "./region-picker";
 
 interface SquadPlayer {
   id: string;
@@ -157,7 +158,7 @@ function SquadList({ title, list, t, muted }: { title: string; list: SquadPlayer
             <span className="w-6 text-center text-xs tabular-nums opacity-70">{p.number ?? "–"}</span>
             <span className="w-12 shrink-0 rounded bg-muted px-1 text-center text-[11px] font-semibold">{t.positionsShort[p.position]}</span>
             <span className="min-w-0 flex-1 truncate">
-              {p.nationality && FLAGS[p.nationality] ? `${FLAGS[p.nationality]} ` : ""}
+              {p.nationality && <CountryFlag country={p.nationality} className="me-1.5 inline-block h-3 w-[1.1rem] rounded-[2px] align-[-1px] shadow-sm" />}
               {p.you ? `${p.name} (${t.squad.you})` : p.name}
             </span>
             <span className="text-xs tabular-nums opacity-70">{p.age ?? ""}</span>

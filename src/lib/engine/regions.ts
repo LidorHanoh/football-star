@@ -1,11 +1,9 @@
 import type { World, WorldLeague } from "./types";
 
-/** Flag code (public/flags/{code}.svg) for a country name as stored on leagues. */
-export const FLAG_CODE: Record<string, string> = {
-  Israel: "il", England: "gb-eng", Scotland: "gb-sct", Spain: "es", Portugal: "pt", France: "fr", Belgium: "be", Netherlands: "nl",
-  Germany: "de", Austria: "at", Switzerland: "ch", Denmark: "dk", Italy: "it", Greece: "gr", Turkey: "tr", Brazil: "br",
-  Argentina: "ar", "United States": "us", USA: "us", "Saudi Arabia": "sa", "Saudi-Arabia": "sa",
-};
+import { FLAG_CODE } from "./flag-codes";
+
+/** Flag code (public/flags/{code}.svg) for a country name as stored on leagues and players. */
+export { FLAG_CODE };
 
 /** Country names for the start screen. */
 export const COUNTRY_NAMES: Record<string, { he: string; en: string }> = {

@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { roleFor } from "@/lib/engine/attrs";
 import { netWage, teamStrength } from "@/lib/engine/career";
 import { clubKit } from "@/lib/engine/people";
-import { playHalf, type HalfEvent, sortTable } from "@/lib/engine/season";
-import { situationsPending } from "@/lib/engine/situations";
+import { playHalf, promotionRating, type HalfEvent, sortTable } from "@/lib/engine/season";
 import type { CareerSave } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
@@ -18,12 +17,13 @@ import { clubName, fill, leagueRating, money, teamName } from "./helpers";
 import { CountryFlag } from "./region-picker";
 import { PlayerStats } from "./player-stats";
 import { SeasonPlay } from "./season-play";
-import { Situations } from "./situations";
 import { Squad } from "./squad";
 import { StatusBars } from "./status-bars";
 
 type Stage = { kind: "idle" } | { kind: "simulating" } | { kind: "playing"; events: HalfEvent[]; next: CareerSave } | { kind: "summary"; events: HalfEvent[]; pending?: CareerSave };
 type Tab = "overview" | "squad" | "stats" | "career";
+/** These are shown between the matches (full screen), not in the summary. */
+const BETWEEN_MATCHES = new Set(["injured", "recovered", "roleDown", "roleUp"]);
 
 export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
   const [stage, setStage] = useState<Stage>({ kind: "idle" });
@@ -51,6 +51,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
       <SeasonPlay
         before={save}
         after={stage.next}
+        events={stage.events}
         world={world}
         t={t}
         locale={locale}
@@ -174,7 +175,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           <div className="animate-rise rounded-xl border border-primary/30 bg-primary/5 p-4">
             <h3 className="mb-2 font-bold">{t.highlights.summary}</h3>
             <ul className="grid gap-1 text-sm">
-              {stage.events.map((e, i) => (
+              {stage.events.filter((e) => !BETWEEN_MATCHES.has(e.key)).map((e, i) => (
                 <li key={i}>• {fill(t.events[e.key as keyof typeof t.events], { ...e.params, club: e.params?.club ? clubName(world, String(e.params.club), locale) : "", kind: e.params?.kind ? t.injury.kinds[e.params.kind as keyof typeof t.injury.kinds] : "" })}</li>
               ))}
             </ul>
@@ -187,7 +188,26 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           </Button>
         )}
 
-        {contract.level === "youth" && <p className="rounded-lg bg-muted p-3 text-sm">{d.youthNote}</p>}
+        {contract.level === "youth" && (
+          <div className="grid gap-2 rounded-lg bg-muted p-3 text-sm">
+            <p>{d.youthNote}</p>
+            {(() => {
+              const need = promotionRating(save.player.age, club.teamRating);
+              const pct = Math.max(4, Math.min(100, Math.round((save.player.rating / need) * 100)));
+              return (
+                <div className="grid gap-1">
+                  <div className="flex justify-between font-semibold">
+                    <span>{fill(d.callUp, { n: need })}</span>
+                    <span className="tabular-nums">{save.player.rating}/{need}</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-background">
+                    <div className={cn("h-full rounded-full", save.player.rating >= need ? "bg-emerald-500" : "bg-primary")} style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
 
         <dl className="grid grid-cols-4 gap-2 text-center">
           {[
@@ -203,7 +223,6 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           ))}
         </dl>
 
-        {view.phase === "season" && season.halvesPlayed < 2 && stage.kind !== "summary" && <Situations save={save} t={t} onChange={onChange} />}
 
         {view.player.injury && (
           <p className="flex items-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3 text-sm font-medium">
@@ -212,9 +231,9 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
         )}
 
         {view.phase === "season" && season.halvesPlayed < 2 && (
-          <Button size="lg" className="shine h-14 text-base" disabled={stage.kind === "simulating" || situationsPending(save)} onClick={play}>
+          <Button size="lg" className="shine h-14 text-base" disabled={stage.kind === "simulating"} onClick={play}>
             <PlayIcon aria-hidden />
-            {stage.kind === "simulating" ? d.simulating : situationsPending(save) ? t.situations.decideFirst : season.halvesPlayed === 0 ? d.playFirst : d.playSecond}
+            {stage.kind === "simulating" ? d.simulating : season.halvesPlayed === 0 ? d.playFirst : d.playSecond}
           </Button>
         )}
 

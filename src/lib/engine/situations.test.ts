@@ -3,7 +3,7 @@ import { agentAdvice, askMoreChance } from "./advice";
 import { overall } from "./attrs";
 import { createCareer, signOffer, startOffers } from "./career";
 import { injuryChance, playHalf } from "./season";
-import { chooseSituation, situationsPending, upcomingSituations } from "./situations";
+import { chooseSituation, choiceOf, halfSituations } from "./situations";
 import type { CareerSave, Offer, World } from "./types";
 
 const world: World = {
@@ -18,34 +18,42 @@ function pro(seed: number): CareerSave {
 }
 
 describe("in-season situations", () => {
-  it("two decisions before each half, and you must answer them", () => {
+  it("2-3 decisions a season, spread through the halves, stable on reload", () => {
     let s = pro(1);
-    const list = upcomingSituations(s);
-    expect(list).toHaveLength(2);
-    expect(upcomingSituations(s).map((x) => x.id)).toEqual(list.map((x) => x.id)); // stable on reload
-    expect(situationsPending(s)).toBe(true);
-    for (const sit of list) s = chooseSituation(s, sit.id, sit.options[0].id);
-    expect(situationsPending(s)).toBe(false);
-    // answering twice does nothing
-    expect(chooseSituation(s, list[0].id, list[0].options[1].id)).toBe(s);
+    for (const half of [1, 2] as const) {
+      const list = halfSituations(s, half);
+      expect(list.length).toBeGreaterThanOrEqual(1);
+      expect(list.length).toBeLessThanOrEqual(half === 1 ? 2 : 1);
+      expect(halfSituations(s, half).map((x) => x.situation.id)).toEqual(list.map((x) => x.situation.id));
+      for (const d of list) {
+        expect(d.at).toBeGreaterThanOrEqual(0);
+        expect(d.at).toBeLessThan(1);
+        s = chooseSituation(s, half, d.situation.id, d.situation.options[0].id);
+        expect(choiceOf(s, half, d.situation.id)).toBe(d.situation.options[0].id);
+        // answering twice does nothing
+        expect(chooseSituation(s, half, d.situation.id, d.situation.options[1].id)).toBe(s);
+      }
+    }
   });
 
   it("choices move bars and attributes", () => {
     const s = pro(2);
-    const shoot = chooseSituation(s, "sponsorShoot", "shoot");
+    const shoot = chooseSituation(s, 1, "sponsorShoot", "shoot");
     expect(shoot.bars.fans).toBe(s.bars.fans + 12);
     expect(shoot.bars.form).toBe(s.bars.form - 5);
-    const train = chooseSituation(s, "sponsorShoot", "train");
+    const train = chooseSituation(s, 1, "sponsorShoot", "train");
     expect(train.player.attrs.shooting).toBeGreaterThan(s.player.attrs.shooting); // ST's key attribute
     expect(train.player.rating).toBe(overall(train.player.attrs, "ST"));
-    const gym = chooseSituation(s, "extraGym", "yes");
+    const gym = chooseSituation(s, 1, "extraGym", "yes");
     expect(gym.season!.risk).toBeGreaterThan(0);
   });
 
   it("a new club starts with the welcome night", () => {
     const s = pro(3);
     const moved = { ...s, history: [{ year: 2025, clubId: "isr-1", level: "first" as const, apps: 10, goals: 1, assists: 1, avgRating: 6.5, ratingEnd: 60, leaguePosition: 5 }] };
-    expect(upcomingSituations(moved)[0].id).toBe("welcomeNight");
+    const first = halfSituations(moved, 1)[0];
+    expect(first.situation.id).toBe("welcomeNight");
+    expect(first.at).toBe(0);
   });
 });
 
@@ -81,5 +89,37 @@ describe("agent advice", () => {
     const star: Offer = { ...bench, id: "y", clubId: "isr-8", role: "starter", trust: 60, wage: 1 };
     expect(agentAdvice({ ...s, agent, offers: [bench, star] }, world, star)!.verdict).toBe("askMore");
     expect(askMoreChance(5)).toBeGreaterThan(askMoreChance(1));
+  });
+});
+
+describe("v7: offers, manager talk, call-ups", () => {
+  it("offers come mostly from your division and never from way above", async () => {
+    const { agentReport } = await import("./season-end");
+    for (let seed = 1; seed <= 20; seed++) {
+      const s = pro(seed);
+      const ended = { ...s, agent: { id: "a", name: "A", face: 1, quality: 2, commission: 8 }, season: { ...playHalf(playHalf(s, world).save, world).save.season! } };
+      const { report } = agentReport(ended, world);
+      for (const o of report.offers) {
+        if (o.tag === "talent") continue;
+        const c = world.clubs.find((x) => x.id === o.clubId)!;
+        expect(c.teamRating).toBeLessThanOrEqual(Math.max(ended.player.rating + 1, 61 + 3 + 2));
+      }
+    }
+  });
+
+  it("the manager says yes more when he's happy and you get on", async () => {
+    const { managerOutcome } = await import("./season-end");
+    const s = pro(5);
+    const good = { ...s, bars: { ...s.bars, trust: 90, form: 90, morale: 90 } };
+    const bad = { ...s, bars: { ...s.bars, trust: 10, form: 10, morale: 10 } };
+    expect(managerOutcome(bad, "raise")).toBe("no");
+    expect(["yes", "maybe"]).toContain(managerOutcome(good, "workHarder"));
+  });
+
+  it("younger youth players get called up a bit earlier", async () => {
+    const { promotionRating, canPromote } = await import("./season");
+    expect(promotionRating(16, 70)).toBeLessThan(promotionRating(19, 70));
+    expect(canPromote(70, 18, 70, 60)).toBe(true);
+    expect(canPromote(70, 18, 70, 20)).toBe(false);
   });
 });

@@ -52,8 +52,8 @@ export const BALANCE = {
 
   promotion: {
     /** Youth player moves up when rating ≥ first-team XI average − this many points. */
-    gapToFirstTeam: 6,
-    minTrust: 55,
+    gapToFirstTeam: 8,
+    minTrust: 50,
   },
 
   injuries: {

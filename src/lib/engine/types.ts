@@ -54,7 +54,7 @@ export interface Offer {
   /** "Ask for more" already used on this offer. */
   negotiated?: "won" | "lost";
   /** Short label key for the UI: big club / steady path / fast track. */
-  tag: "big" | "steady" | "fast" | "renew" | "transfer";
+  tag: "big" | "steady" | "fast" | "renew" | "transfer" | "talent";
   /** Your expected place in that squad when you arrive. */
   role: Role;
 }

@@ -74,7 +74,7 @@ export function OfferCard({
 }) {
   const club = world.clubs.find((c) => c.id === offer.clubId)!;
   const league = world.leagues.find((l) => l.key === club.leagueKey);
-  const tagColor = { big: "bg-amber-500/15 text-amber-600 dark:text-amber-300", steady: "bg-sky-500/15 text-sky-600 dark:text-sky-300", fast: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", renew: "bg-violet-500/15 text-violet-600 dark:text-violet-300", transfer: "bg-rose-500/15 text-rose-600 dark:text-rose-300" }[offer.tag];
+  const tagColor = { big: "bg-amber-500/15 text-amber-600 dark:text-amber-300", steady: "bg-sky-500/15 text-sky-600 dark:text-sky-300", fast: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300", renew: "bg-violet-500/15 text-violet-600 dark:text-violet-300", transfer: "bg-rose-500/15 text-rose-600 dark:text-rose-300", talent: "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300" }[offer.tag];
   return (
     <article className={cn("flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg", highlight && "border-primary ring-2 ring-primary/30")}>
       <div className="flex items-start gap-3">
