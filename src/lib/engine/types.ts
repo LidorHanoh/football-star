@@ -117,7 +117,28 @@ export interface MatchResult {
   rating: number | null; // 3..10 match rating
   /** A penalty / free kick you take (or a penalty you face as a keeper), decided by you. */
   setPiece?: SetPiece;
+  /** Your own numbers in the match (saves from before v5 have none). */
+  stats?: MatchStats;
 }
+
+/** What you did in a match. Driven by your attributes. */
+export interface MatchStats {
+  shots: number;
+  onTarget: number;
+  keyPasses: number;
+  passes: number;
+  passesDone: number;
+  dribbles: number;
+  dribblesWon: number;
+  tackles: number;
+  interceptions: number;
+  /** Keepers only. */
+  saves: number;
+  cleanSheet: number;
+}
+export const STAT_KEYS: (keyof MatchStats)[] = ["shots", "onTarget", "keyPasses", "passes", "passesDone", "dribbles", "dribblesWon", "tackles", "interceptions", "saves", "cleanSheet"];
+
+export type Trophy = "league" | "youthCup" | "goldenBoot" | "playmaker" | "playerOfSeason" | "goldenGlove" | "wall";
 
 export type SetPieceKind = "penalty" | "freekick" | "penaltySave";
 /** Goal target zones, seen from the shooter: 0 top-left, 1 top-centre, 2 top-right, 3 bottom-left, 4 bottom-centre, 5 bottom-right. */
@@ -174,6 +195,11 @@ export interface SeasonSummary {
   avgRating: number | null;
   ratingEnd: number;
   leaguePosition: number | null;
+  /** Totals of the season's match stats (apps with stats only) — absent on old saves. */
+  stats?: MatchStats;
+  /** Apps that have stats (for per-match averages). */
+  statApps?: number;
+  trophies?: Trophy[];
 }
 
 export type Phase = "offers" | "agent" | "season" | "season-end" | "retired";

@@ -206,13 +206,19 @@ export const offerRole = (rating: number, club: WorldClub, level: Level, trust: 
 // ---------------------------------------------------------------------------
 export function canTrain(save: CareerSave, k: keyof Attrs) {
   const p = save.player;
-  return p.trainingPoints > 0 && p.attrs[k] < 99 && p.rating < readPotential(p.p) + 3;
+  return p.trainingPoints > 0 && p.attrs[k] < 99;
+}
+
+/** One point = +1, but past your natural ceiling every point gives less (points never get stuck). */
+export function trainingGain(save: CareerSave) {
+  const over = save.player.rating - readPotential(save.player.p);
+  return over < 0 ? 1 : over < 3 ? 0.7 : over < 6 ? 0.45 : 0.3;
 }
 
 export function train(save: CareerSave, k: keyof Attrs): CareerSave {
   if (!canTrain(save, k)) return save;
   const p = save.player;
-  const attrs = { ...p.attrs, [k]: Math.min(99, Math.round((p.attrs[k] + 1) * 10) / 10) };
+  const attrs = { ...p.attrs, [k]: Math.min(99, Math.round((p.attrs[k] + trainingGain(save)) * 10) / 10) };
   return {
     ...save,
     player: { ...p, attrs, rating: overall(attrs, p.position), trainingPoints: p.trainingPoints - 1 },

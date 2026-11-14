@@ -2,11 +2,40 @@ import { growAttrs, overall } from "./attrs";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
 import { clamp, Rng } from "./rng";
-import type { CareerSave, Highlight, MatchResult, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
+import type { Attrs, CareerSave, Highlight, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
 
 /** Share of a team's goals / assists a player in this position is involved in (per 90, as a starter). */
 const GOAL_SHARE: Record<Position, number> = { GK: 0, CB: 0.04, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.08, AM: 0.15, LW: 0.17, RW: 0.17, ST: 0.3 };
 const ASSIST_SHARE: Record<Position, number> = { GK: 0.01, CB: 0.03, LB: 0.08, RB: 0.08, DM: 0.06, CM: 0.12, AM: 0.18, LW: 0.17, RW: 0.17, ST: 0.12 };
+
+/** Per-90 rates of a starter in each position (an average player for his team level). */
+const RATES: Record<Position, { shots: number; keyPasses: number; passes: number; dribbles: number; tackles: number; interceptions: number }> = {
+  GK: { shots: 0, keyPasses: 0.05, passes: 28, dribbles: 0, tackles: 0, interceptions: 0.3 },
+  CB: { shots: 0.5, keyPasses: 0.3, passes: 55, dribbles: 0.3, tackles: 2.2, interceptions: 1.8 },
+  LB: { shots: 0.5, keyPasses: 0.9, passes: 45, dribbles: 1, tackles: 2, interceptions: 1.2 },
+  RB: { shots: 0.5, keyPasses: 0.9, passes: 45, dribbles: 1, tackles: 2, interceptions: 1.2 },
+  DM: { shots: 0.7, keyPasses: 0.8, passes: 62, dribbles: 0.6, tackles: 2.8, interceptions: 1.9 },
+  CM: { shots: 1.2, keyPasses: 1.4, passes: 58, dribbles: 1.4, tackles: 1.8, interceptions: 1 },
+  AM: { shots: 2.2, keyPasses: 2.2, passes: 42, dribbles: 2.6, tackles: 0.8, interceptions: 0.4 },
+  LW: { shots: 2.2, keyPasses: 1.8, passes: 30, dribbles: 3.6, tackles: 0.7, interceptions: 0.3 },
+  RW: { shots: 2.2, keyPasses: 1.8, passes: 30, dribbles: 3.6, tackles: 0.7, interceptions: 0.3 },
+  ST: { shots: 3.2, keyPasses: 1, passes: 22, dribbles: 2, tackles: 0.4, interceptions: 0.2 },
+};
+
+/**
+ * How good an attribute is for the level you play at (1 = average there).
+ * This is what makes training matter: +shooting -> more goals, +passing -> more assists.
+ */
+export const attrEdge = (value: number, teamLevel: number) => clamp(Math.exp((value - teamLevel) * 0.05), 0.35, 2.6);
+
+/** Keeper skill = diving + reflexes (stored in pace / dribbling). */
+export const keeperSkill = (a: Attrs) => (a.pace + a.dribbling) / 2;
+
+function binomial(n: number, p: number, rng: Rng) {
+  let k = 0;
+  for (let i = 0; i < n; i++) if (rng.chance(p)) k++;
+  return k;
+}
 
 export interface HalfEvent {
   key: string; // i18n key under career.events
@@ -229,23 +258,32 @@ function playMyMatch(
   const minutes = started ? (rng.chance(0.25) ? rng.int(60, 85) : 90) : subOn ? rng.int(10, 30) : null;
 
   // Player quality nudges the team a little when he plays.
-  const boost = minutes ? ((player.rating - myStrength) / 11) * (minutes / 90) : 0;
+  const a = player.attrs;
+  const pos = player.position;
+  const share = minutes ? minutes / 90 : 0;
+  const boost = minutes ? ((player.rating - myStrength) / 11) * share : 0;
+  // A strong keeper / defender keeps more out.
+  const wall = pos === "GK" ? attrEdge(keeperSkill(a), myStrength) ** 0.3 : ["CB", "LB", "RB", "DM"].includes(pos) ? attrEdge(a.defending, myStrength) ** 0.12 : 1;
   const gf = poisson(xg(myStrength + boost, opp.teamRating, home), rng);
-  const ga = poisson(xg(opp.teamRating, myStrength + boost, !home), rng);
+  const oppXg = xg(opp.teamRating, myStrength + boost, !home) / (1 + (wall - 1) * share);
+  const ga = poisson(oppXg, rng);
 
   let goals = 0;
   let assists = 0;
   const moments: { minute: number; kind: Highlight["kind"] }[] = [];
   if (minutes) {
     const quality = clamp(Math.exp((player.rating - myStrength) * 0.06), 0.4, 2.2);
+    // Finishing comes from shooting; creating from passing (and a bit of dribbling).
+    const goalQ = quality ** 0.35 * attrEdge(a.shooting, myStrength) ** 0.9 * attrEdge(a.pace, myStrength) ** 0.15;
+    const assistQ = quality ** 0.35 * attrEdge(a.passing, myStrength) ** 0.8 * attrEdge(a.dribbling, myStrength) ** 0.25;
     for (let g = 0; g < gf; g++) {
       const minute = rng.int(1, 90);
       const onPitch = started ? minute <= minutes : minute > 90 - minutes;
       if (!onPitch) continue;
-      if (rng.chance(Math.min(0.42, GOAL_SHARE[player.position] * quality * 1.3 + 0.02))) {
+      if (rng.chance(Math.min(0.5, GOAL_SHARE[pos] * goalQ * 1.3 + 0.02))) {
         goals++;
         moments.push({ minute, kind: "goal" });
-      } else if (rng.chance(Math.min(0.3, ASSIST_SHARE[player.position] * quality * 1.2))) {
+      } else if (rng.chance(Math.min(0.38, ASSIST_SHARE[pos] * assistQ * 1.2))) {
         assists++;
         moments.push({ minute, kind: "assist" });
       }
@@ -253,6 +291,7 @@ function playMyMatch(
     if (player.position === "GK" && ga <= 1 && rng.chance(0.5)) moments.push({ minute: rng.int(10, 88), kind: "save" });
     if (!moments.length && rng.chance(0.25)) moments.push({ minute: rng.int(5, 88), kind: "chance" });
   }
+  const stats = minutes ? matchStats(rng, a, pos, myStrength, share, goals, assists, ga, oppXg) : undefined;
 
   // A set piece for you to take (decided later by the player in the UI).
   let setPiece: MatchResult["setPiece"];
@@ -262,7 +301,7 @@ function playMyMatch(
         ? rng.chance(0.07)
           ? "penaltySave"
           : null
-        : rng.chance(PENALTY_CHANCE[player.position])
+        : rng.chance(PENALTY_CHANCE[player.position] * clamp(0.6 + (a.shooting - 50) / 50, 0.5, 1.8))
           ? "penalty"
           : null;
     if (kind) setPiece = { kind, minute: started ? rng.int(8, Math.min(88, minutes)) : rng.int(92 - minutes, 89), seed: rng.int(1, 2 ** 30) };
@@ -272,7 +311,9 @@ function playMyMatch(
   if (minutes) {
     const result = gf > ga ? 0.35 : gf === ga ? 0 : -0.3;
     const cleanSheet = ga === 0 && ["GK", "CB", "LB", "RB", "DM"].includes(player.position) ? 0.5 : 0;
-    rating = Math.round(clamp(6.2 + goals * 1 + assists * 0.6 + result + cleanSheet + (player.rating - myStrength) * 0.04 + rng.normal() * 0.45 - (minutes < 30 ? 0.2 : 0), 3, 10) * 10) / 10;
+    const st = stats!;
+    const work = Math.min(1.1, (st.keyPasses - assists) * 0.12 + st.dribblesWon * 0.06 + (st.tackles + st.interceptions) * 0.05 + st.saves * 0.12 + (st.passes ? (st.passesDone / st.passes - 0.78) * 1.2 : 0));
+    rating = Math.round(clamp(6.0 + goals * 1 + assists * 0.6 + result + cleanSheet + work + (player.rating - myStrength) * 0.03 + rng.normal() * 0.4 - (minutes < 30 ? 0.2 : 0), 3, 10) * 10) / 10;
   }
 
   // Score at each moment, for the 2D overlay.
@@ -291,7 +332,34 @@ function playMyMatch(
     });
   }
 
-  return { half, round, opponentId: opp.id, home, goalsFor: gf, goalsAgainst: ga, minutes, started, goals, assists, rating, ...(setPiece ? { setPiece } : {}) };
+  return { half, round, opponentId: opp.id, home, goalsFor: gf, goalsAgainst: ga, minutes, started, goals, assists, rating, ...(setPiece ? { setPiece } : {}), ...(stats ? { stats } : {}) };
+}
+
+/** Your numbers in one match. Each one is pushed by the matching attribute. */
+function matchStats(rng: Rng, a: Attrs, pos: Position, level: number, share: number, goals: number, assists: number, ga: number, oppXg: number): MatchStats {
+  const r = RATES[pos];
+  const e = (v: number, pow: number) => attrEdge(v, level) ** pow;
+  const shots = goals + poisson(r.shots * share * e(a.shooting, 0.5), rng);
+  const onTarget = goals + binomial(shots - goals, clamp(0.22 + (a.shooting - 50) / 250, 0.12, 0.45), rng);
+  const passes = poisson(r.passes * share * (0.85 + e(a.passing, 0.3) * 0.15), rng);
+  const passesDone = binomial(passes, clamp(0.62 + (a.passing - 50) * 0.006, 0.5, 0.95), rng);
+  const dribbles = poisson(r.dribbles * share * e(a.dribbling, 0.6) * e(a.pace, 0.2), rng);
+  const dribblesWon = binomial(dribbles, clamp(0.35 + (a.dribbling - 50) * 0.008, 0.2, 0.85), rng);
+  const defQ = e(a.defending, 0.5) * e(a.physical, 0.15);
+  const saves = pos === "GK" ? poisson(oppXg * 1.5 * share * e(keeperSkill(a), 0.5), rng) : 0;
+  return {
+    shots,
+    onTarget,
+    keyPasses: assists + poisson(r.keyPasses * share * e(a.passing, 0.8), rng),
+    passes,
+    passesDone,
+    dribbles,
+    dribblesWon,
+    tackles: poisson(r.tackles * share * defQ, rng),
+    interceptions: poisson(r.interceptions * share * defQ, rng),
+    saves,
+    cleanSheet: ga === 0 && share >= 0.66 ? 1 : 0,
+  };
 }
 
 /** Chance per match (≥30 min played) that you step up for a penalty. */

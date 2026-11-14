@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3Icon, ChevronDownIcon, LayoutDashboardIcon, PlayIcon, UsersIcon } from "lucide-react";
+import { BarChart3Icon, ChevronDownIcon, LayoutDashboardIcon, PlayIcon, TrophyIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { roleFor } from "@/lib/engine/attrs";
@@ -10,6 +10,7 @@ import { playHalf, type HalfEvent, sortTable } from "@/lib/engine/season";
 import type { CareerSave } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
+import { CareerHistory } from "./career-history";
 import { Crest } from "./crest";
 import { Face } from "./face";
 import { clubName, fill, leagueRating, money, teamName } from "./helpers";
@@ -20,7 +21,7 @@ import { Squad } from "./squad";
 import { StatusBars } from "./status-bars";
 
 type Stage = { kind: "idle" } | { kind: "simulating" } | { kind: "playing"; events: HalfEvent[]; next: CareerSave } | { kind: "summary"; events: HalfEvent[]; pending?: CareerSave };
-type Tab = "overview" | "squad" | "stats";
+type Tab = "overview" | "squad" | "stats" | "career";
 
 export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
   const [stage, setStage] = useState<Stage>({ kind: "idle" });
@@ -118,6 +119,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
               ["overview", LayoutDashboardIcon],
               ["squad", UsersIcon],
               ["stats", BarChart3Icon],
+              ["career", TrophyIcon],
             ] as const
           ).map(([k, Icon]) => (
             <button
@@ -127,7 +129,7 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
               aria-pressed={tab === k}
               className={cn("relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold transition", tab === k ? "bg-background shadow" : "text-muted-foreground hover:text-foreground")}
             >
-              <Icon className="size-4" aria-hidden /> {t.tabs[k]}
+              <Icon className="size-4 shrink-0" aria-hidden /> <span className="truncate">{t.tabs[k]}</span>
               {k === "stats" && view.player.trainingPoints > 0 && <span className="absolute end-2 top-1 size-2 animate-ping rounded-full bg-primary" />}
             </button>
           ))}
@@ -142,6 +144,11 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
       {tab === "stats" && (
         <div className="animate-rise lg:col-span-2">
           <PlayerStats save={save} t={t} onChange={onChange} />
+        </div>
+      )}
+      {tab === "career" && (
+        <div className="animate-rise lg:col-span-2">
+          <CareerHistory save={view} world={world} t={t} locale={locale} />
         </div>
       )}
       {tab === "overview" && (
@@ -266,23 +273,6 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           </>
         )}
 
-        {view.history.length > 0 && (
-          <div className="mt-5">
-            <h3 className="mb-2 font-bold">{d.history}</h3>
-            <ul className="grid gap-1 text-sm">
-              {view.history.map((h) => (
-                <li key={h.year} className="flex justify-between gap-2">
-                  <span className="truncate">
-                    {h.year}/{String((h.year + 1) % 100).padStart(2, "0")} · {clubName(world, h.clubId, locale)}
-                  </span>
-                  <span className="shrink-0 tabular-nums text-muted-foreground">
-                    {h.apps} · {h.goals}⚽ · {h.ratingEnd}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
         </>
       )}

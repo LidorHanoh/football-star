@@ -39,9 +39,9 @@ export function resolveSetPiece(save: CareerSave, index: number, zone: Zone, qua
     const sameCol = keeperCol === zoneCol(zone);
     // Penalty (free kicks from old saves play as penalties too).
     {
-      const miss = clamp(((zoneHigh(zone) ? (zoneCol(zone) === 1 ? 0.08 : 0.17) : zoneCol(zone) === 1 ? 0.02 : 0.06) - skill * 0.3) * (1.7 - quality * 1.2), 0.01, 0.45);
+      const miss = clamp(((zoneHigh(zone) ? (zoneCol(zone) === 1 ? 0.08 : 0.17) : zoneCol(zone) === 1 ? 0.02 : 0.06) - skill * 0.45) * (1.7 - quality * 1.2), 0.01, 0.45);
       const saved = sameCol ? (zoneCol(zone) === 1 ? 0.88 : zoneHigh(zone) ? 0.25 : 0.65) : 0.02;
-      outcome = r.chance(miss) ? "miss" : r.chance(clamp(saved - skill * 0.3 - (quality - 0.6) * 0.25, 0, 0.95)) ? "saved" : "goal";
+      outcome = r.chance(miss) ? "miss" : r.chance(clamp(saved - skill * 0.6 - (quality - 0.6) * 0.25, 0, 0.95)) ? "saved" : "goal";
     }
   }
 

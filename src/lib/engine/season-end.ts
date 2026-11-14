@@ -2,6 +2,7 @@ import { BALANCE } from "./balance";
 import { newSeason, offerRole, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
+import { seasonTrophies, sumMatchStats } from "./stats";
 import type { CareerSave, Offer, SeasonSummary, World, WorldClub } from "./types";
 
 export function seasonSummary(save: CareerSave): SeasonSummary {
@@ -9,16 +10,25 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
   const played = s.matches.filter((m) => m.minutes);
   const ratings = played.map((m) => m.rating!).filter(Boolean);
   const pos = sortTable(s.table).findIndex((r) => r.clubId === save.contract!.clubId);
+  const { total, apps: statApps } = sumMatchStats(s.matches);
+  const goals = s.matches.reduce((t, m) => t + m.goals, 0);
+  const assists = s.matches.reduce((t, m) => t + m.assists, 0);
+  const avgRating = ratings.length ? Math.round((ratings.reduce((t, r) => t + r, 0) / ratings.length) * 100) / 100 : null;
+  const leaguePosition = pos >= 0 ? pos + 1 : null;
+  const level = save.contract!.level;
   return {
     year: s.year,
     clubId: save.contract!.clubId,
-    level: save.contract!.level,
+    level,
     apps: played.length,
-    goals: s.matches.reduce((t, m) => t + m.goals, 0),
-    assists: s.matches.reduce((t, m) => t + m.assists, 0),
-    avgRating: ratings.length ? Math.round((ratings.reduce((t, r) => t + r, 0) / ratings.length) * 100) / 100 : null,
+    goals,
+    assists,
+    avgRating,
     ratingEnd: save.player.rating,
-    leaguePosition: pos >= 0 ? pos + 1 : null,
+    leaguePosition,
+    stats: total,
+    statApps,
+    trophies: seasonTrophies({ level, position: save.player.position, leaguePosition, matches: s.matches, apps: played.length, goals, assists, avgRating, cleanSheets: total.cleanSheet }),
   };
 }
 

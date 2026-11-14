@@ -8,6 +8,8 @@ import { agentReport, answerManager, type ManagerChoice, managerMood, mustRetire
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
 import { AgentCard } from "./agent-picker";
+import { Celebration } from "./celebration";
+import { TrophyArt } from "./trophy";
 import { Face } from "./face";
 import { fill, teamName } from "./helpers";
 import { OfferCard } from "./offers";
@@ -22,6 +24,8 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const [reply, setReply] = useState<ManagerChoice | null>((save.talks.manager as ManagerChoice) ?? null);
   const [report, setReport] = useState<AgentReport | null>(null);
   const summary = seasonSummary(save);
+  const trophies = summary.trophies ?? [];
+  const [celebrating, setCelebrating] = useState(step === "review" && trophies.length > 0);
   const mood = managerMood(save);
   const contract = save.contract!;
   const club = world.clubs.find((c) => c.id === contract.clubId)!;
@@ -47,6 +51,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-8">
+      {celebrating && <Celebration trophies={trophies} t={t} subtitle={`${teamName(world, contract.clubId, locale, contract.level, save.player.age)} · ${seasonLabel}`} onClose={() => setCelebrating(false)} />}
       <h1 className="mb-1 flex items-center gap-2 font-heading text-3xl font-extrabold">
         <TrophyIcon className="text-amber-500" aria-hidden /> {fill(s.title, { year: seasonLabel })}
       </h1>
@@ -74,6 +79,16 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               </div>
             ))}
           </dl>
+          {trophies.length > 0 && (
+            <ul className="flex flex-wrap justify-center gap-4 rounded-2xl border border-amber-400/50 bg-gradient-to-b from-amber-400/15 to-transparent p-5">
+              {trophies.map((k, i) => (
+                <li key={k} className="animate-pop flex w-28 flex-col items-center gap-1 text-center" style={{ animationDelay: `${i * 120}ms` }}>
+                  <TrophyArt kind={k} className="h-24 drop-shadow-lg" />
+                  <span className="text-sm font-bold">{t.trophies[k]}</span>
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="rounded-2xl border bg-card p-5">
             <StatusBars bars={save.bars} t={t} />
           </div>

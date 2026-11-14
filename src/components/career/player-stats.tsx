@@ -8,6 +8,7 @@ import { attrWeight, canTrain, train } from "@/lib/engine/career";
 import { ATTRS, type Attrs, type CareerSave } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { type CareerDict, fill } from "./helpers";
+import { PerMatch } from "./per-match";
 
 const tone = (v: number) => (v >= 80 ? "bg-emerald-500" : v >= 65 ? "bg-lime-500" : v >= 50 ? "bg-amber-400" : "bg-rose-500");
 
@@ -37,10 +38,12 @@ export function PlayerStats({ save, t, onChange }: { save: CareerSave; t: Career
         </div>
         <ul className="grid gap-3">
           {ATTRS.map((k) => {
-            const v = Math.round(p.attrs[k]);
+            const raw = p.attrs[k];
+            const v = Math.floor(raw);
+            const frac = Math.round((raw - v) * 10);
             const allowed = canTrain(save, k);
             return (
-              <li key={k} className="grid grid-cols-[7rem_1fr_2.5rem_2.75rem] items-center gap-3">
+              <li key={k} className="grid grid-cols-[7rem_1fr_3.25rem_2.75rem] items-center gap-3">
                 <span className="flex items-center gap-1 truncate text-sm font-medium">
                   {labels[k]}
                   {best.has(k) && (
@@ -54,6 +57,7 @@ export function PlayerStats({ save, t, onChange }: { save: CareerSave; t: Career
                 </div>
                 <span key={v} className={cn("text-end font-heading text-lg font-extrabold tabular-nums", flash?.k === k && "animate-pop text-emerald-500")}>
                   {v}
+                  {frac > 0 && <sup className="text-[0.6rem] font-bold text-muted-foreground">.{frac}</sup>}
                 </span>
                 <Button
                   size="icon"
@@ -77,6 +81,7 @@ export function PlayerStats({ save, t, onChange }: { save: CareerSave; t: Career
       </div>
 
       <div className="grid content-start gap-3">
+        <PerMatch save={save} t={t} />
         <div className="rounded-2xl border bg-card p-5">
           <h3 className="mb-3 font-bold">{t.training.careerTotals}</h3>
           <dl className="grid grid-cols-3 gap-2 text-center">

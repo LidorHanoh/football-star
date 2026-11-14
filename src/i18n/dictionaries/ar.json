@@ -216,7 +216,8 @@
       "left": "Left",
       "face": "Your player's face",
       "newFace": "Another face",
-      "kit": "Shirt number"
+      "kit": "Shirt number",
+      "kitStyle": "Shirt colour"
     },
     "positions": {
       "GK": "Goalkeeper",
@@ -448,7 +449,8 @@
       "label": "Career menu",
       "overview": "Overview",
       "squad": "Squad",
-      "stats": "Skills & training"
+      "stats": "Skills & training",
+      "career": "Career"
     },
     "squad": {
       "coach": "Head coach",
@@ -536,6 +538,54 @@
       "subtitle": "Pick a country — we'll find academies that want to sign you.",
       "leagues": "{n} leagues",
       "pick": "Pick"
+    },
+    "perMatch": {
+      "title": "Per-match averages",
+      "season": "Season",
+      "career": "Career",
+      "none": "No numbers yet — play a few matches.",
+      "apps": "{n} matches with stats",
+      "goals": "Goals",
+      "assists": "Assists",
+      "shots": "Shots",
+      "onTarget": "Shots on target",
+      "keyPasses": "Key passes",
+      "passes": "Passes",
+      "passAcc": "Pass accuracy",
+      "dribbles": "Successful dribbles",
+      "dribbleRate": "Dribble success",
+      "tackles": "Tackles",
+      "interceptions": "Interceptions",
+      "saves": "Saves",
+      "cleanSheets": "Clean sheets",
+      "rating": "Average rating",
+      "driven": "Training matters: shooting → goals & penalties, passing → assists, dribbling → dribbles, defending → tackles."
+    },
+    "history": {
+      "title": "Career story",
+      "cabinet": "Trophy cabinet",
+      "emptyCabinet": "No trophies yet — the first one is waiting.",
+      "progress": "Rating progress",
+      "seasons": "Season by season",
+      "noSeasons": "Every season you finish shows up here.",
+      "start": "Start",
+      "peak": "Peak",
+      "now": "Now",
+      "champion": "Champions!"
+    },
+    "trophies": {
+      "league": "League title",
+      "youthCup": "Youth league title",
+      "goldenBoot": "Golden Boot",
+      "playmaker": "Assist King",
+      "playerOfSeason": "Player of the Season",
+      "goldenGlove": "Golden Glove",
+      "wall": "Defender of the Season"
+    },
+    "celebrate": {
+      "title": "You won it!",
+      "many": "{n} trophies this season!",
+      "continue": "Let's go on"
     }
   },
   "notFound": {
