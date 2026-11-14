@@ -36,6 +36,7 @@ interface Actor {
   marks?: string;
   skin: string;
   hair: string;
+  hairStyle: number;
 }
 
 type BallSeg =
@@ -89,7 +90,7 @@ function buildScript(h: Highlight, isKeeper: boolean): Script {
   const r = new Rng(h.seed);
   const side = r.chance(0.5) ? 1 : -1; // build-up down the far or near side
   const y = (v: number) => H / 2 + side * v;
-  const look = () => ({ skin: r.pick(SKINS), hair: r.pick(HAIRS) });
+  const look = () => ({ skin: r.pick(SKINS), hair: r.pick(HAIRS), hairStyle: r.int(0, 4) });
   const keeperMode = h.kind === "save" || isKeeper;
   const youAttack = !keeperMode;
   const assist = h.kind === "assist";
@@ -302,75 +303,117 @@ function timeWarp(s: Script) {
 // ---------------------------------------------------------------------------
 type Pose = "run" | "kick" | "celebrate" | "dive" | "ready";
 
-/** A side-on footballer with jointed legs and arms. Units: metres × S. */
-function Footballer({ x, y, scale, facing, phase, amp, pose, diveK, shirt, shorts, socks, skin, hair, you, keeper }: { x: number; y: number; scale: number; facing: number; phase: number; amp: number; pose: Pose; diveK: number; shirt: string; shorts: string; socks: string; skin: string; hair: string; you?: boolean; keeper?: boolean }) {
-  const swing = Math.sin(phase) * 0.62 * amp;
-  const lean = 0.18 * amp;
-  const legs: [number, number][] = [];
-  // [thigh angle, knee bend] for both legs (angles from vertical, + = forward)
-  if (pose === "kick") legs.push([1.15, 0.15], [-0.25, 0.25]);
-  else if (pose === "ready") legs.push([0.18, 0.35], [-0.18, 0.35]);
-  else {
-    legs.push([swing, Math.max(0, -Math.cos(phase)) * 1.1 * amp + 0.08], [-swing, Math.max(0, Math.cos(phase)) * 1.1 * amp + 0.08]);
-  }
-  const hip = { x: 0, y: -0.95 };
-  const neck = { x: lean * 0.6 + (pose === "kick" ? -0.12 : 0), y: -1.58 };
+const INK = "#16110e";
+
+/** A goofy cartoon footballer: big head, thick outlines, bouncy run. Units: metres × scale, origin at the feet. */
+function Footballer({ x, y, scale, facing, phase, amp, pose, diveK, shirt, shorts, socks, skin, hair, hairStyle, you, keeper }: { x: number; y: number; scale: number; facing: number; phase: number; amp: number; pose: Pose; diveK: number; shirt: string; shorts: string; socks: string; skin: string; hair: string; hairStyle: number; you?: boolean; keeper?: boolean }) {
+  const swing = Math.sin(phase) * 0.7 * amp;
+  const bounce = pose === "run" || pose === "celebrate" ? Math.abs(Math.sin(phase)) * 0.09 * Math.max(amp, pose === "celebrate" ? 0.8 : 0) : 0;
+  const lean = 0.16 * amp;
+  const legs: [number, number][] =
+    pose === "kick"
+      ? [[1.25, 0.1], [-0.3, 0.3]]
+      : pose === "ready"
+        ? [[0.3, 0.55], [-0.3, 0.55]]
+        : [[swing, Math.max(0, -Math.cos(phase)) * 1.2 * amp + 0.1], [-swing, Math.max(0, Math.cos(phase)) * 1.2 * amp + 0.1]];
+  const hip = { x: 0, y: -0.8 };
+  const neck = { x: lean * 0.7 + (pose === "kick" ? -0.12 : 0), y: -1.3 };
+  const head = { x: neck.x + 0.04, y: neck.y - 0.3 };
   const leg = ([th, bend]: [number, number]) => {
-    const knee = { x: hip.x + Math.sin(th) * 0.47, y: hip.y + Math.cos(th) * 0.47 };
+    const knee = { x: hip.x + Math.sin(th) * 0.4, y: hip.y + Math.cos(th) * 0.4 };
     const a2 = th - bend;
-    const foot = { x: knee.x + Math.sin(a2) * 0.47, y: knee.y + Math.cos(a2) * 0.47 };
-    return { knee, foot };
+    return { knee, foot: { x: knee.x + Math.sin(a2) * 0.4, y: knee.y + Math.cos(a2) * 0.4 } };
   };
-  const armSwing = pose === "run" ? -swing * 0.9 : 0;
+  const armSwing = pose === "run" ? -swing : 0;
   const arm = (dir: number) => {
-    if (pose === "celebrate") return { el: { x: neck.x + 0.22 * dir, y: neck.y - 0.3 }, hand: { x: neck.x + 0.35 * dir, y: neck.y - 0.62 } };
-    if (pose === "dive") return { el: { x: neck.x + 0.38, y: neck.y - 0.05 * dir }, hand: { x: neck.x + 0.75, y: neck.y - 0.1 * dir } };
-    if (pose === "ready") return { el: { x: neck.x + 0.2 * dir + 0.1, y: neck.y + 0.28 }, hand: { x: neck.x + 0.38 * dir + 0.15, y: neck.y + 0.25 } };
-    if (pose === "kick") return { el: { x: neck.x + 0.3 * dir, y: neck.y + 0.12 }, hand: { x: neck.x + 0.55 * dir, y: neck.y + 0.05 } };
-    const a = armSwing * dir;
-    const el = { x: neck.x + Math.sin(a) * 0.3, y: neck.y + 0.06 + Math.cos(a) * 0.3 };
-    return { el, hand: { x: el.x + Math.sin(a + 1.3) * 0.26, y: el.y + Math.cos(a + 1.3) * 0.26 } };
+    const sh = { x: neck.x, y: neck.y + 0.08 };
+    if (pose === "celebrate") {
+      const wave = Math.sin(phase * 2 + dir) * 0.15;
+      return { sh, el: { x: sh.x + 0.18 * dir, y: sh.y - 0.28 }, hand: { x: sh.x + (0.32 + wave) * dir, y: sh.y - 0.56 } };
+    }
+    if (pose === "dive") return { sh, el: { x: sh.x + 0.3, y: sh.y - 0.06 * dir }, hand: { x: sh.x + 0.62, y: sh.y - 0.12 * dir } };
+    if (pose === "ready") return { sh, el: { x: sh.x + 0.2 * dir + 0.06, y: sh.y + 0.22 }, hand: { x: sh.x + 0.36 * dir + 0.1, y: sh.y + 0.14 } };
+    if (pose === "kick") return { sh, el: { x: sh.x + 0.26 * dir, y: sh.y + 0.08 }, hand: { x: sh.x + 0.5 * dir, y: sh.y } };
+    const el = { x: sh.x + Math.sin(armSwing * dir) * 0.26, y: sh.y + Math.cos(armSwing * dir) * 0.26 };
+    return { sh, el, hand: { x: el.x + Math.sin(armSwing * dir + 1.4) * 0.22, y: el.y + Math.cos(armSwing * dir + 1.4) * 0.22 } };
   };
   const [back, front] = legs.map(leg);
   const armB = arm(-1);
   const armF = arm(1);
   const rot = pose === "dive" ? -78 * diveK : 0;
-  const lift = pose === "dive" ? -0.45 * Math.sin(Math.PI * Math.min(1, diveK * 1.1)) : 0;
+  const lift = pose === "dive" ? -0.4 * Math.sin(Math.PI * Math.min(1, diveK * 1.1)) : -bounce;
+  const shout = pose === "celebrate" || pose === "dive" || pose === "kick";
 
   return (
     <g transform={`translate(${x} ${y})`}>
-      <ellipse cx={0} cy={0} rx={0.42 * scale * (pose === "dive" ? 2.2 : 1)} ry={0.13 * scale} fill="rgba(0,0,0,0.32)" />
-      {you && <ellipse cx={0} cy={0} rx={0.85 * scale} ry={0.3 * scale} fill="none" stroke="#fde047" strokeWidth={0.12} opacity={0.9} />}
+      <ellipse cx={0} cy={0} rx={0.4 * scale * (pose === "dive" ? 2.2 : 1) * (1 - bounce)} ry={0.12 * scale} fill="rgba(0,0,0,0.3)" />
+      {you && <ellipse cx={0} cy={0} rx={0.8 * scale} ry={0.28 * scale} fill="none" stroke="#fde047" strokeWidth={0.14} />}
       <g transform={`scale(${facing * scale} ${scale}) translate(0 ${lift}) rotate(${rot} 0 -0.6)`}>
-        {/* far arm + leg (darker) */}
-        <Limb a={neck} b={armB.el} c={armB.hand} w={0.12} top={shirt} bottom={skin} dim />
-        <Limb a={hip} b={back.knee} c={back.foot} w={0.15} top={shorts} bottom={socks} dim boot />
+        <Seg a={armB.sh} b={armB.el} w={0.16} c={shirt} dim />
+        <Seg a={armB.el} b={armB.hand} w={0.13} c={keeper ? "#f8fafc" : skin} dim />
+        <Seg a={hip} b={back.knee} w={0.19} c={skin} dim />
+        <Seg a={back.knee} b={back.foot} w={0.18} c={socks} dim />
+        <Boot at={back.foot} />
         {/* torso */}
-        <path d={`M${hip.x - 0.17} ${hip.y + 0.06} L${neck.x - 0.16} ${neck.y + 0.04} Q${neck.x} ${neck.y - 0.06} ${neck.x + 0.16} ${neck.y + 0.04} L${hip.x + 0.17} ${hip.y + 0.06} Z`} fill={shirt} stroke="rgba(0,0,0,0.35)" strokeWidth={0.025} />
-        <rect x={hip.x - 0.18} y={hip.y - 0.04} width={0.36} height={0.2} rx={0.05} fill={shorts} />
-        {/* near leg + arm */}
-        <Limb a={hip} b={front.knee} c={front.foot} w={0.16} top={shorts} bottom={socks} boot />
-        <Limb a={neck} b={armF.el} c={armF.hand} w={0.12} top={shirt} bottom={keeper ? shirt : skin} glove={keeper ? "#f8fafc" : undefined} />
-        {/* head */}
-        <circle cx={neck.x + 0.03} cy={neck.y - 0.2} r={0.15} fill={skin} stroke="rgba(0,0,0,0.25)" strokeWidth={0.02} />
-        <path d={`M${neck.x - 0.13} ${neck.y - 0.22} Q${neck.x - 0.12} ${neck.y - 0.4} ${neck.x + 0.04} ${neck.y - 0.37} Q${neck.x + 0.19} ${neck.y - 0.34} ${neck.x + 0.17} ${neck.y - 0.24} Q${neck.x + 0.02} ${neck.y - 0.3} ${neck.x - 0.13} ${neck.y - 0.22} Z`} fill={hair} />
+        <path d={`M${hip.x - 0.2} ${hip.y + 0.04} L${neck.x - 0.21} ${neck.y + 0.02} Q${neck.x} ${neck.y - 0.08} ${neck.x + 0.21} ${neck.y + 0.02} L${hip.x + 0.2} ${hip.y + 0.04} Z`} fill={shirt} stroke={INK} strokeWidth={0.05} strokeLinejoin="round" />
+        <rect x={hip.x - 0.21} y={hip.y - 0.05} width={0.42} height={0.22} rx={0.06} fill={shorts} stroke={INK} strokeWidth={0.05} />
+        <Seg a={hip} b={front.knee} w={0.2} c={skin} />
+        <Seg a={front.knee} b={front.foot} w={0.19} c={socks} />
+        <Boot at={front.foot} />
+        <Seg a={armF.sh} b={armF.el} w={0.17} c={shirt} />
+        <Seg a={armF.el} b={armF.hand} w={0.14} c={keeper ? "#f8fafc" : skin} />
+        {/* Big head */}
+        <g transform={`translate(${head.x} ${head.y})`}>
+          <circle cx={-0.2} cy={0.03} r={0.07} fill={skin} stroke={INK} strokeWidth={0.035} />
+          <ellipse cx={0} cy={0} rx={0.27} ry={0.29} fill={skin} stroke={INK} strokeWidth={0.05} />
+          <Hair style={hairStyle} color={hair} />
+          {/* eye looks where he's going */}
+          <ellipse cx={0.12} cy={-0.03} rx={0.075} ry={0.09} fill="#fff" stroke={INK} strokeWidth={0.025} />
+          <circle cx={0.15} cy={shout ? -0.05 : -0.02} r={0.04} fill={INK} />
+          <path d={`M0.04 -0.15 L0.2 ${shout ? -0.19 : -0.14}`} stroke={INK} strokeWidth={0.035} strokeLinecap="round" />
+          {shout ? <ellipse cx={0.16} cy={0.15} rx={0.06} ry={0.07} fill="#7f1d1d" stroke={INK} strokeWidth={0.025} /> : <path d="M0.08 0.14 Q0.16 0.19 0.23 0.12" fill="none" stroke={INK} strokeWidth={0.03} strokeLinecap="round" />}
+          <path d="M0.25 0 Q0.32 0.05 0.25 0.08" fill={skin} stroke={INK} strokeWidth={0.025} />
+        </g>
       </g>
-      {you && (
-        <path d={`M${-0.28 * scale} ${-2.25 * scale} L${0.28 * scale} ${-2.25 * scale} L0 ${-1.95 * scale} Z`} fill="#fde047" stroke="#713f12" strokeWidth={0.05} className="motion-safe:animate-bounce" />
-      )}
+      {you && <path d={`M${-0.26 * scale} ${-2.3 * scale} L${0.26 * scale} ${-2.3 * scale} L0 ${-2.02 * scale} Z`} fill="#fde047" stroke="#713f12" strokeWidth={0.05} className="motion-safe:animate-bounce" />}
     </g>
   );
 }
 
-function Limb({ a, b, c, w, top, bottom, dim, boot, glove }: { a: P; b: P; c: P; w: number; top: string; bottom: string; dim?: boolean; boot?: boolean; glove?: string }) {
+/** Outlined limb segment (dark stroke under a coloured one). */
+function Seg({ a, b, w, c, dim }: { a: P; b: P; w: number; c: string; dim?: boolean }) {
   return (
-    <g opacity={dim ? 0.82 : 1}>
-      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={top} strokeWidth={w * 1.15} strokeLinecap="round" />
-      <line x1={b.x} y1={b.y} x2={c.x} y2={c.y} stroke={bottom} strokeWidth={w} strokeLinecap="round" />
-      {boot && <ellipse cx={c.x + 0.06} cy={c.y} rx={0.12} ry={0.055} fill="#111" />}
-      {glove && <circle cx={c.x} cy={c.y} r={0.07} fill={glove} />}
+    <g opacity={dim ? 0.85 : 1}>
+      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={INK} strokeWidth={w + 0.07} strokeLinecap="round" />
+      <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={c} strokeWidth={w} strokeLinecap="round" />
     </g>
   );
+}
+
+function Boot({ at }: { at: P }) {
+  return <ellipse cx={at.x + 0.07} cy={at.y + 0.01} rx={0.15} ry={0.07} fill="#111" stroke={INK} strokeWidth={0.03} />;
+}
+
+/** Cartoon haircuts: buzz, quiff, spikes, afro, man-bun. */
+function Hair({ style, color }: { style: number; color: string }) {
+  const s = { fill: color, stroke: INK, strokeWidth: 0.04, strokeLinejoin: "round" as const };
+  switch (style % 5) {
+    case 0:
+      return <path d="M-0.27 -0.02 Q-0.28 -0.3 0 -0.31 Q0.26 -0.31 0.27 -0.1 Q0.1 -0.2 -0.27 -0.02 Z" {...s} />;
+    case 1:
+      return <path d="M-0.27 0 Q-0.32 -0.36 0.02 -0.38 Q0.36 -0.42 0.36 -0.2 Q0.2 -0.24 0.22 -0.14 Q0 -0.2 -0.27 0 Z" {...s} />;
+    case 2:
+      return <path d="M-0.27 -0.02 L-0.3 -0.3 L-0.14 -0.24 L-0.08 -0.44 L0.04 -0.27 L0.14 -0.43 L0.18 -0.25 L0.32 -0.32 L0.26 -0.1 Q0 -0.2 -0.27 -0.02 Z" {...s} />;
+    case 3:
+      return <path d="M-0.3 0.06 Q-0.42 -0.2 -0.28 -0.36 Q-0.1 -0.52 0.12 -0.44 Q0.36 -0.4 0.33 -0.14 Q0.3 -0.06 0.25 -0.1 Q0 -0.22 -0.3 0.06 Z" {...s} />;
+    default:
+      return (
+        <>
+          <circle cx={-0.22} cy={-0.28} r={0.1} {...s} />
+          <path d="M-0.27 -0.02 Q-0.28 -0.31 0 -0.31 Q0.26 -0.31 0.27 -0.1 Q0.05 -0.2 -0.27 -0.02 Z" {...s} />
+        </>
+      );
+  }
 }
 
 /** Stands behind the far touchline: a crowd in both teams' colours. */
@@ -622,6 +665,7 @@ export function HighlightClip({
               socks={a.keeper ? "#111827" : kit.primary}
               skin={a.you && playerSkin ? playerSkin : a.skin}
               hair={a.hair}
+              hairStyle={a.hairStyle}
               you={a.you}
               keeper={a.keeper}
             />

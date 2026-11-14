@@ -264,9 +264,7 @@ function playMyMatch(
           : null
         : rng.chance(PENALTY_CHANCE[player.position])
           ? "penalty"
-          : rng.chance(FREEKICK_CHANCE[player.position])
-            ? "freekick"
-            : null;
+          : null;
     if (kind) setPiece = { kind, minute: started ? rng.int(8, Math.min(88, minutes)) : rng.int(92 - minutes, 89), seed: rng.int(1, 2 ** 30) };
   }
 
@@ -296,5 +294,5 @@ function playMyMatch(
   return { half, round, opponentId: opp.id, home, goalsFor: gf, goalsAgainst: ga, minutes, started, goals, assists, rating, ...(setPiece ? { setPiece } : {}) };
 }
 
-const PENALTY_CHANCE: Record<Position, number> = { GK: 0, CB: 0.004, LB: 0.004, RB: 0.004, DM: 0.01, CM: 0.03, AM: 0.06, LW: 0.05, RW: 0.05, ST: 0.08 };
-const FREEKICK_CHANCE: Record<Position, number> = { GK: 0, CB: 0.01, LB: 0.03, RB: 0.03, DM: 0.04, CM: 0.07, AM: 0.1, LW: 0.08, RW: 0.08, ST: 0.06 };
+/** Chance per match (≥30 min played) that you step up for a penalty. */
+const PENALTY_CHANCE: Record<Position, number> = { GK: 0, CB: 0.012, LB: 0.015, RB: 0.015, DM: 0.03, CM: 0.06, AM: 0.1, LW: 0.09, RW: 0.09, ST: 0.13 };

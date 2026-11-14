@@ -15,7 +15,7 @@ import { Crest } from "./crest";
 import { Dashboard } from "./dashboard";
 import { Face } from "./face";
 import { type CareerDict, fill, loadSaves, storeSaves, teamName } from "./helpers";
-import { LeaguePicker } from "./league-picker";
+import { RegionPicker } from "./region-picker";
 import { OffersScreen } from "./offers";
 import { SeasonEnd } from "./season-end";
 
@@ -68,12 +68,12 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
     body = <CreatePlayer t={t} onDone={(input) => setScreen({ kind: "league", input })} />;
   } else if (screen.kind === "league") {
     body = (
-      <LeaguePicker
+      <RegionPicker
         t={t}
         world={world}
         locale={locale}
-        onPick={(leagueKey) => {
-          const save = startOffers(createCareer(screen.input), world, leagueKey);
+        onPick={(leagueKeys) => {
+          const save = startOffers(createCareer(screen.input), world, leagueKeys);
           update(save);
           setScreen({ kind: "career", id: save.id });
         }}

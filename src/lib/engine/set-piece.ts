@@ -9,9 +9,11 @@ export const zoneHigh = (z: Zone) => z < 3;
 /**
  * Resolve the set piece in match `index` of the current season.
  * Shooting: `zone` is where you aim. Facing a penalty as a keeper: `zone` is
- * where you dive (only the column counts).
+ * where you dive (only the column counts). `quality` (0..1) is how well you
+ * timed the power bar: a clean strike misses less and beats the keeper more;
+ * a sharp reaction helps the keeper.
  */
-export function resolveSetPiece(save: CareerSave, index: number, zone: Zone): CareerSave {
+export function resolveSetPiece(save: CareerSave, index: number, zone: Zone, quality = 0.75): CareerSave {
   const season = save.season!;
   const m = season.matches[index];
   if (!m?.setPiece || m.setPiece.result) return save;
@@ -29,21 +31,17 @@ export function resolveSetPiece(save: CareerSave, index: number, zone: Zone): Ca
     const sameCol = zoneCol(ball) === zoneCol(zone);
     const skill = ((a.pace + a.dribbling) / 2 - 55) / 100; // diving + reflexes
     if (r.chance(0.07)) outcome = "miss";
-    else outcome = sameCol && r.chance(clamp((zoneHigh(ball) ? 0.45 : 0.7) + skill, 0.2, 0.92)) ? "saved" : "goal";
+    else outcome = sameCol && r.chance(clamp((zoneHigh(ball) ? 0.45 : 0.7) + skill + (quality - 0.5) * 0.3, 0.2, 0.95)) ? "saved" : "goal";
   } else {
     const skill = (a.shooting - 60) / 100;
     const keeperCol = r.pick([0, 0, 2, 2, 1]);
     keeper = (keeperCol + (zoneHigh(zone) && r.chance(0.5) ? 0 : 3)) as Zone;
     const sameCol = keeperCol === zoneCol(zone);
-    if (sp.kind === "penalty") {
-      const miss = clamp((zoneHigh(zone) ? (zoneCol(zone) === 1 ? 0.08 : 0.17) : zoneCol(zone) === 1 ? 0.02 : 0.06) - skill * 0.3, 0.01, 0.3);
+    // Penalty (free kicks from old saves play as penalties too).
+    {
+      const miss = clamp(((zoneHigh(zone) ? (zoneCol(zone) === 1 ? 0.08 : 0.17) : zoneCol(zone) === 1 ? 0.02 : 0.06) - skill * 0.3) * (1.7 - quality * 1.2), 0.01, 0.45);
       const saved = sameCol ? (zoneCol(zone) === 1 ? 0.88 : zoneHigh(zone) ? 0.25 : 0.65) : 0.02;
-      outcome = r.chance(miss) ? "miss" : r.chance(clamp(saved - skill * 0.3, 0, 0.95)) ? "saved" : "goal";
-    } else {
-      // Free kick: over the wall into a top corner is the best bet.
-      const base = zoneHigh(zone) ? (zoneCol(zone) === 1 ? 0.1 : 0.3) : zoneCol(zone) === 1 ? 0.03 : 0.14;
-      const p = clamp(base + skill * 0.5 - (sameCol ? 0.12 : 0), 0.02, 0.6);
-      outcome = r.chance(p) ? "goal" : r.chance(0.55) ? "saved" : "miss";
+      outcome = r.chance(miss) ? "miss" : r.chance(clamp(saved - skill * 0.3 - (quality - 0.6) * 0.25, 0, 0.95)) ? "saved" : "goal";
     }
   }
 

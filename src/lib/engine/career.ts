@@ -80,13 +80,21 @@ export function seniorWage(club: WorldClub, rating: number, rng: Rng) {
 // Start offers: 3 youth-team offers in the chosen league — one big club
 // (slower path), one mid-table (steady), one small club (fast track).
 // ---------------------------------------------------------------------------
-export function startOffers(save: CareerSave, world: World, leagueKey: string): CareerSave {
+export function startOffers(save: CareerSave, world: World, leagueKey: string | string[]): CareerSave {
   const rng = new Rng(save.rng);
-  const clubs = world.clubs.filter((c) => c.leagueKey === leagueKey).sort((a, b) => b.reputation - a.reputation);
-  const third = Math.max(1, Math.floor(clubs.length / 3));
-  const big = rng.pick(clubs.slice(0, third));
-  const mid = rng.pick(clubs.slice(third, third * 2));
-  const small = rng.pick(clubs.slice(third * 2));
+  // Several leagues (a region): the big club comes from the strongest league,
+  // the small one from the weakest (e.g. Liga Leumit), the middle one from any.
+  const keys = (Array.isArray(leagueKey) ? leagueKey : [leagueKey]).filter((k) => world.clubs.some((c) => c.leagueKey === k));
+  const byStrength = [...keys].sort((a, b) => (world.leagues.find((l) => l.key === b)?.strength ?? 0) - (world.leagues.find((l) => l.key === a)?.strength ?? 0));
+  const clubsOf = (k: string) => world.clubs.filter((c) => c.leagueKey === k).sort((a, b) => b.reputation - a.reputation);
+  const thirds = (k: string) => {
+    const clubs = clubsOf(k);
+    const third = Math.max(1, Math.floor(clubs.length / 3));
+    return [clubs.slice(0, third), clubs.slice(third, third * 2), clubs.slice(third * 2)];
+  };
+  const big = rng.pick(thirds(byStrength[0])[0]);
+  const mid = rng.pick(thirds(rng.pick(byStrength))[1]);
+  const small = rng.pick(thirds(byStrength[byStrength.length - 1])[2]);
   const rating = save.player.rating;
   const make = (club: WorldClub, tag: Offer["tag"], trust: number): Offer => ({
     id: `o${club.id.slice(0, 8)}${rng.int(0, 9999)}`,

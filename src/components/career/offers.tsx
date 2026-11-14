@@ -10,7 +10,8 @@ import type { Agent, Offer, World } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
-import { type CareerDict, fill, FLAGS, money, teamName } from "./helpers";
+import { type CareerDict, fill, money, teamName } from "./helpers";
+import { CountryFlag } from "./region-picker";
 
 export function OffersScreen({ save, world, t, locale, onChange }: ScreenProps) {
   const [spin, setSpin] = useState<{ offerId: string; won: boolean; wage: number } | null>(null);
@@ -75,8 +76,9 @@ export function OfferCard({
         <Crest club={club} className="size-12" />
         <div className="min-w-0">
           <h2 className="truncate font-heading text-xl font-bold">{teamName(world, offer.clubId, locale, offer.level, age)}</h2>
-          <p className="truncate text-sm text-muted-foreground">
-            {league ? `${FLAGS[league.country] ?? ""} ${league.name[locale] ?? league.name.en}` : ""}
+          <p className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
+            {league && <CountryFlag country={league.country} className="size-4 rounded-full" />}
+            <span className="truncate">{league ? (league.name[locale] ?? league.name.en) : ""}</span>
           </p>
         </div>
       </div>

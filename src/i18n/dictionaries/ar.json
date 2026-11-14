@@ -500,12 +500,12 @@
       "subOn": "Came off the bench ({min} min)"
     },
     "setPiece": {
-      "penaltyTitle": "Penalty! You take it",
+      "penaltyTitle": "Penalty! You step up",
       "freekickTitle": "Free kick!",
       "penaltySaveTitle": "Penalty against you — you're in goal!",
-      "penaltyHint": "Pick where to shoot. Top corners are hard to save — but easier to miss.",
+      "penaltyHint": "1) Pick a corner. 2) Stop the meter in the green. Top corners are hard to save — but easier to miss.",
       "freekickHint": "Over the wall into a top corner is your best chance.",
-      "diveHint": "Pick where to dive.",
+      "diveHint": "1) Pick where to dive. 2) Stop the meter in the green for a quick reaction.",
       "zones": [
         "Top left",
         "Top middle",
@@ -522,7 +522,40 @@
       "saved": "SAVED!",
       "conceded": "Goal…",
       "afterGood": "The fans are singing your name!",
-      "afterBad": "Never mind — next time."
+      "afterBad": "Never mind — next time.",
+      "powerHint": "Stop the meter in the green!",
+      "reactHint": "React! Stop the meter in the green",
+      "shoot": "Shoot! ⚽",
+      "dive": "Dive! 🧤",
+      "perfect": "Perfect strike! 🔥",
+      "good": "Good strike",
+      "poor": "Ouch… scuffed it"
+    },
+    "region": {
+      "title": "Where do you start?",
+      "subtitle": "Pick a region — we'll find academies that want to sign you.",
+      "leagues": "{n} leagues",
+      "pick": "Pick",
+      "names": {
+        "israel": "Israel",
+        "british": "British Isles",
+        "iberia": "Iberia",
+        "west": "France & Benelux",
+        "central": "Central & Northern Europe",
+        "med": "Mediterranean",
+        "americas": "The Americas",
+        "gulf": "The Gulf"
+      },
+      "blurbs": {
+        "israel": "From Liga Leumit to the Premier League — home.",
+        "british": "The most competitive league on earth. Fast and physical.",
+        "iberia": "Technique, ball on the floor, legendary academies.",
+        "west": "Football schools that produce stars.",
+        "central": "High tempo, packed stadiums, professionalism.",
+        "med": "Tactics, passion and crazy fans.",
+        "americas": "Raw talent and a dream of Europe.",
+        "gulf": "Rich clubs and veteran superstars."
+      }
     }
   },
   "notFound": {

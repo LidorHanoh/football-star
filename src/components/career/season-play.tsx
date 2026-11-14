@@ -119,8 +119,10 @@ export function SeasonPlay({ before, after, world, t, locale, onFinish }: { befo
             myKit={myKit}
             oppKit={oppKit}
             minute={m.setPiece.minute}
-            onShoot={(zone: Zone) => {
-              const resolved = resolveSetPiece(save, offset + i, zone);
+            playerNumber={before.player.kit}
+            playerName={before.player.name}
+            onShoot={(zone: Zone, quality: number) => {
+              const resolved = resolveSetPiece(save, offset + i, zone, quality);
               setSave(resolved);
               return resolved.season!.matches[offset + i].setPiece!.result!;
             }}

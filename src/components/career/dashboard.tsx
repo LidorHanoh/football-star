@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import type { ScreenProps } from "./career-app";
 import { Crest } from "./crest";
 import { Face } from "./face";
-import { clubName, fill, FLAGS, leagueRating, money, teamName } from "./helpers";
+import { clubName, fill, leagueRating, money, teamName } from "./helpers";
+import { CountryFlag } from "./region-picker";
 import { PlayerStats } from "./player-stats";
 import { SeasonPlay } from "./season-play";
 import { Squad } from "./squad";
@@ -85,7 +86,8 @@ export function Dashboard({ save, world, t, locale, onChange }: ScreenProps) {
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-heading text-2xl font-extrabold sm:text-3xl">
-              {FLAGS[view.player.nationality] ?? ""} {view.player.name}
+              <CountryFlag country={view.player.nationality} className="me-2 inline-block size-6 rounded-full align-[-3px] shadow" />
+              {view.player.name}
             </h1>
             <p className="text-muted-foreground">
               {t.positions[view.player.position]} · {fill(d.ageYears, { age: view.player.age })} · {d.leagueRating} <strong className="text-foreground tabular-nums">{leagueRating(world, view)}</strong>
