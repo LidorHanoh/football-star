@@ -2,8 +2,9 @@
 export const BALANCE = {
   start: {
     age: 16,
-    rating: [44, 50] as const, // world rating range for a new player
-    potential: { min: 60, max: 95, mean: 76, sd: 8 }, // hidden
+    rating: [36, 42] as const, // world rating range for a new player (a long way from the top)
+    // Hidden. Wide on purpose: some careers never leave the lower divisions, a few become world class.
+    potential: { min: 47, max: 96, mean: 69, sd: 12 },
     bars: { trust: 50, form: 50, training: 50, fitness: 90, fans: 20, chemistry: 50 },
   },
 

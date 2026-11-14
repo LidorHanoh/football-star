@@ -2,14 +2,15 @@ import type { Kit } from "@/lib/engine/people";
 import { cn } from "@/lib/utils";
 
 /**
- * Portraits: AI-generated people who don't exist (public/faces), cut out of
+ * Portraits. Players: AI footballer photos (public/faces/fp, from the owner's face pack).
+ * Coaches and agents: AI-generated people who don't exist (public/faces), cut out of
  * their photo background and kept in their own clothes, on a card in the
  * club's colours (agents get a dark studio card).
  */
 export type FaceKind = "player" | "agent" | "manager";
 
 const POOL: Record<FaceKind, { prefix: string; size: number }> = {
-  player: { prefix: "p", size: 82 },
+  player: { prefix: "fp/f", size: 334 },
   agent: { prefix: "a", size: 24 },
   manager: { prefix: "m", size: 26 },
 };
@@ -58,7 +59,7 @@ export function Face({
       aria-label={title}
       style={plain ? undefined : { background: `radial-gradient(120% 90% at 50% 25%, ${a} 0%, ${b} 100%)` }}
     >
-      {!plain && (
+      {!plain && kind !== "player" && (
         <>
           {/* soft studio light behind the head */}
           <span aria-hidden className="absolute inset-x-[15%] top-[8%] h-[60%] rounded-full bg-white/15 blur-xl" />
@@ -67,7 +68,7 @@ export function Face({
         </>
       )}
       {/* eslint-disable-next-line @next/next/no-img-element -- small static portrait */}
-      <img src={faceSrc(seed, kind)} alt="" draggable={false} loading="lazy" decoding="async" className="relative block size-full object-cover object-top drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]" />
+      <img src={faceSrc(seed, kind)} alt="" draggable={false} loading="lazy" decoding="async" className={cn("relative block size-full object-cover", kind === "player" ? "object-center" : "object-top drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]")} />
       {!plain && <span aria-hidden className="absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-t from-black/25 to-transparent" />}
       {!plain && !agent && kind === "player" && (
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-[5%]" style={{ background: `linear-gradient(90deg, ${k.primary} 0 50%, ${k.secondary} 50% 100%)` }} />

@@ -2,6 +2,7 @@ import { growAttrs, overall, roleFor } from "./attrs";
 import { afterLeaguePhase, CUP_STAGES, EURO_KO, europeDraw, europeThisSeason, euroPoints, knockoutOpponent, qualification, wonTie } from "./competitions";
 import { BALANCE } from "./balance";
 import { readPotential } from "./career";
+import { internationalBreaks, playTournament } from "./international";
 import { clamp, Rng } from "./rng";
 import type { Attrs, CareerSave, Comp, EuroComp, Highlight, InjuryKind, KnockoutStage, MatchResult, MatchStats, Position, SetPieceKind, TableRow, World, WorldClub } from "./types";
 
@@ -262,7 +263,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
   const pot = readPotential(player.p);
   const gap = pot - player.rating;
   let growth = BALANCE.growth.perHalfByAge(player.age);
-  if (growth > 0) growth *= clamp(gap / 12, 0, 1.4) * (0.7 + (bars.training / 100) * 0.6) * (0.6 + minutesShare * 0.6);
+  if (growth > 0) growth *= clamp(gap / 12, 0, 2.2) * (0.7 + (bars.training / 100) * 0.6) * (0.6 + minutesShare * 0.6);
   growth += rng.normal() * 0.6;
   const before = player.rating;
   const target = clamp(player.rating + growth, 30, Math.max(pot, player.rating));
@@ -317,6 +318,11 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
     if (qualified && level === "first") events.push({ key: qualified === "cl" ? "qualifiedCl" : "qualifiedEl" });
   }
 
+  // The national team: breaks during the half, and a tournament some summers.
+  const breaks = internationalBreaks({ ...save, player, bars }, half);
+  const intl = [...(season.intl ?? []), ...breaks];
+  const tournament = half === 2 ? playTournament({ ...save, player, bars, season: { ...season, intl } }) : undefined;
+
   return {
     save: {
       ...save,
@@ -324,7 +330,7 @@ export function playHalf(save: CareerSave, world: World): HalfResult {
       player,
       bars,
       contract,
-      season: { ...season, halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0, europe: europe ?? null, ...(half === 2 ? { qualified: qualified ?? null } : {}) },
+      season: { ...season, intl, ...(half === 2 ? { tournament } : {}), halvesPlayed: half, matches: [...season.matches, ...matches], table: newTable, highlights: [...season.highlights, ...pickHighlights(highlights)], risk: 0, europe: europe ?? null, ...(half === 2 ? { qualified: qualified ?? null } : {}) },
       phase: half === 2 ? "season-end" : "season",
       updatedAt: new Date().toISOString(),
     },

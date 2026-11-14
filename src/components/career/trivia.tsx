@@ -4,7 +4,7 @@ import { ArrowRightIcon, CheckIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/i18n/config";
-import { TOPICS, type TriviaData, type TriviaQuestion } from "@/lib/engine/trivia";
+import { factAnswer, factText, TOPICS, type TriviaData, type TriviaQuestion } from "@/lib/engine/trivia";
 import type { TriviaTopic } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { Crest } from "./crest";
@@ -91,7 +91,8 @@ export function TriviaTakeover({ data, q, t, locale, onDone }: { data: TriviaDat
   const tr = t.trivia;
   const [pick, setPick] = useState<number | null>(null);
   const right = pick === q.answer;
-  const label = (id: number) => (q.kind === "transfer" ? name(data.players[id], locale) : name(data.clubs[id], locale));
+  const he = locale === "he";
+  const label = (id: number) => (q.kind === "fact" ? factAnswer(q.fact, id, he) : q.kind === "transfer" ? name(data.players[id], locale) : name(data.clubs[id], locale));
   const fee = q.kind === "transfer" ? (q.fee === -1 ? tr.loan : q.fee === 0 ? tr.free : q.fee ? `€${q.fee >= 1e6 ? `${Math.round(q.fee / 1e5) / 10}M` : `${Math.round(q.fee / 1e3)}K`}` : null) : null;
 
   return (
@@ -120,6 +121,13 @@ export function TriviaTakeover({ data, q, t, locale, onDone }: { data: TriviaDat
             </div>
           </div>
           <p className="mt-5 text-center font-heading text-2xl font-bold">{tr.whoTransfer}</p>
+        </>
+      ) : q.kind === "fact" ? (
+        <>
+          <div className="animate-pop mx-auto mt-4 grid size-20 place-items-center rounded-full bg-white/10 text-5xl" aria-hidden>
+            ⚽
+          </div>
+          <p className="mt-4 text-center font-heading text-2xl leading-snug font-bold">{factText(q.fact, he)}</p>
         </>
       ) : (
         <p className="mt-6 text-center font-heading text-2xl leading-snug font-bold">{fill(q.comp === "cl" ? tr.whoWonCl : tr.whoWonIsr, { year: `${q.year - 1}/${String(q.year % 100).padStart(2, "0")}` })}</p>

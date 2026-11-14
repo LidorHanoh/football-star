@@ -1,6 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { migrateSave } from "@/lib/engine/career";
+import { FLAG_CODE } from "@/lib/engine/flag-codes";
 import type { CareerSave, Level, Localized, World } from "@/lib/engine/types";
 
 export type CareerDict = Dictionary["career"];
@@ -99,3 +100,25 @@ export const FLAGS: Record<string, string> = {
   Netherlands: "🇳🇱", Belgium: "🇧🇪", Turkey: "🇹🇷", Scotland: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", Austria: "🇦🇹", Switzerland: "🇨🇭",
   Greece: "🇬🇷", Denmark: "🇩🇰", "Saudi Arabia": "🇸🇦", "United States": "🇺🇸", Brazil: "🇧🇷", Argentina: "🇦🇷",
 };
+
+const UK: Record<string, { he: string; en: string }> = {
+  England: { he: "אנגליה", en: "England" },
+  Scotland: { he: "סקוטלנד", en: "Scotland" },
+  Wales: { he: "ויילס", en: "Wales" },
+  "Northern Ireland": { he: "צפון אירלנד", en: "Northern Ireland" },
+};
+
+/** A country's name in the page language (national teams, nationality). */
+export function countryLabel(country: string, locale: Locale) {
+  const known = UK[country];
+  if (known) return locale === "he" ? known.he : known.en;
+  const code = FLAG_CODE[country];
+  if (code && code.length === 2) {
+    try {
+      return new Intl.DisplayNames([locale], { type: "region" }).of(code.toUpperCase()) ?? country;
+    } catch {
+      return country;
+    }
+  }
+  return country;
+}

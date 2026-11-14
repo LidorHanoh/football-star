@@ -69,7 +69,7 @@ export function CareerApp({ world, t, locale }: { world: World; t: CareerDict; l
 
   let body: React.ReactNode;
   if (screen.kind === "create") {
-    body = <CreatePlayer t={t} onDone={(input) => setScreen({ kind: "topics", input })} />;
+    body = <CreatePlayer t={t} locale={locale} onDone={(input) => setScreen({ kind: "topics", input })} />;
   } else if (screen.kind === "topics") {
     body = <TopicPicker t={t} onDone={(trivia) => setScreen({ kind: "league", input: { ...screen.input, trivia } })} />;
   } else if (screen.kind === "league") {

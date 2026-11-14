@@ -1,5 +1,7 @@
 import { BALANCE } from "./balance";
 import { isLeague, runOf } from "./competitions";
+import { intlTotals } from "./international";
+import { askedToLeave } from "./office";
 import { newSeason, offerRole, readPotential, seniorWage, youthWage } from "./career";
 import { clamp, Rng } from "./rng";
 import { sortTable } from "./season";
@@ -23,6 +25,8 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
   const trophies = seasonTrophies({ level, position: save.player.position, leaguePosition, matches: league, apps: league.filter((m) => m.minutes).length, goals: league.reduce((t, m) => t + m.goals, 0), assists: league.reduce((t, m) => t + m.assists, 0), avgRating, cleanSheets: total.cleanSheet });
   if (cup.won) trophies.unshift("cup");
   if (euro?.won && s.europe) trophies.unshift(s.europe.comp);
+  const tour = s.tournament;
+  if (tour?.won && tour.picked) trophies.unshift(tour.comp);
   return {
     year: s.year,
     clubId: save.contract!.clubId,
@@ -39,73 +43,9 @@ export function seasonSummary(save: CareerSave): SeasonSummary {
     qualified: level === "first" ? (s.qualified ?? null) : null,
     cup: cup.last && cup.last !== "league" ? cup.last : null,
     europe: s.europe && euro?.last ? { comp: s.europe.comp, last: euro.last } : null,
+    intl: intlTotals(s.intl, tour),
+    tournament: tour?.qualified ? { comp: tour.comp, last: tour.last, won: tour.won, picked: tour.picked } : null,
   };
-}
-
-// ---------------------------------------------------------------------------
-// Talk with the manager
-// ---------------------------------------------------------------------------
-export type ManagerChoice = "moreMinutes" | "workHarder" | "raise" | "captain" | "trustMe" | "wantToLeave";
-export const MANAGER_CHOICES: ManagerChoice[] = ["moreMinutes", "workHarder", "raise", "captain", "trustMe", "wantToLeave"];
-export type Mood = "happy" | "neutral" | "unhappy";
-export type Relation = "close" | "ok" | "cold";
-
-/** What the manager thinks of your season (numbers + how much he trusts you). */
-export function managerMood(save: CareerSave): Mood {
-  const s = seasonSummary(save);
-  if (s.avgRating === null || s.apps < 5) return "unhappy";
-  if (s.avgRating >= 6.9 || save.bars.trust >= 70) return "happy";
-  if (s.avgRating < 6.3 && save.bars.trust < 60) return "unhappy";
-  return "neutral";
-}
-
-/** Your relationship with him. */
-export const relation = (save: CareerSave): Relation => (save.bars.trust >= 65 ? "close" : save.bars.trust >= 40 ? "ok" : "cold");
-
-/** The answer depends on your season AND your relationship: he gives more to players he trusts. */
-export function managerOutcome(save: CareerSave, choice: ManagerChoice): "yes" | "maybe" | "no" {
-  const mood = managerMood(save);
-  const rel = relation(save);
-  const score = (mood === "happy" ? 2 : mood === "neutral" ? 1 : 0) + (rel === "close" ? 1 : rel === "cold" ? -1 : 0);
-  const need: Record<ManagerChoice, number> = { moreMinutes: 2, workHarder: 0, raise: 3, captain: 3, trustMe: 0, wantToLeave: 0 };
-  if (choice === "wantToLeave") return score >= 2 ? "maybe" : "yes"; // "maybe" = he'd rather keep you
-  return score >= need[choice] + 1 ? "yes" : score >= need[choice] ? "maybe" : "no";
-}
-
-export function answerManager(save: CareerSave, choice: ManagerChoice): CareerSave {
-  const out = managerOutcome(save, choice);
-  const bars = { ...save.bars };
-  let contract = save.contract;
-  const yes = out === "yes";
-  const no = out === "no";
-  switch (choice) {
-    case "moreMinutes":
-      bars.trust += yes ? 8 : no ? -6 : 2;
-      bars.form += no ? -3 : 3;
-      break;
-    case "workHarder":
-      bars.training += 12;
-      bars.trust += 4;
-      break;
-    case "raise":
-      if (yes && contract) contract = { ...contract, wage: Math.round(contract.wage * 1.15) };
-      bars.trust += yes ? 0 : no ? -7 : -2;
-      break;
-    case "captain":
-      bars.chemistry = (bars.chemistry ?? 50) + (yes ? 10 : 0);
-      bars.fans += yes ? 5 : 0;
-      bars.trust += no ? -5 : 1;
-      break;
-    case "trustMe":
-      // A second chance: helps most when things went badly.
-      bars.trust += managerMood(save) === "unhappy" ? 7 : 3;
-      break;
-    case "wantToLeave":
-      bars.trust -= out === "maybe" ? 6 : 12;
-      break;
-  }
-  for (const k of Object.keys(bars) as (keyof typeof bars)[]) bars[k] = Math.round(clamp(bars[k] ?? 50, 0, 100));
-  return { ...save, bars, contract, talks: { ...save.talks, manager: choice } };
 }
 
 // ---------------------------------------------------------------------------
@@ -156,7 +96,7 @@ export function agentReport(save: CareerSave, world: World): { save: CareerSave;
 
   // Offers from other clubs. Count and reach depend on the agent and the season.
   const q = save.agent?.quality ?? 0;
-  const count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (save.talks.manager === "wantToLeave" ? 1 : 0), 1, 5);
+  const count = clamp(1 + BALANCE.agents.extraOffers[q] + (goodSeason ? 1 : 0) + (released ? 1 : 0) + (askedToLeave(save) ? 1 : 0), 1, 5);
   const reach = BALANCE.agents.reputationReach[q];
   let talent: WorldClub | undefined;
   const countryOf = (key: string) => world.leagues.find((l) => l.key === key)?.country;

@@ -1,28 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Locale } from "@/i18n/config";
 import { roleFor } from "@/lib/engine/attrs";
 import { teamStrength } from "@/lib/engine/career";
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { CareerSave, Position, World } from "@/lib/engine/types";
-import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { cn } from "@/lib/utils";
 import { Face } from "./face";
+import { type SquadPlayer, useSquad } from "./use-squad";
 import { type CareerDict, fill } from "./helpers";
 import { CountryFlag } from "./region-picker";
-
-interface SquadPlayer {
-  id: string;
-  name: string;
-  position: Position;
-  number: number | null;
-  rating: number;
-  age: number | null;
-  nationality: string | null;
-  you?: boolean;
-}
 
 /** 4-3-3 slots on a vertical pitch (x: 0 left → 100 right, y: 0 attack → 100 own goal) and who can play there. */
 const SLOTS: { x: number; y: number; fits: Position[] }[] = [
@@ -39,36 +28,13 @@ const SLOTS: { x: number; y: number; fits: Position[] }[] = [
   { x: 84, y: 22, fits: ["RW", "AM"] },
 ];
 
-const squadCache = new Map<string, SquadPlayer[]>();
-
 export function Squad({ save, world, t, locale }: { save: CareerSave; world: World; t: CareerDict; locale: Locale }) {
   const clubId = save.contract!.clubId;
   const club = world.clubs.find((c) => c.id === clubId)!;
   const league = world.leagues.find((l) => l.key === club.leagueKey);
   const kit = clubKit(club);
   const manager = clubManager(club, league?.country === "Israel");
-  const [players, setPlayers] = useState<SquadPlayer[] | null>(squadCache.get(clubId) ?? null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    if (squadCache.has(clubId) || !isSupabaseConfigured) return;
-    let live = true;
-    createClient()
-      .from("players")
-      .select("id, name, position, shirt_number, rating_world, age, nationality")
-      .eq("club_id", clubId)
-      .order("rating_world", { ascending: false })
-      .then(({ data, error }) => {
-        if (!live) return;
-        if (error || !data) return setFailed(true);
-        const list = data.map((p) => ({ id: p.id, name: (p.name as { en: string; he?: string })[locale === "he" ? "he" : "en"] ?? (p.name as { en: string }).en, position: p.position as Position, number: p.shirt_number, rating: p.rating_world, age: p.age, nationality: p.nationality }));
-        squadCache.set(clubId, list);
-        setPlayers(list);
-      });
-    return () => {
-      live = false;
-    };
-  }, [clubId, locale]);
+  const { players, failed } = useSquad(club, locale, league?.country === "Israel");
 
   const youth = save.contract!.level === "youth";
   const me: SquadPlayer = { id: "you", name: save.player.name, position: save.player.position, number: save.player.kit, rating: save.player.rating, age: save.player.age, nationality: save.player.nationality, you: true };

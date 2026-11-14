@@ -107,13 +107,20 @@ describe("v7: offers, manager talk, call-ups", () => {
     }
   });
 
-  it("the manager says yes more when he's happy and you get on", async () => {
-    const { managerOutcome } = await import("./season-end");
+  it("the office talk fits the season, and a bad reaction costs his trust", async () => {
+    const { officeTopic, officeMood, reactInOffice, askedToLeave } = await import("./office");
     const s = pro(5);
-    const good = { ...s, bars: { ...s.bars, trust: 90, form: 90, morale: 90 } };
-    const bad = { ...s, bars: { ...s.bars, trust: 10, form: 10, morale: 10 } };
-    expect(managerOutcome(bad, "raise")).toBe("no");
-    expect(["yes", "maybe"]).toContain(managerOutcome(good, "workHarder"));
+    const happy = { ...s, bars: { ...s.bars, trust: 90 } };
+    const ended = { ...happy, season: playHalf(playHalf(happy, world).save, world).save.season! };
+    const topic = officeTopic(ended);
+    expect(topic.mood).toBe(officeMood(ended));
+    const worst = [...topic.reactions].sort((a, b) => a.trust - b.trust)[0];
+    const after = reactInOffice(ended, worst.id);
+    expect(after.bars.trust).toBeLessThanOrEqual(ended.bars.trust);
+    expect(after.talks.manager).toBe(`${topic.id}:${worst.id}`);
+    expect(askedToLeave(after)).toBe(!!worst.leave);
+    // Only one reaction per season.
+    expect(reactInOffice(after, topic.reactions[0].id)).toBe(after);
   });
 
   it("younger youth players get called up a bit earlier", async () => {

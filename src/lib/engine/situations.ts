@@ -22,6 +22,8 @@ export interface SituationOption {
   /** Who tells you what they think of it, and whether they liked it. */
   who: Reactor;
   good: boolean;
+  /** A 50/50 call: a roulette decides whether it works out (win) or backfires (lose). */
+  gamble?: { win: Partial<Bars>; lose: Partial<Bars> };
 }
 
 /** Extra facts a situation may need. */
@@ -38,6 +40,8 @@ export interface Situation {
 }
 
 const isGk = (s: CareerSave) => s.player.position === "GK";
+/** A 50/50 option: the reaction and the effects depend on how the roulette lands. */
+const g = (id: string, who: Reactor, win: Partial<Bars>, lose: Partial<Bars>): SituationOption => ({ id, who, good: true, gamble: { win, lose } });
 const o = (id: string, who: Reactor, good: boolean, bars: Partial<Bars> = {}, attrs?: SituationOption["attrs"], risk?: number): SituationOption => ({ id, who, good, bars, ...(attrs ? { attrs } : {}), ...(risk ? { risk } : {}) });
 
 // Small nudges: a choice tilts things a little, it never makes or breaks a season.
@@ -61,7 +65,7 @@ export const SITUATIONS: Situation[] = [
   { id: "nutritionist", options: [o("follow", "fitnessCoach", true, { fitness: 3, form: 1 }), o("ignore", "fitnessCoach", false, { form: -1, fans: 1 })] },
   { id: "lateNightFood", options: [o("join", "teammate", true, { chemistry: 3, fitness: -2 }), o("home", "teammate", false, { fitness: 2 })] },
   { id: "derbyPress", options: [o("bold", "journalist", true, { fans: 4, trust: -2 }), o("humble", "coach", true, { trust: 2 })] },
-  { id: "rivalTaunt", options: [o("reply", "agent", false, { fans: 3, trust: -3 }), o("ignore", "coach", true, { trust: 2 })] },
+  { id: "rivalTaunt", options: [g("reply", "fan", { fans: 5, form: 2 }, { trust: -4, fans: -2 }), o("ignore", "coach", true, { trust: 2 })] },
   { id: "leadWarmup", options: [o("lead", "captain", true, { chemistry: 3, trust: 2 }), o("decline", "captain", false, { chemistry: -1 })] },
   { id: "newRole", options: [o("learn", "coach", true, { trust: 3, form: -1 }, { key2: 0.3 }), o("stick", "coach", false, { form: 2, trust: -2 })] },
   { id: "newBoots", options: [o("wear", "agent", true, { fans: 3, form: -2 }), o("old", "teammate", true, { form: 2 })] },
@@ -70,7 +74,11 @@ export const SITUATIONS: Situation[] = [
   { id: "overslept", options: [o("sorry", "coach", true, { trust: -1 }), o("excuse", "coach", false, { trust: -4 })] },
   { id: "youthClinic", options: [o("go", "youngster", true, { fans: 3, chemistry: 1 }), o("skip", "youngster", false, { training: 2 })] },
   { id: "podcast", options: [o("accept", "journalist", true, { fans: 4, training: -2 }), o("decline", "agent", false, { training: 2 })] },
-  { id: "dressingRoomFight", options: [o("calm", "captain", true, { chemistry: 4 }), o("stayOut", "teammate", false, { chemistry: -1 })] },
+  { id: "dressingRoomFight", options: [g("calm", "captain", { chemistry: 6, trust: 2 }, { chemistry: -4, fitness: -2 }), o("stayOut", "teammate", false, { chemistry: -1 })] },
+  { id: "askToStart", options: [g("ask", "coach", { trust: 4, form: 2 }, { trust: -5 }), o("wait", "coach", true, { trust: 1 })] },
+  { id: "trickShot", when: (s) => !isGk(s), options: [g("try", "teammate", { fans: 3, chemistry: 3 }, { fitness: -4, chemistry: -1 }), o("simple", "teammate", false, { training: 1 })] },
+  { id: "teamMeeting", options: [g("speak", "captain", { chemistry: 5, trust: 2 }, { chemistry: -3, trust: -2 }), o("quiet", "captain", false, { chemistry: -1 })] },
+  { id: "refereeRow", options: [g("argue", "coach", { fans: 4, form: 1 }, { trust: -4, form: -2 }), o("walkAway", "coach", true, { trust: 2 })] },
   { id: "sprintCoach", when: (s) => !isGk(s), options: [o("hire", "fitnessCoach", true, { fitness: -2 }, { pace: 0.5 }), o("no", "agent", false, { fitness: 1 })] },
   { id: "birthday", options: [o("go", "teammate", true, { chemistry: 4, form: -2 }), o("gift", "teammate", false, { chemistry: 1 })] },
   { id: "stormTraining", options: [o("go", "coach", true, { training: 3, fitness: -2 }, undefined, 0.01), o("gym", "coach", false, { fitness: 1 })] },
@@ -106,6 +114,10 @@ export function halfSituations(save: CareerSave, half: 1 | 2, ctx: SituationCont
   const rest = rng.shuffle(pool.filter((s) => s.id !== "welcomeNight"));
   const count = half === 1 ? (forced.length || rng.chance(0.5) ? 2 : 1) : 1;
   const picked = [...forced, ...rest].slice(0, count);
+  // Most seasons bring at least one 50/50 call.
+  const isGamble = (x: Situation) => x.options.some((op) => op.gamble);
+  const gambles = rest.filter((x) => isGamble(x) && !picked.includes(x));
+  if (half === 2 && !picked.some(isGamble) && gambles.length && rng.chance(0.6)) picked[picked.length - 1] = gambles[0];
   // Spread them out: the welcome night comes right away, the rest during the half.
   return picked.map((situation, i) => ({ situation, at: situation.id === "welcomeNight" ? 0 : count === 1 ? rng.range(0.3, 0.7) : i === 0 ? rng.range(0.15, 0.4) : rng.range(0.55, 0.85) }));
 }
@@ -120,13 +132,20 @@ export function resolveAttr(save: CareerSave, k: AttrKey): keyof Attrs {
   return k;
 }
 
+/** How a 50/50 option lands (decided up front, so a reload gives the same result). */
+export const gambleWon = (save: CareerSave, half: number, situationId: string) => new Rng(hash(`${save.id}:${save.season?.year}:${half}:${situationId}:gamble`)).chance(0.5);
+
+/** The effects an option will have (a gamble's depend on the roulette). */
+export const optionBars = (opt: SituationOption, won: boolean) => (opt.gamble ? (won ? opt.gamble.win : opt.gamble.lose) : opt.bars) ?? {};
+
 /** Apply a choice. Effects land straight away (bars, attributes) and risky ones raise the injury risk for the next stretch. */
 export function chooseSituation(save: CareerSave, half: number, situationId: string, optionId: string): CareerSave {
   const sit = byId.get(situationId);
   const opt = sit?.options.find((x) => x.id === optionId);
   if (!sit || !opt || !save.season || choiceOf(save, half, situationId)) return save;
+  const won = gambleWon(save, half, situationId);
   const bars = { ...save.bars };
-  for (const [k, v] of Object.entries(opt.bars ?? {}) as [keyof Bars, number][]) bars[k] = Math.round(clamp((bars[k] ?? 50) + v, 0, 100));
+  for (const [k, v] of Object.entries(optionBars(opt, won)) as [keyof Bars, number][]) bars[k] = Math.round(clamp((bars[k] ?? 50) + v, 0, 100));
   const attrs = { ...save.player.attrs };
   for (const [k, v] of Object.entries(opt.attrs ?? {}) as [AttrKey, number][]) {
     const a = resolveAttr(save, k);
@@ -139,6 +158,7 @@ export function chooseSituation(save: CareerSave, half: number, situationId: str
     season: {
       ...save.season,
       choices: { ...save.season.choices, [key(half, situationId)]: optionId },
+      ...(opt.gamble ? { gambles: { ...save.season.gambles, [key(half, situationId)]: won } } : {}),
       risk: (save.season.risk ?? 0) + (opt.risk ?? 0),
     },
     seenSituations: [...(save.seenSituations ?? []).filter((id) => id !== situationId), situationId].slice(-24),

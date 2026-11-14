@@ -1,3 +1,5 @@
+import type { IntlBreak, IntlComp, IntlStage, Tournament } from "./international";
+
 export type Localized = { en: string; he?: string; ar?: string };
 
 export type Position = "GK" | "CB" | "LB" | "RB" | "DM" | "CM" | "AM" | "LW" | "RW" | "ST";
@@ -157,7 +159,7 @@ export interface MatchStats {
 }
 export const STAT_KEYS: (keyof MatchStats)[] = ["shots", "onTarget", "keyPasses", "passes", "passesDone", "dribbles", "dribblesWon", "tackles", "interceptions", "saves", "cleanSheet"];
 
-export type Trophy = "league" | "cup" | "cl" | "el" | "youthCup" | "goldenBoot" | "playmaker" | "playerOfSeason" | "goldenGlove" | "wall";
+export type Trophy = "league" | "cup" | "cl" | "el" | IntlComp | "youthCup" | "goldenBoot" | "playmaker" | "playerOfSeason" | "goldenGlove" | "wall";
 
 export type SetPieceKind = "penalty" | "freekick" | "penaltySave";
 /** Goal target zones, seen from the shooter: 0 top-left, 1 top-centre, 2 top-right, 3 bottom-left, 4 bottom-centre, 5 bottom-right. */
@@ -204,12 +206,18 @@ export interface SeasonState {
   highlights: Highlight[];
   /** In-season situations answered: "half:id" -> option id. */
   choices?: Record<string, string>;
+  /** 50/50 choices: "half:id" -> it worked out? */
+  gambles?: Record<string, boolean>;
   /** Extra injury risk this half (from choices like extra gym work). */
   risk?: number;
   /** This season's European campaign (null = not in Europe, absent = not decided yet). */
   europe?: { comp: EuroComp; draw: string[] } | null;
   /** Where the league finish takes the club next season (set after the last half). */
   qualified?: EuroComp | null;
+  /** International breaks so far this season. */
+  intl?: IntlBreak[];
+  /** The summer tournament after the season (set with the last half; null = none this summer). */
+  tournament?: Tournament | null;
   /** Trivia answered this season: "half:index" -> right? */
   trivia?: Record<string, boolean>;
 }
@@ -234,6 +242,9 @@ export interface SeasonSummary {
   /** Furthest round in the cup / Europe. */
   cup?: KnockoutStage | null;
   europe?: { comp: EuroComp; last: KnockoutStage | "league" } | null;
+  /** National team this season (including the summer tournament). */
+  intl?: { caps: number; goals: number };
+  tournament?: { comp: IntlComp; last: IntlStage; won: boolean; picked: boolean } | null;
 }
 
 export type TriviaTopic = "general" | "cl" | "top5" | "israel";

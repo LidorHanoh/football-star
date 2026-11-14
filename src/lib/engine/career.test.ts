@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { askForMore, createCareer, readPotential, signOffer, startOffers, newSeason } from "./career";
 import { playHalf, roundRobin } from "./season";
-import { agentReport, answerManager, seasonSummary, startNextSeason } from "./season-end";
+import { reactInOffice, officeTopic } from "./office";
+import { agentReport, seasonSummary, startNextSeason } from "./season-end";
 import type { CareerSave, World } from "./types";
 
 function fakeWorld(): World {
@@ -44,8 +45,8 @@ describe("player career", () => {
   it("hidden potential round-trips and stays in range", () => {
     for (let i = 1; i < 200; i++) {
       const p = readPotential(createCareer({ name: "A", nationality: "Israel", position: "ST", foot: "right" }, i).player.p);
-      expect(p).toBeGreaterThanOrEqual(60);
-      expect(p).toBeLessThanOrEqual(95);
+      expect(p).toBeGreaterThanOrEqual(47);
+      expect(p).toBeLessThanOrEqual(96);
     }
   });
 
@@ -85,7 +86,7 @@ describe("player career", () => {
         save = playHalf(save, world).save;
         save = playHalf(save, world).save;
         expect(save.phase).toBe("season-end");
-        save = answerManager(save, "workHarder");
+        save = reactInOffice(save, officeTopic(save).reactions[0].id);
         const { save: withOffers, report } = agentReport(save, world);
         save = withOffers;
         const sum = seasonSummary(save);

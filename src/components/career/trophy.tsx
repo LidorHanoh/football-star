@@ -2,7 +2,7 @@ import { useId } from "react";
 import type { Trophy } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 
-const SILVER: Trophy[] = ["youthCup", "wall", "cup", "cl", "el"];
+const SILVER: Trophy[] = ["youthCup", "wall", "cup", "cl", "el", "euro"];
 
 /** Hand-drawn SVG trophies, one shape per award, on a wooden plinth. */
 export function TrophyArt({ kind, className, title }: { kind: Trophy; className?: string; title?: string }) {
@@ -52,6 +52,9 @@ export function TrophyArt({ kind, className, title }: { kind: Trophy; className?
         {kind === "cup" && <Cup metal={metal} />}
         {kind === "cl" && <BigEars metal={metal} />}
         {kind === "el" && <TallCup metal={metal} />}
+        {kind === "wc" && <Globe metal={metal} />}
+        {kind === "euro" && <TallCup metal={metal} />}
+        {kind === "copa" && <Cup metal={metal} />}
       </g>
       {/* shine */}
       <path d="M34 26 Q36 44 44 54" stroke="#fff" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.55" />
@@ -160,6 +163,18 @@ function TallCup({ metal }: { metal: string }) {
       <path d="M36 12 C26 14 26 30 38 34 M64 12 C74 14 74 30 62 34" fill="none" stroke={metal} strokeWidth="3" />
       <path d="M47 56 H53 L54 84 H46 Z" fill={metal} />
       <path d="M36 84 H64 L68 98 H32 Z" fill={metal} />
+    </>
+  );
+}
+
+/** Two figures holding up the globe. */
+function Globe({ metal }: { metal: string }) {
+  return (
+    <>
+      <path d="M40 98 C36 80 30 70 34 58 C38 48 44 52 46 46 M60 98 C64 80 70 70 66 58 C62 48 56 52 54 46" fill={metal} />
+      <path d="M38 98 H62 L58 64 H42 Z" fill={metal} />
+      <circle cx="50" cy="30" r="22" fill={metal} />
+      <path d="M30 26 Q50 34 70 26 M32 38 Q50 44 68 38 M50 8 Q40 30 50 52 M50 8 Q60 30 50 52" fill="none" stroke="#fff" strokeOpacity="0.45" />
     </>
   );
 }

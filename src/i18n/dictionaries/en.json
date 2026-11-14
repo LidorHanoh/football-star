@@ -251,7 +251,7 @@
     },
     "offers": {
       "title": "Your offers",
-      "subtitle": "Three clubs want you in their youth team. Pick one — or try to squeeze out a better wage.",
+      "subtitle": "Three clubs want you — in their youth team, or at a small club straight into the first team. Pick one — or try to squeeze out a better wage.",
       "tags": {
         "big": "Big club",
         "steady": "Steady path",
@@ -399,51 +399,6 @@
       "position": "League position",
       "toManager": "Talk with the manager",
       "manager": "The manager",
-      "managerSays": {
-        "happy": "Great season, kid. You've earned your place — keep it up.",
-        "neutral": "A decent season. I need more from you if you want to play every week.",
-        "unhappy": "Honestly, I expected more. You'll have to fight for your place."
-      },
-      "managerChoices": {
-        "moreMinutes": "I want more minutes",
-        "workHarder": "I'll work even harder",
-        "raise": "I want a pay rise",
-        "captain": "I want to be captain",
-        "trustMe": "Trust me, I'll prove it",
-        "wantToLeave": "I'm thinking about leaving"
-      },
-      "managerReplies": {
-        "moreMinutes": {
-          "yes": "You've earned it. More minutes it is.",
-          "maybe": "Show me in training and we'll see.",
-          "no": "Minutes are earned, not asked for."
-        },
-        "workHarder": {
-          "yes": "That's the attitude! I love it.",
-          "maybe": "Good. I'll be watching.",
-          "no": "Words are easy. Prove it."
-        },
-        "raise": {
-          "yes": "You deserve it. I'll talk to the board — you got the raise.",
-          "maybe": "Another season like that and we'll talk.",
-          "no": "A raise? After that season? Not now."
-        },
-        "captain": {
-          "yes": "You're a real leader. Wear the armband.",
-          "maybe": "You're getting there. Not yet.",
-          "no": "A captain leads — you're not there yet."
-        },
-        "trustMe": {
-          "yes": "I trust you. Don't let me down.",
-          "maybe": "I'll give you a chance. Take it.",
-          "no": "Trust is earned."
-        },
-        "wantToLeave": {
-          "yes": "I'd hate to lose you, but I understand.",
-          "maybe": "If that's what you want…",
-          "no": "Maybe that's best for everyone."
-        }
-      },
       "toAgent": "Talk with your agent",
       "agentTitle": "Your agent",
       "noAgent": "You don't have an agent — here's what came in on its own.",
@@ -461,12 +416,7 @@
       "newAgentSays": "People are talking about you! At {rating} rating, bigger agents want to represent you. Want to switch?",
       "switchAgent": "Sign with this agent",
       "keepAgent": "Stay with {name}",
-      "stayWithoutAgent": "Carry on without an agent",
-      "relation": {
-        "close": "(Great relationship) ",
-        "ok": "",
-        "cold": "(Things are cold between you) "
-      }
+      "stayWithoutAgent": "Carry on without an agent"
     },
     "exit": "Exit",
     "roles": {
@@ -614,7 +564,10 @@
       "wall": "Defender of the Season",
       "cup": "National Cup",
       "cl": "Champions League",
-      "el": "Europa League"
+      "el": "Europa League",
+      "wc": "World Cup",
+      "euro": "Euro",
+      "copa": "Copa América"
     },
     "celebrate": {
       "title": "You won it!",
@@ -842,7 +795,9 @@
           },
           "reactions": {
             "reply": "Oh no... that didn't end well. Leave it for the pitch.",
-            "ignore": "Exactly. Answer them on the pitch."
+            "ignore": "Exactly. Answer them on the pitch.",
+            "replyWin": "Your reply went viral! Everyone's laughing at them 😂",
+            "replyLose": "Oh no... that blew up in your face. Everyone's against you now."
           }
         },
         "leadWarmup": {
@@ -941,7 +896,9 @@
           },
           "reactions": {
             "calm": "Thanks. The room is calm thanks to you.",
-            "stayOut": "You could've helped... it affected everyone."
+            "stayOut": "You could've helped... it affected everyone.",
+            "calmWin": "Thanks. Because of you it's quiet and everyone's shaking hands.",
+            "calmLose": "You tried to split them up and took an elbow... it only got worse."
           }
         },
         "sprintCoach": {
@@ -1020,6 +977,54 @@
             "practice": "Maybe you're our next taker 🎯",
             "skip": "Someone else will take them, then."
           }
+        },
+        "askToStart": {
+          "text": "You're in top form. Ask the coach to start you?",
+          "options": {
+            "ask": "Ask to start",
+            "wait": "Wait for a chance"
+          },
+          "reactions": {
+            "askWin": "I like the confidence. You're starting on Saturday!",
+            "askLose": "Don't tell me how to pick my team. Back to the bench.",
+            "wait": "Be patient. Your chance will come."
+          }
+        },
+        "trickShot": {
+          "text": "At training you get a chance to try a bicycle kick in front of everyone.",
+          "options": {
+            "try": "Try the bicycle kick 🦶",
+            "simple": "Just shoot normally"
+          },
+          "reactions": {
+            "tryWin": "Wow! The whole squad was on its feet. The video's already online!",
+            "tryLose": "Ouch... you landed on your back. Off to the physio.",
+            "simple": "Boring... but at least it went in."
+          }
+        },
+        "teamMeeting": {
+          "text": "After three defeats in a row there's a team meeting. Stand up and speak?",
+          "options": {
+            "speak": "Stand up and speak",
+            "quiet": "Stay quiet"
+          },
+          "reactions": {
+            "speakWin": "Powerful speech! You woke the room up.",
+            "speakLose": "Who are you to lecture us? Score first.",
+            "quiet": "Shame, someone needed to say something."
+          }
+        },
+        "refereeRow": {
+          "text": "The referee waved away a clear penalty for you. Argue with him?",
+          "options": {
+            "argue": "Argue hard",
+            "walkAway": "Walk away and play on"
+          },
+          "reactions": {
+            "argueWin": "He went to VAR — penalty! The fans are singing your name.",
+            "argueLose": "Yellow card, and nearly red. Don't do that to me again.",
+            "walkAway": "Self-control. That's what I like to see."
+          }
         }
       },
       "reactors": {
@@ -1034,6 +1039,12 @@
         "dad": "Dad",
         "fan": "A fan",
         "youngster": "The young player"
+      },
+      "gamble": {
+        "chip": "50/50 — a gamble",
+        "spinning": "The wheel decides...",
+        "won": "It worked! 🎉",
+        "lost": "It backfired... 😬"
       }
     },
     "injury": {
@@ -1286,6 +1297,204 @@
           "Another signing at {club}. {name} will need to stand out.",
           "{name} at {club} for {years} years. Let's see how it goes."
         ]
+      }
+    },
+    "intl": {
+      "breakTitle": "International break",
+      "notPicked": "Not picked this time",
+      "notPickedText": "The {nation} coach left you out. You're close — keep going.",
+      "calledUp": "Called up by {nation}!",
+      "firstCap": "Your {nation} debut!",
+      "firstCapBadge": "Debut",
+      "scored": "You scored {n} this break ⚽",
+      "unused": "Unused sub",
+      "stages": {
+        "group": "Group stage",
+        "r16": "Round of 16",
+        "qf": "Quarter-final",
+        "sf": "Semi-final",
+        "final": "Final"
+      },
+      "comps": {
+        "wc": "World Cup",
+        "euro": "Euro",
+        "copa": "Copa América"
+      },
+      "summer": "Summer tournament",
+      "inSquad": "You're in the {nation} squad!",
+      "notInSquad": "{nation} are there — but you're not in the squad.",
+      "notInSquadShort": "not in squad",
+      "didNotQualify": "{nation} didn't qualify. Next time.",
+      "champions": "{nation} are champions!",
+      "outGroup": "Out in the group stage.",
+      "outStage": "Out in the {stage}.",
+      "outFinal": "Lost the final. So close...",
+      "capsChip": "National team: {caps} caps · {goals} goals"
+    },
+    "office": {
+      "trust": "manager's trust",
+      "raise": "+15% wage, longer contract",
+      "leave": "Your agent will look for a club",
+      "howReact": "How do you react?",
+      "wentWell": "He liked that 👍",
+      "wentBadly": "That didn't go well 👎",
+      "topics": {
+        "praise": {
+          "says": "Great season. You're one of the best things that happened to this team this year.",
+          "reactions": {
+            "thanks": "Thanks, boss. It's down to the whole team.",
+            "raise": "Then I deserve a raise.",
+            "startEvery": "Then promise me I start every game."
+          },
+          "replies": {
+            "thanks": "That's exactly the attitude. That's how you keep growing.",
+            "raise": "Money? I came to talk football. Not what I wanted to hear.",
+            "startEvery": "Nobody gets promises from me. Not even you."
+          }
+        },
+        "captaincy": {
+          "says": "I'm thinking of giving you the captain's armband next season.",
+          "reactions": {
+            "proud": "It would be a huge honour. I won't let you down.",
+            "notReady": "I'm not sure I'm ready for that.",
+            "onlyWithRaise": "Only if I get a raise."
+          },
+          "replies": {
+            "proud": "I knew it. The lads look up to you.",
+            "notReady": "Shame. I thought you were a leader.",
+            "onlyWithRaise": "You don't buy the armband. Forget it."
+          }
+        },
+        "bigClubs": {
+          "says": "Big clubs are asking about you. I want to know where you stand.",
+          "reactions": {
+            "staying": "I'm here. We've got work to finish.",
+            "seeOffers": "Let's see what comes. I'm open to offers.",
+            "wantToGo": "I want to move to a bigger club."
+          },
+          "replies": {
+            "staying": "That's what I wanted to hear. The club won't forget it.",
+            "seeOffers": "I understand... but that doesn't reassure me.",
+            "wantToGo": "If your head is somewhere else, maybe it's better you go."
+          }
+        },
+        "newContract": {
+          "says": "The club wants to extend your contract, with a raise.",
+          "reactions": {
+            "signNow": "Where do I sign?",
+            "agentTalks": "My agent will talk to you.",
+            "wantMore": "The offer is too low for me."
+          },
+          "replies": {
+            "signNow": "Brilliant! Three more years and more money. You've earned it.",
+            "agentTalks": "Fine, that's how it's done. We'll talk to your agent.",
+            "wantMore": "Too low? It's a fair offer. Don't push it."
+          }
+        },
+        "wantMore": {
+          "says": "I expect more from you. It was an okay season, nothing more.",
+          "reactions": {
+            "workHarder": "You're right. I'll work harder this summer.",
+            "needMinutes": "Give me more minutes and you'll see more.",
+            "blameSystem": "Your system doesn't suit me."
+          },
+          "replies": {
+            "workHarder": "That's what I like to hear. We start from the first session.",
+            "needMinutes": "Minutes are earned in training, not asked for.",
+            "blameSystem": "My system? I'm the coach here. Think about that."
+          }
+        },
+        "newSigning": {
+          "says": "We've signed a new player in your position. You'll have competition.",
+          "reactions": {
+            "competition": "Great. Competition will only make me better.",
+            "leaveThen": "Then maybe it's better I leave.",
+            "noChance": "He's got no chance of taking my place."
+          },
+          "replies": {
+            "competition": "A winner's attitude. May the best man win.",
+            "leaveThen": "Giving up before it starts? Disappointing.",
+            "noChance": "Confidence is good. Show it on the pitch."
+          }
+        },
+        "fitness": {
+          "says": "Your fitness wasn't good enough this season. I saw you tiring.",
+          "reactions": {
+            "summerGym": "I'll do a fitness programme all summer.",
+            "imFine": "I feel great, no problem.",
+            "physioPlan": "I'll work out a plan with the physio."
+          },
+          "replies": {
+            "summerGym": "Good. I want to see you come back stronger.",
+            "imFine": "The numbers say otherwise. Don't argue with me.",
+            "physioPlan": "Smart. We'll help you."
+          }
+        },
+        "position": {
+          "says": "I want to try you in a slightly different position next season.",
+          "reactions": {
+            "tryIt": "I'm open to it. I'll try.",
+            "myPosition": "I only want to play in my position.",
+            "ifIPlay": "If it means more minutes — gladly."
+          },
+          "replies": {
+            "tryIt": "Open mind. It'll help you and the team.",
+            "myPosition": "A team isn't a menu. I decide who plays where.",
+            "ifIPlay": "At least you're honest. Let's see how it goes."
+          }
+        },
+        "benched": {
+          "says": "I'll be honest with you: next season you probably won't play much.",
+          "reactions": {
+            "proveWrong": "I'll prove you wrong.",
+            "loanMe": "Then loan me out.",
+            "slamDoor": "(Slams the door and walks out)"
+          },
+          "replies": {
+            "proveWrong": "That's what I want to see. Prove it in training.",
+            "loanMe": "Maybe that's best for you. I'll talk to the board.",
+            "slamDoor": "Don't you dare do that in my office again!"
+          }
+        },
+        "attitude": {
+          "says": "Your attitude in training wasn't good. I've heard it from several people.",
+          "reactions": {
+            "sorry": "You're right. It won't happen again.",
+            "notTrue": "That's not true, someone's stirring.",
+            "silence": "(Stays silent, staring at the floor)"
+          },
+          "replies": {
+            "sorry": "I appreciate the honesty. Clean slate.",
+            "notTrue": "Everyone's lying except you? Really?",
+            "silence": "Silence isn't an answer. I expect more."
+          }
+        },
+        "notReady": {
+          "says": "You're not ready for the first team yet. You need more time.",
+          "reactions": {
+            "learn": "Okay. I'll learn and be ready.",
+            "readyNow": "I'm ready now, give me a chance.",
+            "youthAgain": "Then I'll be the best in the youth team."
+          },
+          "replies": {
+            "learn": "Exactly. Patience will pay off.",
+            "readyNow": "Hunger is good, but I haven't seen it yet.",
+            "youthAgain": "Good. Get yourself noticed there."
+          }
+        },
+        "lastChance": {
+          "says": "This is your last chance here. Another season like this and you're out.",
+          "reactions": {
+            "allIn": "I'll give everything. You won't be disappointed.",
+            "agentCall": "I'm calling my agent.",
+            "shrug": "(Shrugs) Whatever happens, happens."
+          },
+          "replies": {
+            "allIn": "I hope so. I want to believe in you.",
+            "agentCall": "Do what you want. I won't stop you.",
+            "shrug": "That's exactly what worries me about you."
+          }
+        }
       }
     }
   },

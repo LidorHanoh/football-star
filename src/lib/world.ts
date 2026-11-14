@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient as createSupabase } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
+import { withLowerLeagues } from "@/lib/engine/lower-leagues";
 import type { World } from "@/lib/engine/types";
 import type { Database } from "@/lib/supabase/database.types";
 import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
@@ -23,7 +24,7 @@ export async function getCareerWorld(): Promise<World> {
   if (e1 || e2) throw new Error(`Failed to load world: ${(e1 ?? e2)!.message}`);
 
   const keyById = new Map(leagues!.map((l) => [l.id, l.key]));
-  return {
+  return withLowerLeagues({
     leagues: leagues!
       .map((l) => ({ key: l.key, name: l.name as World["leagues"][number]["name"], country: l.country_code, strength: l.strength, tier: l.tier }))
       .sort((a, b) => b.strength - a.strength),
@@ -35,5 +36,5 @@ export async function getCareerWorld(): Promise<World> {
       teamRating: c.team_rating,
       tmId: c.external_id,
     })),
-  };
+  });
 }

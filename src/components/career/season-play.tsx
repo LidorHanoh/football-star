@@ -9,7 +9,8 @@ import { clubKit, clubManager, hash } from "@/lib/engine/people";
 import { Rng } from "@/lib/engine/rng";
 import type { HalfEvent } from "@/lib/engine/season";
 import { resolveSetPiece } from "@/lib/engine/set-piece";
-import { chooseSituation, halfSituations, type Situation } from "@/lib/engine/situations";
+import type { IntlBreak, Tournament } from "@/lib/engine/international";
+import { chooseSituation, gambleWon, halfSituations, type Situation } from "@/lib/engine/situations";
 import { makeQuestion, triviaSlots, type TriviaQuestion } from "@/lib/engine/trivia";
 import type { CareerSave, EuroComp, InjuryKind, KnockoutStage, MatchResult, Role, Trophy, World, WorldClub, Zone } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,9 @@ import { type CareerDict, clubName, fill, teamName } from "./helpers";
 import { HighlightClip } from "./highlights";
 import { SetPieceGame } from "./set-piece";
 import { DrawTakeover, FAN_MOMENTS, type FanMoment, FanTakeover, NewsTakeover, SituationTakeover, type Toast, Toasts } from "./situations";
+import { IntlTakeover, TournamentTakeover } from "./international";
 import { TriviaTakeover, useTriviaData } from "./trivia";
+import { useSquad } from "./use-squad";
 
 type Step = "pre" | "score" | "post" | "clip" | "setpiece" | "end";
 
@@ -34,7 +37,9 @@ type Moment =
   | { kind: "fans"; moment: FanMoment }
   | { kind: "trophy"; trophy: Trophy; subtitle: string }
   | { kind: "news"; icon: string; title: string; text: string; good: boolean }
-  | { kind: "role"; up: boolean; to: Role };
+  | { kind: "role"; up: boolean; to: Role }
+  | { kind: "intl"; brk: IntlBreak }
+  | { kind: "tournament"; tour: Tournament };
 
 const STAGE_ICON: Record<KnockoutStage, string> = { po: "🎟️", r16: "🎯", qf: "🔥", sf: "⚡", final: "🏆" };
 
@@ -77,6 +82,11 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
   const nameOf = (id: string) => teamName(world, id, locale, level, age);
   const cupName = (t.cupNames as Record<string, string>)[country] ?? t.comps.cup;
   const compName = (x: MatchResult) => (x.comp === "cup" ? cupName : x.comp === "cl" || x.comp === "el" ? t.comps[x.comp] : null);
+  const israeli = country === "Israel";
+  // Real names for the people around you (the youth side's are made up).
+  const { players: squad } = useSquad(level === "youth" ? { ...myClub, id: `${myClub.id}-youth`, teamRating: myClub.teamRating - 12 } : myClub, locale, israeli, level === "youth");
+  const cast = { squad, coach: coach.name, agent: before.agent?.name, israeli, clubId: myClub.id };
+  const nation = before.player.nationality;
   const triviaOn = !!before.trivia?.topics.length;
   const trivia = useTriviaData(triviaOn);
 
@@ -103,9 +113,11 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
     // The European draw comes before your first European night.
     const firstEuro = ms.findIndex((x) => x.comp === "cl" || x.comp === "el");
     const draw = after.season!.europe && !prior.some((x) => x.comp === "cl" || x.comp === "el") && firstEuro >= 0 ? { index: firstEuro, comp: after.season!.europe.comp, clubs: after.season!.europe.draw } : null;
-    return { decisions, fanAfter, triviaAt, draw };
+    // International breaks (shown when you're called up, or only just missed out).
+    const intlAt = (after.season!.intl ?? []).filter((b) => b.half === half && (b.picked || b.close)).map((brk) => ({ brk, index: at(brk.at) }));
+    return { decisions, fanAfter, triviaAt, draw, intlAt };
   });
-  const { decisions, fanAfter, triviaAt, draw } = plan;
+  const { decisions, fanAfter, triviaAt, draw, intlAt } = plan;
 
   const questions = useMemo(() => {
     if (!trivia || !before.trivia) return [];
@@ -150,6 +162,7 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
         if (at === k && questions[j]) q.push({ kind: "trivia", q: questions[j]!, slot: j });
       });
       if (draw && draw.index === k) q.push({ kind: "draw", comp: draw.comp, clubs: draw.clubs });
+      for (const b of intlAt) if (b.index === k) q.push({ kind: "intl", brk: b.brk });
       if (k > 0 && matches[k - 1].out && !x.out) q.push({ kind: "recovered" });
     } else {
       if (x.injured) {
@@ -164,9 +177,14 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
     }
     return q;
   };
+  // The summer tournament: shown if your country qualified, or if you've been playing for them.
+  const tour = half === 2 ? after.season!.tournament : null;
+  const intlThisSeason = (after.season!.intl ?? []).some((b) => b.picked);
+  const tourMoments: Moment[] = tour && (tour.qualified || intlThisSeason) ? [{ kind: "tournament", tour }, ...(tour.won && tour.picked ? [{ kind: "trophy", trophy: tour.comp, subtitle: `${t.intl.comps[tour.comp]} ${tour.year}` } as Moment] : [])] : [];
   const endQueue: Moment[] = [
     ...events.filter((e) => e.key === "roleDown" || e.key === "roleUp").map((e): Moment => ({ kind: "role", up: e.key === "roleUp", to: e.params!.to as Role })),
     ...events.filter((e) => e.key === "qualifiedCl" || e.key === "qualifiedEl").map((e): Moment => ({ kind: "news", icon: e.key === "qualifiedCl" ? "⭐" : "🟠", good: true, title: t.compNews.qualifiedTitle, text: fill(t.compNews.qualifiedText, { comp: t.comps[e.key === "qualifiedCl" ? "cl" : "el"] }) })),
+    ...tourMoments,
   ];
   const clipsOf = (k: number) => {
     const x = matches[k];
@@ -273,8 +291,8 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
           save={save}
           situation={current.situation}
           t={t}
-          kit={myKit}
-          coach={coach}
+          cast={cast}
+          won={gambleWon(before, half, current.situation.id)}
           onChoose={(opt) => {
             setSave(chooseSituation(saveRef.current, half, current.situation.id, opt));
             closeMoment();
@@ -302,6 +320,8 @@ export function SeasonPlay({ before, after, events, world, t, locale, onFinish }
         />
       )}
       {current?.kind === "draw" && <DrawTakeover comp={current.comp} clubs={current.clubs.map((id) => world.clubs.find((c) => c.id === id)!).filter(Boolean)} names={current.clubs.map((id) => clubName(world, id, locale))} t={t} onClose={closeMoment} />}
+      {current?.kind === "intl" && <IntlTakeover key={`intl${current.brk.at}`} brk={current.brk} country={nation} locale={locale} t={t} onClose={closeMoment} />}
+      {current?.kind === "tournament" && <TournamentTakeover tour={current.tour} country={nation} locale={locale} t={t} onClose={closeMoment} />}
       {current?.kind === "injury" && <NewsTakeover icon="🩹" tone="bad" title={fill(t.injury.title, { kind: t.injury.kinds[current.injury] })} text={fill(t.injury.text, { n: current.n })} t={t} onClose={closeMoment} />}
       {current?.kind === "recovered" && <NewsTakeover icon="💪" tone="good" title={t.injury.backTitle} text={t.injury.backText} t={t} onClose={closeMoment} />}
       {current?.kind === "news" && <NewsTakeover icon={current.icon} tone={current.good ? "good" : "bad"} title={current.title} text={current.text} t={t} onClose={closeMoment} />}

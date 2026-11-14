@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getDictionary, getLocale } from "@/i18n/get-dictionary";
 import { getCurrentProfile } from "@/lib/supabase/server";
+import { isLowerClub } from "@/lib/engine/lower-leagues";
 import { getCareerWorld } from "@/lib/world";
 import { AdminPanel } from "./admin-panel";
 
@@ -27,5 +28,6 @@ async function AdminGate(props: Omit<React.ComponentProps<typeof AdminPanel>, "w
   const profile = await getCurrentProfile();
   if (profile?.role !== "admin") notFound();
   const world = await getCareerWorld();
-  return <AdminPanel {...props} world={world} />;
+  // The amateur divisions have no database squads to edit.
+  return <AdminPanel {...props} world={{ leagues: world.leagues.filter((l) => l.tier <= 2), clubs: world.clubs.filter((c) => !isLowerClub(c.id)) }} />;
 }

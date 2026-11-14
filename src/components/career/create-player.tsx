@@ -11,7 +11,8 @@ import { newSeed } from "@/lib/engine/rng";
 import { type Position } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { Face, faceCount } from "./face";
-import { type CareerDict, FLAGS } from "./helpers";
+import type { Locale } from "@/i18n/config";
+import { type CareerDict, countryLabel, FLAGS } from "./helpers";
 import { KIT_STYLES, KitPreview } from "./kit-preview";
 import { CountryFlag } from "./region-picker";
 
@@ -21,9 +22,10 @@ const SPOTS: Record<Position, { x: number; y: number }> = {
   CM: { x: 50, y: 50 }, DM: { x: 50, y: 64 }, LB: { x: 14, y: 72 }, RB: { x: 86, y: 72 }, CB: { x: 50, y: 78 }, GK: { x: 50, y: 92 },
 };
 
-const NATIONS = Object.keys(FLAGS);
+// One entry per country (some have two spellings in the data).
+const NATIONS = Object.keys(FLAGS).filter((n) => !["USA", "Turkey", "Saudi-Arabia"].includes(n));
 
-export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: NewPlayerInput) => void }) {
+export function CreatePlayer({ t, locale, onDone }: { t: CareerDict; locale: Locale; onDone: (input: NewPlayerInput) => void }) {
   const [name, setName] = useState("");
   const [nationality, setNationality] = useState("Israel");
   const [position, setPosition] = useState<Position>("ST");
@@ -80,9 +82,9 @@ export function CreatePlayer({ t, onDone }: { t: CareerDict; onDone: (input: New
             <div className="flex items-center gap-2">
             <CountryFlag country={nationality} className="h-7 w-10 rounded shadow-sm" />
             <select id="pnat" value={nationality} onChange={(e) => setNationality(e.target.value)} className="h-11 min-w-0 flex-1 rounded-lg border bg-background px-3 text-base">
-              {NATIONS.map((n) => (
+              {[...NATIONS].sort((a, b) => countryLabel(a, locale).localeCompare(countryLabel(b, locale), locale)).map((n) => (
                 <option key={n} value={n}>
-                  {n}
+                  {countryLabel(n, locale)}
                 </option>
               ))}
             </select>

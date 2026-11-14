@@ -5,7 +5,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { agentSummary } from "@/lib/engine/advice";
 import { agentTierFor, askForMore, betterAgentAvailable, rollAgents, switchAgent } from "@/lib/engine/career";
-import { agentReport, answerManager, MANAGER_CHOICES, type ManagerChoice, managerMood, managerOutcome, mustRetire, relation, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
+import { reactInOffice } from "@/lib/engine/office";
+import { agentReport, mustRetire, seasonSummary, startNextSeason, type AgentReport } from "@/lib/engine/season-end";
 import { clubKit, clubManager } from "@/lib/engine/people";
 import type { ScreenProps } from "./career-app";
 import { AgentCard } from "./agent-picker";
@@ -14,6 +15,8 @@ import { TrophyArt } from "./trophy";
 import { Face } from "./face";
 import { fill, money, teamName } from "./helpers";
 import { OfferCard, Roulette } from "./offers";
+import { OfficeTalk } from "./office";
+import { CountryFlag } from "./region-picker";
 import { StatusBars } from "./status-bars";
 
 type Step = "review" | "manager" | "newAgent" | "agent";
@@ -22,21 +25,16 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
   const s = t.seasonEnd;
   const newAgentPending = betterAgentAvailable(save) && !save.talks.newAgent;
   const [step, setStep] = useState<Step>(save.talks.manager ? (newAgentPending ? "newAgent" : "agent") : "review");
-  const [reply, setReply] = useState<ManagerChoice | null>((save.talks.manager as ManagerChoice) ?? null);
-  const [answer, setAnswer] = useState<"yes" | "maybe" | "no">("maybe");
   const [report, setReport] = useState<AgentReport | null>(null);
   const [spin, setSpin] = useState<{ won: boolean; wage: number } | null>(null);
   const summary = seasonSummary(save);
   const trophies = summary.trophies ?? [];
   const [celebrating, setCelebrating] = useState(step === "review" && trophies.length > 0);
-  const mood = managerMood(save);
   const contract = save.contract!;
   const club = world.clubs.find((c) => c.id === contract.clubId)!;
   const kit = clubKit(club);
   const coach = clubManager(club, world.leagues.find((l) => l.key === club.leagueKey)?.country === "Israel");
-  const coachFace = <Face seed={coach.face} kind="manager" kit={kit} className="size-12 overflow-hidden rounded-full" title={coach.name} />;
   const agentFace = save.agent ? <Face seed={save.agent.face} kind="agent" className="size-12 overflow-hidden rounded-full" title={save.agent.name} /> : <BriefcaseIcon aria-hidden />;
-  const meFace = <Face seed={save.player.face} kit={kit} className="size-10 overflow-hidden rounded-full" />;
   const seasonLabel = `${summary.year}/${String((summary.year + 1) % 100).padStart(2, "0")}`;
   const nextLabel = `${summary.year + 1}/${String((summary.year + 2) % 100).padStart(2, "0")}`;
 
@@ -93,7 +91,7 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               ))}
             </ul>
           )}
-          {(summary.cup || summary.europe) && (
+          {(summary.cup || summary.europe || !!summary.intl?.caps || summary.tournament) && (
             <div className="flex flex-wrap gap-2 text-sm font-semibold">
               {summary.europe && (
                 <span className={summary.europe.comp === "cl" ? "rounded-full bg-blue-700 px-3 py-1 text-white" : "rounded-full bg-orange-600 px-3 py-1 text-white"}>
@@ -103,6 +101,17 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
               {summary.cup && (
                 <span className="rounded-full bg-amber-500 px-3 py-1 text-black">
                   🏆 {t.comps.cup} · {summary.trophies?.includes("cup") ? "🏆" : t.stages[summary.cup]}
+                </span>
+              )}
+              {!!summary.intl?.caps && (
+                <span className="flex items-center gap-1.5 rounded-full bg-sky-700 px-3 py-1 text-white">
+                  <CountryFlag country={save.player.nationality} className="h-3.5 w-5 rounded-sm" /> {fill(t.intl.capsChip, { caps: summary.intl.caps, goals: summary.intl.goals })}
+                </span>
+              )}
+              {summary.tournament && (
+                <span className="rounded-full bg-indigo-700 px-3 py-1 text-white">
+                  {summary.tournament.comp === "wc" ? "🌍" : "🏆"} {t.intl.comps[summary.tournament.comp]} · {summary.tournament.won ? "🏆" : summary.tournament.last === "group" ? t.intl.stages.group : t.intl.stages[summary.tournament.last]}
+                  {!summary.tournament.picked && ` (${t.intl.notInSquadShort})`}
                 </span>
               )}
             </div>
@@ -117,50 +126,19 @@ export function SeasonEnd({ save, world, t, locale, onChange }: ScreenProps) {
       )}
 
       {step === "manager" && (
-        <div className="grid gap-4">
-          <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
-            {s.relation[relation(save)]} {s.managerSays[mood]}
-          </Bubble>
-          {!reply ? (
-            <div className="grid gap-2 sm:grid-cols-3">
-              {MANAGER_CHOICES.map((c) => (
-                <Button
-                  key={c}
-                  size="lg"
-                  variant="outline"
-                  className="h-auto min-h-12 py-3 whitespace-normal"
-                  onClick={() => {
-                    setReply(c);
-                    setAnswer(managerOutcome(save, c));
-                    onChange(answerManager(save, c));
-                  }}
-                >
-                  {s.managerChoices[c]}
-                </Button>
-              ))}
-            </div>
-          ) : (
-            <>
-              <Bubble who={save.player.name} mine icon={meFace}>
-                {s.managerChoices[reply]}
-              </Bubble>
-              <Bubble who={`${s.manager} · ${coach.name}`} icon={coachFace}>
-                {s.managerReplies[reply][answer]}
-              </Bubble>
-              <Button
-                size="lg"
-                className="h-12 justify-self-end"
-                onClick={() => {
-                  if (!newAgentPending) return openAgent();
-                  onChange(rollAgents(save));
-                  setStep("newAgent");
-                }}
-              >
-                <BriefcaseIcon aria-hidden /> {s.toAgent}
-              </Button>
-            </>
-          )}
-        </div>
+        <OfficeTalk
+          save={save}
+          coach={coach}
+          kit={kit}
+          club={club}
+          t={t}
+          onReact={(id) => onChange(reactInOffice(save, id))}
+          onNext={() => {
+            if (!newAgentPending) return openAgent();
+            onChange(rollAgents(save));
+            setStep("newAgent");
+          }}
+        />
       )}
 
       {step === "newAgent" && (

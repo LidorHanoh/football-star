@@ -1,3 +1,4 @@
+import { FACTS, factsFor } from "./facts";
 import { hash } from "./people";
 import { Rng } from "./rng";
 import type { TriviaTopic } from "./types";
@@ -20,7 +21,13 @@ export interface TriviaData {
 
 export type TriviaQuestion =
   | { id: string; kind: "transfer"; player: number; from: number; to: number; year: number; fee: number | null; options: number[]; answer: number }
-  | { id: string; kind: "champion"; comp: "cl" | "isr"; year: number; options: number[]; answer: number };
+  | { id: string; kind: "champion"; comp: "cl" | "isr"; year: number; options: number[]; answer: number }
+  /** A hand-written fact (famous goal, trophy, manager, retirement, record): options are answer indexes into the fact. */
+  | { id: string; kind: "fact"; fact: number; options: number[]; answer: number };
+
+/** Question text and an answer's label for a fact question. */
+export const factText = (fact: number, he: boolean) => FACTS[fact][he ? 3 : 2];
+export const factAnswer = (fact: number, i: number, he: boolean) => FACTS[fact][4][i][he ? 1 : 0];
 
 export const TOPICS: TriviaTopic[] = ["general", "cl", "top5", "israel"];
 const TOP5 = new Set(["gb-eng", "es", "it", "de", "fr"]);
@@ -41,6 +48,12 @@ export function makeQuestion(data: TriviaData, topics: TriviaTopic[], seed: stri
   if (!topics.length) return null;
   const rng = new Rng(hash(seed));
   const done = new Set(seen);
+  // Famous goals, trophies, managers, retirements and records: about a third of the questions.
+  const facts = factsFor(topics).filter(({ f }) => !done.has(`f${f[0]}`));
+  if (facts.length && rng.chance(0.35)) {
+    const { f, i } = rng.pick(facts);
+    return { id: `f${f[0]}`, kind: "fact", fact: i, answer: 0, options: rng.shuffle([0, 1, 2, 3]) };
+  }
   // Champions questions now and then (CL for the CL topic, Ligat Ha'Al for the Israeli one).
   const champComps = (["cl", "isr"] as const).filter((c) => topics.includes("general") || (c === "cl" ? topics.includes("cl") : topics.includes("israel")));
   if (champComps.length && rng.chance(0.18)) {

@@ -99,16 +99,21 @@ export function startOffers(save: CareerSave, world: World, leagueKey: string | 
   const mid = rng.pick(thirds(rng.pick(byStrength))[1]);
   const small = rng.pick(thirds(byStrength[byStrength.length - 1])[2]);
   const rating = save.player.rating;
-  const make = (club: WorldClub, tag: Offer["tag"], trust: number): Offer => ({
-    id: `o${club.id.slice(0, 8)}${rng.int(0, 9999)}`,
-    clubId: club.id,
-    level: "youth",
-    years: rng.int(BALANCE.offers.youthYears[0], BALANCE.offers.youthYears[1]),
-    wage: youthWage(club, rng),
-    trust,
-    tag,
-    role: offerRole(rating, club, "youth", trust),
-  });
+  // Amateur clubs (3rd tier and below) have no academy: you go straight into the first team.
+  const amateur = (club: WorldClub) => (world.leagues.find((l) => l.key === club.leagueKey)?.tier ?? 1) >= 3;
+  const make = (club: WorldClub, tag: Offer["tag"], trust: number): Offer => {
+    const level = amateur(club) ? "first" : "youth";
+    return {
+      id: `o${club.id.slice(0, 8)}${rng.int(0, 9999)}`,
+      clubId: club.id,
+      level,
+      years: level === "first" ? rng.int(1, 2) : rng.int(BALANCE.offers.youthYears[0], BALANCE.offers.youthYears[1]),
+      wage: level === "first" ? seniorWage(club, rating, rng) : youthWage(club, rng),
+      trust,
+      tag,
+      role: offerRole(rating, club, level, trust),
+    };
+  };
   const offers = [make(big, "big", 40), make(mid, "steady", 50), make(small, "fast", 62)];
   return { ...save, rng: rng.state, offers };
 }

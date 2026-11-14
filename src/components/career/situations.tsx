@@ -3,13 +3,13 @@
 import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { hash, type Kit } from "@/lib/engine/people";
-import { type Reactor, resolveAttr, type Situation, type SituationOption } from "@/lib/engine/situations";
+import { hash, type Kit, personName } from "@/lib/engine/people";
+import { optionBars, type Reactor, resolveAttr, type Situation, type SituationOption } from "@/lib/engine/situations";
 import type { CareerSave, EuroComp, WorldClub } from "@/lib/engine/types";
 import { cn } from "@/lib/utils";
 import { Crest } from "./crest";
-import { Face, type FaceKind } from "./face";
 import type { CareerDict } from "./helpers";
+import type { SquadPlayer } from "./use-squad";
 
 const ICON: Record<string, string> = {
   welcomeNight: "🍻",
@@ -48,6 +48,10 @@ const ICON: Record<string, string> = {
   agentDinner: "🍷",
   language: "🗣️",
   penaltyPractice: "🥅",
+  askToStart: "🙋",
+  trickShot: "🪄",
+  teamMeeting: "🗣️",
+  refereeRow: "🟨",
 };
 
 type Tone = "dark" | "bad" | "good" | "gold" | "blue";
@@ -70,38 +74,120 @@ export function Takeover({ children, tone = "dark", label }: { children: React.R
   );
 }
 
-const FACE_KIND: Record<Reactor, FaceKind> = { captain: "player", teammate: "player", friend: "player", fan: "player", youngster: "player", coach: "manager", fitnessCoach: "manager", physio: "manager", dad: "manager", journalist: "manager", agent: "agent" };
+const REACTOR_ICON: Record<Reactor, string> = { captain: "©️", teammate: "👕", coach: "📋", fitnessCoach: "💪", physio: "🩺", agent: "💼", journalist: "🎙️", friend: "🤝", dad: "👨", fan: "📣", youngster: "🌱" };
+
+/** Who's who around you: real names from your squad, the club's coach, your agent… */
+export interface Cast {
+  squad: SquadPlayer[] | null;
+  coach: string;
+  agent?: string;
+  israeli: boolean;
+  clubId: string;
+}
+
+function personFor(who: Reactor, cast: Cast, save: CareerSave, situationId: string): string {
+  const squad = (cast.squad ?? []).filter((p) => p.name !== save.player.name);
+  const seed = hash(`${save.id}:${situationId}:${who}`);
+  const byRating = [...squad].sort((a, b) => b.rating - a.rating);
+  switch (who) {
+    case "coach":
+      return cast.coach;
+    case "agent":
+      return cast.agent ?? personName(seed, cast.israeli);
+    case "dad":
+      return "";
+    case "captain":
+      return (byRating.find((p) => (p.age ?? 0) >= 26) ?? byRating[0])?.name ?? personName(seed, cast.israeli);
+    case "youngster":
+      return [...squad].sort((a, b) => (a.age ?? 30) - (b.age ?? 30))[0]?.name ?? personName(seed, cast.israeli);
+    case "teammate": {
+      const pool = byRating.slice(1, 18);
+      return pool.length ? pool[seed % pool.length].name : personName(seed, cast.israeli);
+    }
+    case "fitnessCoach":
+    case "physio":
+      return personName(hash(`${cast.clubId}:${who}`), cast.israeli);
+    case "journalist":
+      return personName(hash(`${save.id}:journalist`), cast.israeli);
+    case "friend":
+      return personName(hash(`${save.id}:friend`), save.player.nationality === "Israel");
+    case "fan":
+      return personName(seed, cast.israeli).split(" ")[0];
+  }
+}
+
+/** The 50/50 wheel: green it works out, red it backfires. The result is decided already; the wheel lands on it. */
+function GambleWheel({ won, t, onDone }: { won: boolean; t: CareerDict; onDone: () => void }) {
+  const [target] = useState(() => 360 * 5 + (won ? 0 : 180) + 25 + ((hash(String(won)) % 130) as number));
+  const [spun, setSpun] = useState(false);
+  return (
+    <div className="animate-pop mt-5 flex flex-col items-center gap-3">
+      <p className="text-sm font-bold tracking-widest text-white/70 uppercase">{t.situations.gamble.spinning}</p>
+      <div dir="ltr" className="relative size-48">
+        <div className="absolute -top-2 left-1/2 z-10 size-0 -translate-x-1/2 border-x-[12px] border-t-[22px] border-x-transparent border-t-white drop-shadow" aria-hidden />
+        <div
+          className="size-full rounded-full border-4 border-white/80 shadow-[0_0_50px_rgba(255,255,255,0.2)] motion-reduce:transition-none"
+          style={{ background: "conic-gradient(from 0deg, #16a34a 0 180deg, #dc2626 180deg 360deg)", transform: "rotate(0deg)", transition: "transform 2.4s cubic-bezier(0.15, 0.85, 0.25, 1)" }}
+          ref={(el) => {
+            if (el && !el.dataset.spun) {
+              el.dataset.spun = "1";
+              requestAnimationFrame(() => requestAnimationFrame(() => (el.style.transform = `rotate(${-target}deg)`)));
+            }
+          }}
+          onTransitionEnd={() => {
+            if (spun) return;
+            setSpun(true);
+            setTimeout(onDone, 350);
+          }}
+        >
+          <span className="absolute top-1/2 right-[16%] -translate-y-1/2 text-3xl" aria-hidden>
+            👍
+          </span>
+          <span className="absolute top-1/2 left-[16%] -translate-y-1/2 text-3xl" aria-hidden>
+            👎
+          </span>
+        </div>
+      </div>
+      <button type="button" className="text-sm text-white/60 underline" onClick={onDone}>
+        {t.highlights.skip}
+      </button>
+    </div>
+  );
+}
 
 /**
- * An off-the-pitch decision. Pick one: the other card goes away, then the
- * person it matters to tells you what they think, and the small effects pop in.
+ * An off-the-pitch decision. Pick one: the other card goes away. A 50/50 call
+ * spins the wheel first. Then the person it matters to (by name) tells you what
+ * they think, and the small effects pop in.
  */
-export function SituationTakeover({ save, situation, t, kit, coach, onChoose }: { save: CareerSave; situation: Situation; t: CareerDict; kit: Kit; coach: { name: string; face: number }; onChoose: (optionId: string) => void }) {
+export function SituationTakeover({ save, situation, t, cast, won, onChoose }: { save: CareerSave; situation: Situation; t: CareerDict; cast: Cast; won: boolean; onChoose: (optionId: string) => void }) {
   const st = t.situations;
   const text = (st.items as Record<string, { text: string; options: Record<string, string>; reactions: Record<string, string> }>)[situation.id];
   const [picked, setPicked] = useState<SituationOption | null>(null);
+  const [spinning, setSpinning] = useState(false);
   const [typing, setTyping] = useState(true);
   const attrLabels = save.player.position === "GK" ? t.attrs.gk : t.attrs.outfield;
 
   useEffect(() => {
-    if (!picked) return;
+    if (!picked || spinning) return;
     const timer = setTimeout(() => setTyping(false), 900);
     return () => clearTimeout(timer);
-  }, [picked]);
+  }, [picked, spinning]);
 
-  const effects = (o: SituationOption) => {
+  const effects = (o: SituationOption, result = won) => {
     const out: { label: string; good: boolean }[] = [];
     for (const [k, v] of Object.entries(o.attrs ?? {})) out.push({ label: `+${v} ${attrLabels[resolveAttr(save, k as never)]}`, good: v > 0 });
-    for (const [k, v] of Object.entries(o.bars ?? {})) out.push({ label: `${v > 0 ? "+" : ""}${v} ${t.bars[k as keyof typeof t.bars]}`, good: v > 0 });
+    for (const [k, v] of Object.entries(optionBars(o, result))) out.push({ label: `${v > 0 ? "+" : ""}${v} ${t.bars[k as keyof typeof t.bars]}`, good: v > 0 });
     if (o.risk) out.push({ label: st.risk, good: false });
     return out;
   };
 
-  const who = picked?.who;
-  const person = who === "coach" ? { name: coach.name, face: coach.face } : who === "agent" && save.agent ? { name: save.agent.name, face: save.agent.face } : who ? { name: "", face: hash(`${save.id}:${who}`) } : null;
+  const good = picked ? (picked.gamble ? won : picked.good) : false;
+  const reaction = picked ? (picked.gamble ? text.reactions[`${picked.id}${won ? "Win" : "Lose"}`] : text.reactions[picked.id]) : "";
+  const name = picked ? personFor(picked.who, cast, save, situation.id) : "";
 
   return (
-    <Takeover label={st.title} tone={picked ? (picked.good ? "good" : "bad") : "dark"}>
+    <Takeover label={st.title} tone={picked && !spinning ? (good ? "good" : "bad") : "dark"}>
       <p className="mb-3 text-center text-xs font-bold tracking-[0.2em] text-white/60 uppercase">{st.title}</p>
       <div className={cn("mx-auto mb-4 grid place-items-center rounded-full bg-white/10 shadow-[0_0_60px_rgba(255,255,255,0.15)] transition-all duration-500", picked ? "size-16 text-4xl" : "animate-pop size-24 text-6xl")} aria-hidden>
         {ICON[situation.id] ?? "💬"}
@@ -117,7 +203,10 @@ export function SituationTakeover({ save, situation, t, kit, coach, onChoose }: 
               key={o.id}
               type="button"
               disabled={!!picked}
-              onClick={() => setPicked(o)}
+              onClick={() => {
+                setPicked(o);
+                if (o.gamble) setSpinning(true);
+              }}
               className={cn(
                 "group flex min-h-20 flex-col gap-2 rounded-2xl border p-4 text-start backdrop-blur transition duration-300 focus-visible:ring-4 focus-visible:ring-white/40 focus-visible:outline-none",
                 chosen ? "animate-pop border-white/70 bg-white/15 sm:col-span-2" : "animate-rise border-white/15 bg-white/5 hover:border-white/50 hover:bg-white/10 active:scale-[0.98]",
@@ -131,11 +220,15 @@ export function SituationTakeover({ save, situation, t, kit, coach, onChoose }: 
               </span>
               {!picked && (
                 <span className="flex flex-wrap gap-1">
-                  {effects(o).map((e) => (
-                    <span key={e.label} className={cn("rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums", e.good ? "bg-emerald-400/20 text-emerald-200" : "bg-rose-400/20 text-rose-200")}>
-                      {e.label}
-                    </span>
-                  ))}
+                  {o.gamble ? (
+                    <span className="rounded-md bg-amber-400/25 px-2 py-0.5 text-xs font-bold text-amber-100">🎲 {st.gamble.chip}</span>
+                  ) : (
+                    effects(o).map((e) => (
+                      <span key={e.label} className={cn("rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums", e.good ? "bg-emerald-400/20 text-emerald-200" : "bg-rose-400/20 text-rose-200")}>
+                        {e.label}
+                      </span>
+                    ))
+                  )}
                 </span>
               )}
             </button>
@@ -143,17 +236,20 @@ export function SituationTakeover({ save, situation, t, kit, coach, onChoose }: 
         })}
       </div>
 
+      {picked && spinning && <GambleWheel won={won} t={t} onDone={() => setSpinning(false)} />}
+
       {/* The reaction */}
-      {picked && person && (
+      {picked && !spinning && (
         <div className="animate-rise mt-5" style={{ animationDelay: "250ms" }}>
+          {picked.gamble && <p className={cn("animate-pop mb-4 text-center font-heading text-3xl font-black", won ? "text-emerald-300" : "text-rose-300")}>{won ? st.gamble.won : st.gamble.lost}</p>}
           <div className="flex items-end gap-3">
-            <div className="animate-pop shrink-0" style={{ animationDelay: "300ms" }}>
-              <Face seed={person.face} kind={FACE_KIND[picked.who]} kit={kit} className={cn("size-16 rounded-2xl ring-4", picked.good ? "ring-emerald-400/70" : "ring-rose-400/70")} />
+            <div className={cn("animate-pop grid size-14 shrink-0 place-items-center rounded-full text-3xl ring-4", good ? "bg-emerald-500/25 ring-emerald-400/60" : "bg-rose-500/25 ring-rose-400/60")} style={{ animationDelay: "300ms" }} aria-hidden>
+              {REACTOR_ICON[picked.who]}
             </div>
             <div className="relative min-w-0 flex-1 rounded-2xl rounded-es-sm bg-white p-3.5 text-slate-900 shadow-xl">
-              <p className="mb-0.5 text-xs font-bold text-slate-500">
-                {st.reactors[picked.who]}
-                {person.name && ` · ${person.name}`}
+              <p className="mb-0.5 leading-tight">
+                <span className="font-bold">{name || st.reactors[picked.who]}</span>
+                {name && <span className="text-xs font-semibold text-slate-500"> · {st.reactors[picked.who]}</span>}
               </p>
               {typing ? (
                 <p className="flex h-6 items-center gap-1" aria-label="…">
@@ -162,7 +258,7 @@ export function SituationTakeover({ save, situation, t, kit, coach, onChoose }: 
                   ))}
                 </p>
               ) : (
-                <p className="animate-rise font-semibold">{text.reactions[picked.id]}</p>
+                <p className="animate-rise font-semibold">{reaction}</p>
               )}
             </div>
           </div>
